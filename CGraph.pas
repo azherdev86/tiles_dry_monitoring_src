@@ -145,7 +145,9 @@ type
     function GetGridCoord(AMouseCoord : TPoint) : TPoint;
 
     procedure HighLightCell(ACell : TPoint);   //ѕодсветить €чейку
-    procedure DeHighLightCell(ACell : TPoint); //”брать подсветку
+    procedure DeHighLightCell(ACell : TPoint); //”брать подсветку €чейки
+    procedure DeHighLightRow(ARowIndex : integer); //”брать подсветку строки
+
 
   public
     property Width : integer read GetBitMapWidth;
@@ -984,6 +986,23 @@ begin
   if Row.GetCount = 0
     then FHighLightedRows.DeleteItem(IntToStr(Row.RowIndex));
 end;
+
+
+procedure TMGraph.DeHighLightRow(ARowIndex : integer);
+var
+  Row : TMRow;
+begin
+  if (ARowIndex < 0) or (ARowIndex > (FGridRowCount - 1))
+    then Exit;
+
+  Row := FHighLightedRows.GetItem(IntToStr(ARowIndex));
+
+  if not Assigned(Row)
+    then Exit;
+
+  FHighLightedRows.DeleteItem(IntToStr(Row.RowIndex));
+end;
+
 
 function TMGraph.GetBitMapWidth() : integer;
 begin

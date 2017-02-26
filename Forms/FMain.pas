@@ -37,16 +37,16 @@ type
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
     ButtonApplyFloorAxisSettings: TButton;
-    Button2: TButton;
-    LabeledEdit3: TLabeledEdit;
-    Button3: TButton;
-    LabeledEdit4: TLabeledEdit;
-    Button4: TButton;
-    LabeledEdit5: TLabeledEdit;
-    Button5: TButton;
-    LabeledEdit6: TLabeledEdit;
-    Button6: TButton;
-    LabeledEdit7: TLabeledEdit;
+    ButtonChangeConveyor5Mode: TButton;
+    LabeledEditConveyor5Mode: TLabeledEdit;
+    ButtonChangeConveyor4Mode: TButton;
+    LabeledEditConveyor4Mode: TLabeledEdit;
+    ButtonChangeConveyor3Mode: TButton;
+    LabeledEditConveyor3Mode: TLabeledEdit;
+    ButtonChangeConveyor2Mode: TButton;
+    LabeledEditConveyor2Mode: TLabeledEdit;
+    ButtonChangeConveyor1Mode: TButton;
+    LabeledEditConveyor1Mode: TLabeledEdit;
     Label19: TLabel;
     StatusBar1: TStatusBar;
     ComPort: TComPort;
@@ -68,10 +68,6 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
-    procedure Button5Click(Sender: TObject);
     procedure PaintBoxClick(Sender: TObject);
     procedure ComPortRxChar(Sender: TObject; Count: Integer);
     procedure TimerCreateComPortMessagesTimer(Sender: TObject);
@@ -87,6 +83,11 @@ type
       Shift: TShiftState);
     procedure Button7Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure ButtonChangeConveyor5ModeClick(Sender: TObject);
+    procedure ButtonChangeConveyor4ModeClick(Sender: TObject);
+    procedure ButtonChangeConveyor3ModeClick(Sender: TObject);
+    procedure ButtonChangeConveyor2ModeClick(Sender: TObject);
+    procedure ButtonChangeConveyor1ModeClick(Sender: TObject);
   private
     { Private declarations }
     StartTime : double;
@@ -104,8 +105,6 @@ type
     ErrorWrongCmdOrDeviceId     : integer;
     ErrorTimeOutSendPacketCount : integer;
 
-    procedure WriteLog(AMessage : string);
-
     procedure DrawSeries();
     function LoadSettings : boolean;
     function SaveSettings : boolean;
@@ -114,6 +113,7 @@ type
 
   public
     { Public declarations }
+    procedure WriteLog(AMessage : string);
   end;
 
 var
@@ -125,7 +125,8 @@ implementation
 
 uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventHistory,
      FGraphHistory, CBoxes, CBasicComPortMessage, CIncomingComPortMessage,
-     COutgoingComPortMessage, DateUtils, CTableRecords, ZDataset, CTempValuesBuffer;
+     COutgoingComPortMessage, DateUtils, CTableRecords, ZDataset, CTempValuesBuffer,
+     CController;
 
 
 procedure FreeAndNilMessage(out ComPortMessage : TMOutgoingComportMessage);
@@ -139,7 +140,7 @@ procedure TFormMain.FormCreate(Sender: TObject);
 begin
   FGraphMouseCoord := Point(0, 0);
 
-  MemoLogs.Visible := False;
+//  MemoLogs.Visible := False;
   MemoInfo.Visible := False;
   FormMain.WindowState := wsMaximized;
   FormMain.DoubleBuffered := TRUE;
@@ -255,6 +256,9 @@ begin
 
   for i := 0 to count - 1 do
   begin
+//    if i > 1
+//      then Continue;
+
     ComPortMessage := TMOutgoingComportMessage.Create;
 
     Box := ApplicationBoxes.GetItem(i);
@@ -265,10 +269,11 @@ begin
     if not Box.SaveToComPortMessage(ComPortMessage)
       then ComPortMessage.Free;
 
-
     if Assigned(ComPortMessage)
       then ApplicationComPortOutgoingMessages.AddItem(ComPortMessage);
   end;
+
+//  TimerCreateComPortMessages.Enabled := FALSE;
 end;
 
 procedure TFormMain.TimerUpdateInfoTimer(Sender: TObject);
@@ -388,7 +393,7 @@ begin
 
         ApplicationComPortOutgoingMessages.SendingComPortMessage := OutgoingMessage;
 
-        WriteLog('Сообщение отправлено:' + OutgoingMessage.MessageUid + '. Коробка ' + IntToStr(OutgoingMessage.DebugDeviceId));
+//        WriteLog('Сообщение отправлено:' + OutgoingMessage.MessageUid + '. Коробка ' + IntToStr(OutgoingMessage.DebugDeviceId));
 
         Inc(SentMessagesCount);
 
@@ -461,43 +466,6 @@ begin
   finally
     TableRecord.Free;
   end;
-end;
-
-procedure TFormMain.Button2Click(Sender: TObject);
-begin
-  Button2.Tag := Button2.Tag + 1;
-
-  if (Button2.Tag mod 2) = 0
-    then LabeledEdit3.Text := 'overlocking'
-    else LabeledEdit3.Text := 'operation';
-end;
-
-procedure TFormMain.Button3Click(Sender: TObject);
-begin
-  Button3.Tag := Button3.Tag + 1;
-
-  if (Button3.Tag mod 2) = 0
-    then LabeledEdit4.Text := 'overlocking'
-    else LabeledEdit4.Text := 'operation';
-end;
-
-procedure TFormMain.Button4Click(Sender: TObject);
-begin
-  Button4.Tag := Button4.Tag + 1;
-
-  if (Button4.Tag mod 2) = 0
-    then LabeledEdit5.Text := 'overlocking'
-    else LabeledEdit5.Text := 'operation';
-
-end;
-
-procedure TFormMain.Button5Click(Sender: TObject);
-begin
-  Button5.Tag := Button5.Tag + 1;
-
-  if (Button5.Tag mod 2) = 0
-    then LabeledEdit6.Text := 'overlocking'
-    else LabeledEdit6.Text := 'operation';
 end;
 
 procedure TFormMain.Button7Click(Sender: TObject);
@@ -593,6 +561,76 @@ begin
   PaintBox.Repaint;
 end;
 
+procedure TFormMain.ButtonChangeConveyor1ModeClick(Sender: TObject);
+var
+  Conveyor : TMConveyor;
+begin
+  Conveyor := ApplicationController.GetItem('1');
+
+  case Conveyor.WorkMode of
+    cwmOverlocking: Conveyor.WorkMode := cwmWork;
+    cwmWork:        Conveyor.WorkMode := cwmOverlocking;
+  end;
+
+  LabeledEditConveyor1Mode.Text := Conveyor.WorkModeString;
+end;
+
+procedure TFormMain.ButtonChangeConveyor2ModeClick(Sender: TObject);
+var
+  Conveyor : TMConveyor;
+begin
+  Conveyor := ApplicationController.GetItem('2');
+
+  case Conveyor.WorkMode of
+    cwmOverlocking: Conveyor.WorkMode := cwmWork;
+    cwmWork:        Conveyor.WorkMode := cwmOverlocking;
+  end;
+
+  LabeledEditConveyor2Mode.Text := Conveyor.WorkModeString;
+end;
+
+procedure TFormMain.ButtonChangeConveyor3ModeClick(Sender: TObject);
+var
+  Conveyor : TMConveyor;
+begin
+  Conveyor := ApplicationController.GetItem('3');
+
+  case Conveyor.WorkMode of
+    cwmOverlocking: Conveyor.WorkMode := cwmWork;
+    cwmWork:        Conveyor.WorkMode := cwmOverlocking;
+  end;
+
+  LabeledEditConveyor3Mode.Text := Conveyor.WorkModeString;
+end;
+
+procedure TFormMain.ButtonChangeConveyor4ModeClick(Sender: TObject);
+var
+  Conveyor : TMConveyor;
+begin
+  Conveyor := ApplicationController.GetItem('4');
+
+  case Conveyor.WorkMode of
+    cwmOverlocking: Conveyor.WorkMode := cwmWork;
+    cwmWork:        Conveyor.WorkMode := cwmOverlocking;
+  end;
+
+  LabeledEditConveyor4Mode.Text := Conveyor.WorkModeString;
+end;
+
+procedure TFormMain.ButtonChangeConveyor5ModeClick(Sender: TObject);
+var
+  Conveyor : TMConveyor;
+begin
+  Conveyor := ApplicationController.GetItem('5');
+
+  case Conveyor.WorkMode of
+    cwmOverlocking: Conveyor.WorkMode := cwmWork;
+    cwmWork:        Conveyor.WorkMode := cwmOverlocking;
+  end;
+
+  LabeledEditConveyor5Mode.Text := Conveyor.WorkModeString;
+end;
+
 procedure TFormMain.ComPortException(Sender: TObject;
   TComException: TComExceptions; ComportMessage: string; WinError: Int64;
   WinMessage: string);
@@ -650,7 +688,7 @@ begin
               SendingComPortMessage.State := omsDelievered;
               SendingComPortMessage.DelieveredTime := Now;
 
-              WriteLog('Данные сохранены. Сообщение доставлено: ' + SendingComPortMessage.MessageUid + '. Байт получено: ' + IntToStr(ApplicationComPortIncomingMessage.IncomingByteIndex));
+//              WriteLog('Данные сохранены. Сообщение доставлено: ' + SendingComPortMessage.MessageUid + '. Байт получено: ' + IntToStr(ApplicationComPortIncomingMessage.IncomingByteIndex));
             end
           else ApplicationComPortIncomingMessage.Error := imeWrongCmdOrDeviceId;
 
@@ -762,7 +800,10 @@ end;
 function TFormMain.LoadSettings : boolean;
 var
   MinYValueText,
-  MaxYValueText : string;
+  MaxYValueText,
+  ConveyorMode : string;
+
+  Conveyor : TMConveyor;
 begin
   MinYValueText := FloatToStr(ApplicationProgramSettings.GraphSettings.AxisMinYValue, ApplicationFormatSettings);
   MaxYValueText := FloatToStr(ApplicationProgramSettings.GraphSettings.AxisMaxYValue, ApplicationFormatSettings);
@@ -772,6 +813,26 @@ begin
 
   LabelAxisMinYValue.Caption := MinYValueText;
   LabelAxisMaxYValue.Caption := MaxYValueText;
+
+  Conveyor     := ApplicationController.GetItem('1');
+  ConveyorMode := Conveyor.WorkModeString;
+  LabeledEditConveyor1Mode.Text := ConveyorMode;
+
+  Conveyor     := ApplicationController.GetItem('2');
+  ConveyorMode := Conveyor.WorkModeString;
+  LabeledEditConveyor2Mode.Text := ConveyorMode;
+
+  Conveyor     := ApplicationController.GetItem('3');
+  ConveyorMode := Conveyor.WorkModeString;
+  LabeledEditConveyor3Mode.Text := ConveyorMode;
+
+  Conveyor     := ApplicationController.GetItem('4');
+  ConveyorMode := Conveyor.WorkModeString;
+  LabeledEditConveyor4Mode.Text := ConveyorMode;
+
+  Conveyor     := ApplicationController.GetItem('5');
+  ConveyorMode := Conveyor.WorkModeString;
+  LabeledEditConveyor5Mode.Text := ConveyorMode;
 
   Result := TRUE;
 end;

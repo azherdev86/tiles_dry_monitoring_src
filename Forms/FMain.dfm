@@ -2801,9 +2801,9 @@ object FormMain: TFormMain
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000}
   end
-  object Button2: TButton
+  object ButtonChangeConveyor5Mode: TButton
     Left = 140
-    Top = 72
+    Top = 71
     Width = 70
     Height = 25
     Caption = 'Change'
@@ -2814,9 +2814,9 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
     TabOrder = 4
-    OnClick = Button2Click
+    OnClick = ButtonChangeConveyor5ModeClick
   end
-  object LabeledEdit3: TLabeledEdit
+  object LabeledEditConveyor5Mode: TLabeledEdit
     Left = 56
     Top = 73
     Width = 78
@@ -2835,7 +2835,7 @@ object FormMain: TFormMain
     TabOrder = 5
     Text = 'overlocking'
   end
-  object Button3: TButton
+  object ButtonChangeConveyor4Mode: TButton
     Left = 140
     Top = 151
     Width = 70
@@ -2848,9 +2848,9 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
     TabOrder = 6
-    OnClick = Button3Click
+    OnClick = ButtonChangeConveyor4ModeClick
   end
-  object LabeledEdit4: TLabeledEdit
+  object LabeledEditConveyor4Mode: TLabeledEdit
     Left = 56
     Top = 152
     Width = 78
@@ -2869,7 +2869,7 @@ object FormMain: TFormMain
     TabOrder = 7
     Text = 'overlocking'
   end
-  object Button4: TButton
+  object ButtonChangeConveyor3Mode: TButton
     Left = 140
     Top = 233
     Width = 70
@@ -2882,9 +2882,9 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
     TabOrder = 8
-    OnClick = Button4Click
+    OnClick = ButtonChangeConveyor3ModeClick
   end
-  object LabeledEdit5: TLabeledEdit
+  object LabeledEditConveyor3Mode: TLabeledEdit
     Left = 56
     Top = 234
     Width = 78
@@ -2903,7 +2903,7 @@ object FormMain: TFormMain
     TabOrder = 9
     Text = 'overlocking'
   end
-  object Button5: TButton
+  object ButtonChangeConveyor2Mode: TButton
     Left = 140
     Top = 312
     Width = 70
@@ -2916,9 +2916,9 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
     TabOrder = 10
-    OnClick = Button5Click
+    OnClick = ButtonChangeConveyor2ModeClick
   end
-  object LabeledEdit6: TLabeledEdit
+  object LabeledEditConveyor2Mode: TLabeledEdit
     Left = 56
     Top = 313
     Width = 78
@@ -2937,7 +2937,7 @@ object FormMain: TFormMain
     TabOrder = 11
     Text = 'overlocking'
   end
-  object Button6: TButton
+  object ButtonChangeConveyor1Mode: TButton
     Left = 140
     Top = 392
     Width = 70
@@ -2950,8 +2950,9 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
     TabOrder = 12
+    OnClick = ButtonChangeConveyor1ModeClick
   end
-  object LabeledEdit7: TLabeledEdit
+  object LabeledEditConveyor1Mode: TLabeledEdit
     Left = 56
     Top = 393
     Width = 78
@@ -2993,10 +2994,11 @@ object FormMain: TFormMain
       end>
   end
   object MemoLogs: TMemo
-    Left = 281
-    Top = 294
+    Left = 280
+    Top = 560
     Width = 506
-    Height = 219
+    Height = 76
+    Anchors = [akLeft, akTop, akBottom]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -3007,7 +3009,7 @@ object FormMain: TFormMain
   end
   object Button7: TButton
     Left = 20
-    Top = 441
+    Top = 488
     Width = 209
     Height = 67
     Caption = 'RESET BASE'
@@ -3016,7 +3018,7 @@ object FormMain: TFormMain
   end
   object Button8: TButton
     Left = 20
-    Top = 370
+    Top = 417
     Width = 209
     Height = 65
     Caption = 'STOP/START'
@@ -3046,7 +3048,7 @@ object FormMain: TFormMain
   end
   object Button1: TButton
     Left = 20
-    Top = 514
+    Top = 561
     Width = 209
     Height = 67
     Caption = 'GENERATE BASE'
@@ -3054,7 +3056,7 @@ object FormMain: TFormMain
     OnClick = Button1Click
   end
   object TimerCreateComPortMessages: TTimer
-    Interval = 4000
+    Interval = 5000
     OnTimer = TimerCreateComPortMessagesTimer
     Left = 19
     Top = 14

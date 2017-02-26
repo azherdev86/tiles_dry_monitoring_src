@@ -46,6 +46,8 @@ type
     function GetAverage(ASectionNumber : integer; APair : string) : single; overload;
     function GetAverage(ASectionNumber : integer; AConveyorNumber : integer; APair : string) : single; overload;
 
+    function CheckAverage(ASectionNumber : integer; AConveyorNumber : integer) : boolean;
+
     function AddItem(Item : TMTempBufferValue) : TMTempBufferValue;
     function DeleteItem(ItemIndex : integer) : boolean; overload;
     function DeleteItem(ItemTitle : string) : boolean; overload;
@@ -62,7 +64,7 @@ type
 
 implementation
 
-uses SysUtils;
+uses SysUtils, CProgramSettings;
 
 
 //////////////////////////CTempBufferValue/////////////////////////
@@ -197,9 +199,11 @@ var
 begin
   Result := 0;
 
-  sum := 0; count := 0;
+  sum := 0;
 
-  for i := 0 to GetCount - 1 do
+  count := GetCount;
+
+  for i := 0 to count - 1 do
     begin
       Item := GetItem(i);
 
@@ -209,15 +213,45 @@ begin
       if (Item.FSectionNumber = ASectionNumber) and
          (Item.FConveyorNumber = AConveyorNumber) and
          (Pos(APair, Item.FSensorPosition)<>0)
-        then
-          begin
-            sum := sum + Item.TempValue;
-            count := count + 1;
-          end;
+        then sum := sum + Item.TempValue;
     end;
 
-    if count <> 0
-      then Result := sum/count;
+  Result := sum/2;
+end;
+
+function TMTempBufferValuesList.CheckAverage(ASectionNumber : integer; AConveyorNumber : integer) : boolean;
+var
+  range_min, range_max : single;
+
+  top_pair_value, bottom_pair_value,
+  left_pair_value, right_pair_value : single;
+begin
+  Result := False;
+
+  range_min := GetSectionYMinValue(ASectionNumber);
+  range_max := GetSectionYMaxValue(ASectionNumber);
+
+  top_pair_value := GetAverage(ASectionNumber, AConveyorNumber, 'Top');
+
+  if (top_pair_value > range_max) or (top_pair_value < range_min)
+    then Exit;
+
+  bottom_pair_value := GetAverage(ASectionNumber, AConveyorNumber, 'Bottom');
+
+  if (bottom_pair_value > range_max) or (bottom_pair_value < range_min)
+    then Exit;
+
+  left_pair_value := GetAverage(ASectionNumber, AConveyorNumber, 'Left');
+
+  if (left_pair_value > range_max) or (left_pair_value < range_min)
+    then Exit;
+
+  right_pair_value := GetAverage(ASectionNumber, AConveyorNumber, 'Right');
+
+  if (right_pair_value > range_max) or (right_pair_value < range_min)
+    then Exit;
+
+  Result := True;
 end;
 
 

@@ -4,7 +4,7 @@ interface
 
 uses CIncomingComPortMessage, COutgoingComPortMessage, Classes, CRows;
 
-
+const CONVEYORS_COUNT = 5;
 
 type
   TypeConveyorWorkMode = (cwmNone,
@@ -17,22 +17,38 @@ type
 
 type
   TMConveyor = class
-    private
-      FNumber     : integer;
-      FWorkMode   : TypeConveyorWorkMode;
-      FSignalMode : TypeConveyorSignalMode;
+    constructor Create;
+    destructor Destroy; override;
+  private
+    FNumber     : integer;
+    FWorkMode   : TypeConveyorWorkMode;
+    FSignalMode : TypeConveyorSignalMode;
 
-      FOutOfRangeRow : TMRow;
+    FOutOfRangeSections : TMRow;
 
+    procedure Reset;
+    function IsFailure : boolean;
+    function GetWorkModeString : string;
 
-    public
-      function SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean; virtual; abstract;
-      function LoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean; virtual; abstract;
+  public
+    function SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean; virtual; abstract;
+    function LoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean; virtual; abstract;
 
-    public
-      property Number : integer read FNumber;
-      property WorkMode : TypeConveyorWorkMode read FWorkMode write FWorkMode;
-      property SignalMode : TypeConveyorSignalMode read FSignalMode;
+    procedure HighLight(ASectionNumber : integer);
+
+    procedure DeHighLight(); overload;
+    procedure DeHighLight(ASectionNumber : integer); overload;
+
+    procedure FailureSection(ASectionNumber : integer);
+    procedure DeFailureSection(ASectionNumber : integer);
+
+  public
+    property Number     : integer                read FNumber;
+    property WorkMode   : TypeConveyorWorkMode   read FWorkMode    write FWorkMode;
+    property SignalMode : TypeConveyorSignalMode read FSignalMode  write FSignalMode;
+
+    property WorkModeString     : string read GetWorkModeString;
+    property OutOfRangeSections : TMRow  read FOutOfRangeSections write FOutOfRangeSections;
   end;
 
 
@@ -60,12 +76,116 @@ type
     Items : TStringList;
 
     procedure Reset;
+    procedure DeHighLight();
   end;
 
 implementation
 
-uses SysUtils, CProgramSettings, LApplicationGlobals, CTempValuesBuffer, Types;
+uses SysUtils, CProgramSettings, LApplicationGlobals, CTempValuesBuffer, Types,
+     FMain;
 
+///////////////////////TMConveyor//////////////////////////////////
+
+constructor TMConveyor.Create;
+begin
+  FOutOfRangeSections := TMRow.Create;
+end;
+
+destructor TMConveyor.Destroy;
+begin
+  Reset;
+
+  FOutOfRangeSections.Free;
+
+  inherited;
+end;
+
+procedure TMConveyor.Reset;
+begin
+  FNumber     := 0;
+
+  FWorkMode   := cwmNone;
+  FSignalMode := csmNone;
+
+  FOutOfRangeSections.Clear;
+end;
+
+function TMConveyor.IsFailure : boolean;
+begin
+  FOutOfRangeSections.GetCount > 0;
+end;
+
+procedure TMConveyor.HighLight(ASectionNumber : integer);
+var
+  Point : TPoint;
+begin
+  Point.X := ASectionNumber - 1;
+  Point.Y := CONVEYORS_COUNT - FNumber;
+
+  ApplicationGraph.HighLightCell(Point);
+end;
+
+procedure TMConveyor.DeHighLight();
+var
+  row_index : integer;
+begin
+  row_index := CONVEYORS_COUNT - FNumber;
+  ApplicationGraph.DeHighLightRow(row_index);
+end;
+
+procedure TMConveyor.DeHighLight(ASectionNumber : integer); 
+var
+  Point : TPoint;
+begin
+  Point.X := ASectionNumber - 1;
+  Point.Y := CONVEYORS_COUNT - FNumber;
+
+  ApplicationGraph.DeHighLightCell(Point);
+end;
+
+procedure TMConveyor.FailureSection(ASectionNumber : integer);
+var
+  Column : TMColumn;
+begin
+  Column := FOutOfRangeSections.GetItem(IntToStr(ASectionNumber));
+
+  if Assigned(Column)
+    then Exit;
+
+  Column := TMColumn.Create;
+  Column.ColumnIndex := ASectionNumber;
+
+  FOutOfRangeSections.AddItem(Column);
+end;
+
+procedure TMConveyor.DeFailureSection(ASectionNumber : integer);
+var
+  Column : TMColumn;
+begin
+  Column := FOutOfRangeSections.GetItem(IntToStr(ASectionNumber));
+
+  if not Assigned(Column)
+    then Exit;
+
+  FOutOfRangeSections.DeleteItem(IntToStr(ASectionNumber));
+end;
+
+function TMConveyor.GetWorkModeString : string;
+var
+  Value : string;
+begin
+  Value := '';
+
+  case FWorkMode of
+    cwmNone:        Value := '';
+    cwmOverlocking: Value := 'overlocking';
+    cwmWork:        Value := 'work';
+  end;
+
+  Result := Value;
+end;
+
+//////////////////////TMController////////////////////////////////////////////
 constructor TMController.Create;
 begin
   Items := TStringList.Create;
@@ -94,10 +214,7 @@ begin
       Conveyor.FSignalMode := csmDisabled;
 
       Conveyor := AddItem(Conveyor);
-
-      if not Assigned(Conveyor)
-        then Conveyor := nil;
-    end;                     
+    end;
 end;
 
 
@@ -175,6 +292,24 @@ begin
   Items.Clear;
 end;
 
+procedure TMController.DeHighLight();
+var
+  i, count : integer;
+  Conveyor : TMConveyor;
+begin
+  count := GetCount;
+
+  for i := 0 to count - 1 do
+    begin
+      Conveyor := GetItem(i);
+
+      if not Assigned(Conveyor)
+        then Continue;
+
+      Conveyor.DeHighLight;
+    end;
+end;
+
 
 function TMController.GetCount : integer;
 begin
@@ -184,17 +319,21 @@ end;
 
 function TMController.CheckTemperatureRanges : boolean;
 var
-  i, count,
+  i, j,
   conveyor_number,
-  section_number : integer;
+  section_number,
+  count : integer;
 
   range_min, range_max : single;
 
   TempValueBuffer : TMTempBufferValue;
 
-  HighLightedCell : TPoint;
+  Conveyor : TMConveyor;
+  Section  : TMColumn;
 begin
-  count := ApplicationTempBufferValues.GetCount;
+  DeHighLight; //Убираем все выделения на графике
+
+  count := ApplicationTempBufferValues.GetCount; //Количество датчиков в буфере
 
   for i := 0 to count - 1 do
     begin
@@ -206,16 +345,70 @@ begin
       section_number  := TempValueBuffer.SectionNumber;
       conveyor_number := TempValueBuffer.ConveyorNumber;
 
+      Conveyor := GetItem(IntToStr(conveyor_number));
+
+      if not Assigned(Conveyor)
+        then Exit;
+
       range_min := GetSectionYMinValue(section_number);
       range_max := GetSectionYMaxValue(section_number);
 
-      HighLightedCell := Point(section_number - 1, conveyor_number - 1);
-
       if (TempValueBuffer.TempValue > range_max) or
          (TempValueBuffer.TempValue < range_min)
-        then ApplicationGraph.HighLightCell(HighLightedCell);
+        then
+          begin
+            Conveyor.FailureSection(section_number);
+
+            if Conveyor.WorkMode = cwmWork
+              then
+                begin
+                  Conveyor.HighLight(section_number);
+                  if Conveyor.SignalMode = csmDisabled
+                    then
+                      begin
+                        Conveyor.SignalMode := csmEnabled; //Здесь должно инициироваться включение сигнализации
+                        FormMain.WriteLog('Включена сигнализация. Конвейер ' + IntToStr(Conveyor.Number));
+                      end;
+                end;
+          end;
     end;
 
+
+  //Если
+  count := GetCount;
+
+  for i := 0 to count - 1 do
+    begin
+      Conveyor := GetItem(i);
+
+      if not Assigned(Conveyor)
+        then Continue;
+
+      if not Conveyor.IsFailure
+        then Continue;
+
+      conveyor_number := Conveyor.Number;
+
+      for j := 0 to Conveyor.OutOfRangeSections.GetCount - 1 do
+        begin
+          Section := Conveyor.OutOfRangeSections.GetItem(j);
+
+          if not Assigned(Section)
+            then Continue;
+
+          section_number := Section.ColumnIndex;
+
+          if ApplicationTempBufferValues.CheckAverage(section_number, conveyor_number)
+            then Conveyor.DeFailureSection(section_number);
+
+          if not Conveyor.IsFailure
+            then
+              begin
+                Conveyor.SignalMode := csmDisabled; //Здесь сигнализация должна выключаться
+                FormMain.WriteLog('Выключена сигнализация. Конвейер ' + IntToStr(Conveyor.Number));
+              end;
+        end;
+    end;                    
 end;
 
 

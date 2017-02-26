@@ -29,6 +29,8 @@ type
 
     function GetCount : integer;
 
+    procedure Clear;
+
   private
     Items : TStringList;
     FRowIndex : integer;
@@ -155,7 +157,7 @@ begin
       then Item.Free;
   end;
 
-  FRowIndex := -1;
+  FRowIndex := 0;
 
   Items.Clear;
 end;
@@ -163,6 +165,11 @@ end;
 function TMRow.GetCount : integer;
 begin
   Result := Items.Count;
+end;
+
+procedure TMRow.Clear;
+begin
+  Reset;
 end;
 
 //////////////TMRows//////////////////////////////////

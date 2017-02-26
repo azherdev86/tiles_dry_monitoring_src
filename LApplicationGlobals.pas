@@ -86,6 +86,7 @@ begin
     then Exit;
 
   ApplicationBoxes.Init;
+  ApplicationController.Init;
 end;
 
 
