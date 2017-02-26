@@ -147,7 +147,7 @@ begin
   TimerCreateComPortMessages.Enabled := TRUE;
 
   StartTime := Now;
-//  ComPort.Connected := TRUE;
+  ComPort.Connected := TRUE;
 
   SentMessagesCount           := 0;
   ReSentMessagesCount         := 0;
@@ -275,7 +275,6 @@ procedure TFormMain.TimerUpdateInfoTimer(Sender: TObject);
 var
   QueueCount : integer;
 begin
-
   QueueCount := ApplicationComPortOutgoingMessages.GetCount;
 
   MemoInfo.Clear;
@@ -296,6 +295,8 @@ begin
   MemoInfo.Lines.Add('ErrorWrongCmdOrDeviceId:' + #9 + #9 + IntToStr(ErrorWrongCmdOrDeviceId));
   MemoInfo.Lines.Add('');
   MemoInfo.Lines.Add('ErrorTimeOutSendPacketCount:' + #9 + IntToStr(ErrorTimeOutSendPacketCount));
+
+  ApplicationController.CheckTemperatureRanges;
 
   DrawSeries;
 end;

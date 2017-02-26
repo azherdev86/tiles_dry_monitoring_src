@@ -20,7 +20,6 @@ uses
   CTemplateEntity in 'DatabaseFrameWork\CTemplateEntity.pas',
   LApplicationGlobals in 'LApplicationGlobals.pas',
   uTDurationProcess in 'uTDurationProcess.pas',
-  LApplicationComPort in 'LApplicationComPort.pas',
   CGraph in 'CGraph.pas',
   FTemperatureRanges in 'Forms\FTemperatureRanges.pas' {FormTemperatureRanges},
   FEventHistory in 'Forms\FEventHistory.pas' {FormEventHistory},
@@ -33,7 +32,8 @@ uses
   CProgramSettings in 'CProgramSettings.pas',
   CProgramGraphSettings in 'CProgramGraphSettings.pas',
   CTempValuesBuffer in 'CTempValuesBuffer.pas',
-  CHighLighted in 'CHighLighted.pas';
+  CController in 'CController.pas',
+  CRows in 'CRows.pas';
 
 {$R *.res}
 

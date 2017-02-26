@@ -44,12 +44,13 @@
     </DelphiCompile>
     <DCCReference Include="CBasicComPortMessage.pas" />
     <DCCReference Include="CBoxes.pas" />
+    <DCCReference Include="CController.pas" />
     <DCCReference Include="CGraph.pas" />
-    <DCCReference Include="CHighLighted.pas" />
     <DCCReference Include="CIncomingComPortMessage.pas" />
     <DCCReference Include="COutgoingComPortMessage.pas" />
     <DCCReference Include="CProgramGraphSettings.pas" />
     <DCCReference Include="CProgramSettings.pas" />
+    <DCCReference Include="CRows.pas" />
     <DCCReference Include="CTempValues.pas" />
     <DCCReference Include="CTempValuesBuffer.pas" />
     <DCCReference Include="DatabaseFrameWork\CBrowseFieldHints.pas" />
@@ -79,7 +80,6 @@
     <DCCReference Include="Forms\FTemperatureRanges.pas">
       <Form>FormTemperatureRanges</Form>
     </DCCReference>
-    <DCCReference Include="LApplicationComPort.pas" />
     <DCCReference Include="LApplicationGlobals.pas" />
     <DCCReference Include="uTDurationProcess.pas" />
   </ItemGroup>

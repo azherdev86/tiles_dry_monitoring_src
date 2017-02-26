@@ -2,7 +2,7 @@ unit LApplicationGlobals;
 
 interface
 
-uses CDataBaseStructure, ZConnection, ZDataset, SysUtils,
+uses CDataBaseStructure, ZConnection, ZDataset, SysUtils, CController,
      Controls, StdCtrls, CGraph, CBoxes, CIncomingComPortMessage,
      COutgoingComPortMessage, CProgramSettings, CTempValuesBuffer;
 
@@ -22,6 +22,7 @@ var
   ApplicationComPortIncomingMessage  : TMIncomingComportMessage;
   ApplicationProgramSettings         : TMProgramSettings;
   ApplicationTempBufferValues        : TMTempBufferValuesList; //Последние 200 значений
+  ApplicationController              : TMController;
 
   GLOBAL_DATABASE_TYPE : TMDatabaseType = dtFireBird;
 
@@ -61,6 +62,7 @@ begin
   ApplicationComPortOutgoingMessages        := TMOutgoingComportMessagesList.Create;
   ApplicationComPortIncomingMessage         := TMIncomingComportMessage.Create;
   ApplicationProgramSettings                := TMProgramSettings.Create;
+  ApplicationController                     := TMController.Create;
 end;
 
 procedure UpdateGlobals;
@@ -96,6 +98,7 @@ begin
   ApplicationDataBaseStructure.Free;
   ApplicationDBConnection.Free;
   ApplicationGraph.Free;
+  ApplicationController.Free;
 
   ApplicationProgramSettings.SaveToInifile;
   ApplicationProgramSettings.Free;

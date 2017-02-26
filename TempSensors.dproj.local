@@ -26,5 +26,8 @@
     <Transaction>2017.02.25 03:13:28.027.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\CTempValueBuffers.pas</Transaction>
     <Transaction>2017.02.25 03:14:02.140.pas,F:\_programming\tempsensors\_sources\CTempValueBuffers.pas=F:\_programming\tempsensors\_sources\CTempValuesBuffer.pas</Transaction>
     <Transaction>2017.02.26 17:18:25.706.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\CHighLighted.pas</Transaction>
+    <Transaction>2017.02.26 18:56:57.261.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\CController.pas</Transaction>
+    <Transaction>2017.02.26 20:35:32.518.pas,F:\_programming\tempsensors\_sources\LApplicationComPort.pas=</Transaction>
+    <Transaction>2017.02.26 21:06:49.896.pas,F:\_programming\tempsensors\_sources\CHighLighted.pas=F:\_programming\tempsensors\_sources\CRows.pas</Transaction>
   </Transactions>
 </BorlandProject>

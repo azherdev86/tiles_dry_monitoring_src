@@ -47,9 +47,6 @@ type
 
     procedure DrawChart();
 
-    function GetSectionYMinValue() : single;
-    function GetSectionYMaxValue() : single;
-
   public
     { Public declarations }
     SectionNumber,
@@ -63,7 +60,7 @@ implementation
 
 {$R *.dfm}
 
-uses DateUtils, LApplicationGlobals;
+uses DateUtils, LApplicationGlobals, CProgramSettings;
 
 function TimeToFirebirdString(const Date: TDateTime): string;
 var
@@ -234,12 +231,12 @@ procedure TFormGraphHistory.DrawTempRanges;
 var
   TempValue : Single;
 begin
-  TempValue := GetSectionYMinValue;
+  TempValue := GetSectionYMinValue(SectionNumber);
 
   sRangeMin.AddXY(FDateTimeSince, TempValue);
   sRangeMin.AddXY(FDateTimeTo,    TempValue);
 
-  TempValue := GetSectionYMaxValue;
+  TempValue := GetSectionYMaxValue(SectionNumber);
 
   sRangeMax.AddXY(FDateTimeSince, TempValue);
   sRangeMax.AddXY(FDateTimeTo,    TempValue);
@@ -378,7 +375,6 @@ begin
         TimePickerTo.DateTime := Now;
       end;
 
-
   if not (FDateTimeSince = 0)
     then
       begin
@@ -393,48 +389,5 @@ begin
 end;
 
 
-function TFormGraphHistory.GetSectionYMinValue() : single;
-var
-  Value : single;
-begin
-  Value := 0;
-
-  case SectionNumber of
-    1:  Value := ApplicationProgramSettings.GraphSettings.Section1RangeMinYValue;
-    2:  Value := ApplicationProgramSettings.GraphSettings.Section2RangeMinYValue;
-    3:  Value := ApplicationProgramSettings.GraphSettings.Section3RangeMinYValue;
-    4:  Value := ApplicationProgramSettings.GraphSettings.Section4RangeMinYValue;
-    5:  Value := ApplicationProgramSettings.GraphSettings.Section5RangeMinYValue;
-    6:  Value := ApplicationProgramSettings.GraphSettings.Section6RangeMinYValue;
-    7:  Value := ApplicationProgramSettings.GraphSettings.Section7RangeMinYValue;
-    8:  Value := ApplicationProgramSettings.GraphSettings.Section8RangeMinYValue;
-    9:  Value := ApplicationProgramSettings.GraphSettings.Section9RangeMinYValue;
-    10: Value := ApplicationProgramSettings.GraphSettings.Section10RangeMinYValue;
-  end;
-
-  Result := Value;
-end;
-
-function TFormGraphHistory.GetSectionYMaxValue() : single;
-var
-  Value : single;
-begin
-  Value := 0;
-
-  case SectionNumber of
-    1:  Value := ApplicationProgramSettings.GraphSettings.Section1RangeMaxYValue;
-    2:  Value := ApplicationProgramSettings.GraphSettings.Section2RangeMaxYValue;
-    3:  Value := ApplicationProgramSettings.GraphSettings.Section3RangeMaxYValue;
-    4:  Value := ApplicationProgramSettings.GraphSettings.Section4RangeMaxYValue;
-    5:  Value := ApplicationProgramSettings.GraphSettings.Section5RangeMaxYValue;
-    6:  Value := ApplicationProgramSettings.GraphSettings.Section6RangeMaxYValue;
-    7:  Value := ApplicationProgramSettings.GraphSettings.Section7RangeMaxYValue;
-    8:  Value := ApplicationProgramSettings.GraphSettings.Section8RangeMaxYValue;
-    9:  Value := ApplicationProgramSettings.GraphSettings.Section9RangeMaxYValue;
-    10: Value := ApplicationProgramSettings.GraphSettings.Section10RangeMaxYValue;
-  end;
-
-  Result := Value;
-end;
 
 end.

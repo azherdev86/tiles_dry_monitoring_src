@@ -2991,7 +2991,6 @@ object FormMain: TFormMain
         Text = 'Program version: 0.0.1'
         Width = 50
       end>
-    ExplicitTop = 625
   end
   object MemoLogs: TMemo
     Left = 281
@@ -3055,7 +3054,6 @@ object FormMain: TFormMain
     OnClick = Button1Click
   end
   object TimerCreateComPortMessages: TTimer
-    Enabled = False
     Interval = 4000
     OnTimer = TimerCreateComPortMessagesTimer
     Left = 19
@@ -3082,13 +3080,13 @@ object FormMain: TFormMain
     Top = 187
   end
   object TimerComPortSendMessages: TTimer
-    Enabled = False
     Interval = 10
     OnTimer = TimerComPortSendMessagesTimer
     Left = 64
     Top = 15
   end
   object TimerUpdateInfo: TTimer
+    Interval = 5000
     OnTimer = TimerUpdateInfoTimer
     Left = 112
     Top = 15

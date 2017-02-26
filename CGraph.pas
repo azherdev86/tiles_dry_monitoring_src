@@ -2,7 +2,7 @@ unit CGraph;
 
 interface
 
-uses Graphics, Classes, ExtCtrls, Types, CHighLighted;
+uses Graphics, Classes, ExtCtrls, Types, CRows;
 
 const
   GRID_ROW_COUNT = 6;
@@ -108,7 +108,7 @@ type
 
     FNeedDrawSelectedCell : boolean;
 
-    FHighLightedRows : TMHighLightedRows;
+    FHighLightedRows : TMRows;
 
     procedure Reset();
 
@@ -309,13 +309,11 @@ end;
 
 
 constructor TMGraph.Create();
-var
-  Po : TPoint;
 begin
   FBitMap          := Graphics.TBitmap.Create;
   FSeriesList      := TMSeriesList.Create;
   FRangeList       := TMSeriesList.Create;
-  FHighLightedRows := TMHighLightedRows.Create;
+  FHighLightedRows := TMRows.Create;
 
   FGridRowCount  := GRID_ROW_COUNT;
   FGridColCount  := GRID_COL_COUNT;
@@ -328,22 +326,6 @@ begin
 
   FAxis.MinY := AXIS_MIN_Y;
   FAxis.MaxY := AXIS_MAX_Y;
-
-  Po := Point(1, 0);
-  HighLightCell(Po);
-
-  Po := Point(1, 0);
-  HighLightCell(Po);
-
-  Po := Point(3, 2);
-  HighLightCell(Po);
-
-  Po := Point(7, 2);
-  HighLightCell(Po);
-
-  Po := Point(9, 4);
-  HighLightCell(Po);
-
 end;
 
 
@@ -389,8 +371,8 @@ var
 
   Rect : TRect;
 
-  Row : TMHighLightedRow;
-  Col : TMHighLightedColumn;
+  Row : TMRow;
+  Col : TMColumn;
 begin
   if not IsHighLighted
     then Exit;
@@ -438,9 +420,6 @@ begin
           FBitMap.Canvas.Rectangle(Rect);
         end;
     end;
-
-//  FBitMap.Canvas.Brush.Color := RGB(251, 229, 213); //Светло-розовый
-//  FBitMap.Canvas.Brush.Color := RGB(247, 203, 172); //Темно-розовый
 end;
 
 
@@ -935,8 +914,8 @@ procedure TMGraph.HighLightCell(ACell : TPoint);
 var
   row_index, col_index : integer;
 
-  Row : TMHighLightedRow;
-  Column : TMHighLightedColumn;
+  Row : TMRow;
+  Column : TMColumn;
 begin
   col_index := ACell.X;
   row_index := ACell.Y;
@@ -952,7 +931,7 @@ begin
   if not Assigned(Row)
     then
       begin
-        Row := TMHighLightedRow.Create;
+        Row := TMRow.Create;
         Row.RowIndex := row_index;
 
         Row := FHighLightedRows.AddItem(Row);
@@ -966,7 +945,7 @@ begin
   if Assigned(Column)
     then Row.DeleteItem(IntToStr(Column.ColumnIndex));
 
-  Column := TMHighLightedColumn.Create;
+  Column := TMColumn.Create;
   Column.ColumnIndex := col_index;
 
   Row.AddItem(Column);
@@ -977,8 +956,8 @@ procedure TMGraph.DeHighLightCell(ACell : TPoint);
 var
   row_index, col_index : integer;
 
-  Row : TMHighLightedRow;
-  Column : TMHighLightedColumn;
+  Row : TMRow;
+  Column : TMColumn;
 begin
   col_index := ACell.X;
   row_index := ACell.Y;
