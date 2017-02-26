@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{3491d691-4c46-4e84-88f3-c2cd5c7f391e}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+    <DCC_DependencyCheckOutputName>..\_out\TempSensors.exe</DCC_DependencyCheckOutputName>
+    <MainSource>TempSensors.dpr</MainSource>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_DebugInformation>False</DCC_DebugInformation>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_UnitSearchPath>F:\Distribs\Delphi packs\ZeosDBO\src</DCC_UnitSearchPath>
+    <DCC_ResourcePath>F:\Distribs\Delphi packs\ZeosDBO\src</DCC_ResourcePath>
+    <DCC_ObjPath>F:\Distribs\Delphi packs\ZeosDBO\src</DCC_ObjPath>
+    <DCC_IncludePath>F:\Distribs\Delphi packs\ZeosDBO\src</DCC_IncludePath>
+    <DCC_Define>RELEASE</DCC_Define>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_UnitSearchPath>F:\Distribs\Delphi packs\ZeosDBO\src</DCC_UnitSearchPath>
+    <DCC_ResourcePath>F:\Distribs\Delphi packs\ZeosDBO\src</DCC_ResourcePath>
+    <DCC_ObjPath>F:\Distribs\Delphi packs\ZeosDBO\src</DCC_ObjPath>
+    <DCC_IncludePath>F:\Distribs\Delphi packs\ZeosDBO\src</DCC_IncludePath>
+    <DCC_Define>DEBUG</DCC_Define>
+    <DCC_ExeOutput>..\_out</DCC_ExeOutput>
+    <DCC_DcuOutput>..\_dcu</DCC_DcuOutput>
+    <DCC_ObjOutput>..\_dcu</DCC_ObjOutput>
+    <DCC_HppOutput>..\_dcu</DCC_HppOutput>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Delphi.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+<BorlandProject><Delphi.Personality><Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><VersionInfo><VersionInfo Name="IncludeVerInfo">False</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">0</VersionInfo><VersionInfo Name="Release">0</VersionInfo><VersionInfo Name="Build">0</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">1049</VersionInfo><VersionInfo Name="CodePage">1251</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription"></VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="InternalName"></VersionInfoKeys><VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys><VersionInfoKeys Name="ProductName"></VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="Comments"></VersionInfoKeys></VersionInfoKeys><Source><Source Name="MainSource">TempSensors.dpr</Source></Source></Delphi.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
+  <ItemGroup>
+    <DelphiCompile Include="TempSensors.dpr">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="CBasicComPortMessage.pas" />
+    <DCCReference Include="CBoxes.pas" />
+    <DCCReference Include="CGraph.pas" />
+    <DCCReference Include="CHighLighted.pas" />
+    <DCCReference Include="CIncomingComPortMessage.pas" />
+    <DCCReference Include="COutgoingComPortMessage.pas" />
+    <DCCReference Include="CProgramGraphSettings.pas" />
+    <DCCReference Include="CProgramSettings.pas" />
+    <DCCReference Include="CTempValues.pas" />
+    <DCCReference Include="CTempValuesBuffer.pas" />
+    <DCCReference Include="DatabaseFrameWork\CBrowseFieldHints.pas" />
+    <DCCReference Include="DatabaseFrameWork\CBrowseFieldImages.pas" />
+    <DCCReference Include="DatabaseFrameWork\CBrowseFields.pas" />
+    <DCCReference Include="DatabaseFrameWork\CConditionGroups.pas" />
+    <DCCReference Include="DatabaseFrameWork\CConditions.pas" />
+    <DCCReference Include="DatabaseFrameWork\CDataBaseBrowse.pas" />
+    <DCCReference Include="DatabaseFrameWork\CDataBaseStructure.pas" />
+    <DCCReference Include="DatabaseFrameWork\CFields.pas" />
+    <DCCReference Include="DatabaseFrameWork\CQueryConstructor.pas" />
+    <DCCReference Include="DatabaseFrameWork\CRecordFields.pas" />
+    <DCCReference Include="DatabaseFrameWork\CSortingFields.pas" />
+    <DCCReference Include="DatabaseFrameWork\CTableBrowse.pas" />
+    <DCCReference Include="DatabaseFrameWork\CTableRecords.pas" />
+    <DCCReference Include="DatabaseFrameWork\CTableStructure.pas" />
+    <DCCReference Include="DatabaseFrameWork\CTemplateEntity.pas" />
+    <DCCReference Include="Forms\FEventHistory.pas">
+      <Form>FormEventHistory</Form>
+    </DCCReference>
+    <DCCReference Include="Forms\FGraphHistory.pas">
+      <Form>FormGraphHistory</Form>
+    </DCCReference>
+    <DCCReference Include="Forms\FMain.pas">
+      <Form>FormMain</Form>
+    </DCCReference>
+    <DCCReference Include="Forms\FTemperatureRanges.pas">
+      <Form>FormTemperatureRanges</Form>
+    </DCCReference>
+    <DCCReference Include="LApplicationComPort.pas" />
+    <DCCReference Include="LApplicationGlobals.pas" />
+    <DCCReference Include="uTDurationProcess.pas" />
+  </ItemGroup>
+</Project>
