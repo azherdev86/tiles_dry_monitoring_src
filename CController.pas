@@ -30,10 +30,12 @@ type
     function IsFailure : boolean;
     function GetWorkModeString : string;
 
-  public
-    function SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean; virtual; abstract;
-    function LoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean; virtual; abstract;
+    procedure SetSignalMode(ASignalMode : TypeConveyorSignalMode);
 
+    function SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean;
+    function LoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean;  //может этот метод не нужен
+
+  public
     procedure HighLight(ASectionNumber : integer);
 
     procedure DeHighLight(); overload;
@@ -44,8 +46,8 @@ type
 
   public
     property Number     : integer                read FNumber;
-    property WorkMode   : TypeConveyorWorkMode   read FWorkMode    write FWorkMode;
-    property SignalMode : TypeConveyorSignalMode read FSignalMode  write FSignalMode;
+    property WorkMode   : TypeConveyorWorkMode   read FWorkMode   write FWorkMode;
+    property SignalMode : TypeConveyorSignalMode read FSignalMode write SetSignalMode;
 
     property WorkModeString     : string read GetWorkModeString;
     property OutOfRangeSections : TMRow  read FOutOfRangeSections write FOutOfRangeSections;
@@ -82,7 +84,7 @@ type
 implementation
 
 uses SysUtils, LApplicationGlobals, CTempValuesBuffer, Types,
-     FMain;
+     FMain, CBasicComPortMessage;
 
 ///////////////////////TMConveyor//////////////////////////////////
 
@@ -133,7 +135,7 @@ begin
   ApplicationGraph.DeHighLightRow(row_index);
 end;
 
-procedure TMConveyor.DeHighLight(ASectionNumber : integer); 
+procedure TMConveyor.DeHighLight(ASectionNumber : integer);
 var
   Point : TPoint;
 begin
@@ -184,6 +186,79 @@ begin
 
   Result := Value;
 end;
+
+
+procedure TMConveyor.SetSignalMode(ASignalMode : TypeConveyorSignalMode);
+var
+  ComPortMessage : TMOutgoingComportMessage;
+begin
+//  ComPortMessage := TMOutgoingComportMessage.Create;
+
+  FSignalMode := ASignalMode;
+
+//  case ASignalMode of
+//    csmEnabled: ;
+//    csmDisabled: ;
+//  end;
+//
+//  if not SaveToComPortMessage(ComPortMessage) 
+//    then Exit;
+//
+//  ApplicationComPortOutgoingMessages.AddItem(ComPortMessage);
+end;
+
+function TMConveyor.SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean;
+var
+  DataBytes : TDynamicByteArray;
+begin
+  Result := False;
+
+  if not Assigned(ComPortMessage)
+    then Exit;
+
+  SetLength(DataBytes, 4);
+
+  DataBytes[0] := $00;
+  DataBytes[1] := $00;
+  DataBytes[2] := $00;
+  DataBytes[3] := $0A;
+
+  ComPortMessage.LoadDataBytes(DataBytes);
+  ComPortMessage.DeviceId  := $0A;//FBoxNumber;
+//  ComPortMessage.DebugDeviceId := FBoxNumber;
+  ComPortMessage.CommandId := $03;
+
+  ComPortMessage.Priority  := mpHigh;
+
+  ComPortMessage.CreationTime := Now;
+
+  Result := True;
+end;
+
+
+function TMConveyor.LoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean;
+var
+  DataBytes : TDynamicByteArray;
+  MessageTime : TDateTime;
+
+  len : integer;
+begin
+  Result := False;
+
+  if not Assigned(ComPortMessage)
+    then Exit;
+
+//  if ComPortMessage.DeviceId <> FBoxNumber
+//    then Exit;
+
+  if ComPortMessage.CommandId <> $03
+    then Exit;
+
+  MessageTime := ComPortMessage.RecievedTime;
+
+  ComPortMessage.SaveDataBytes(DataBytes);
+end;
+
 
 //////////////////////TMController////////////////////////////////////////////
 constructor TMController.Create;
