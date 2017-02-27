@@ -187,7 +187,7 @@ begin
     TempValue := TMTempValue.Create;
 
     TempValue.SensorId  := GetSensorId(value_index);
-    TempValue.TempValue := TempToFloat(Value);
+    TempValue.TempValue := TempToFloat(Value) - 10 + random(25);
     TempValue.TempTime  := MessageTime;
 
     if (TempValue.RecordSensors.LoadRecord(TempValue.SensorId) = 0)
@@ -252,7 +252,22 @@ begin
 
       if not Assigned(TempBufferValue)
         then TempBufferValue.Free;
-    end;                     
+    end;
+
+
+//    var
+//  Conveyor : TMConveyor;
+//begin
+//  Conveyor := ApplicationController.GetItem('1');
+//
+//  case Conveyor.WorkMode of
+//    cwmOverlocking: Conveyor.WorkMode := cwmWork;
+//    cwmWork:        Conveyor.WorkMode := cwmOverlocking;
+//  end;
+//
+//  LabeledEditConveyor1Mode.Text := Conveyor.WorkModeString;
+
+
 end;
 
 

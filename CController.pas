@@ -81,7 +81,7 @@ type
 
 implementation
 
-uses SysUtils, CProgramSettings, LApplicationGlobals, CTempValuesBuffer, Types,
+uses SysUtils, LApplicationGlobals, CTempValuesBuffer, Types,
      FMain;
 
 ///////////////////////TMConveyor//////////////////////////////////
@@ -112,7 +112,7 @@ end;
 
 function TMConveyor.IsFailure : boolean;
 begin
-  FOutOfRangeSections.GetCount > 0;
+  Result := FOutOfRangeSections.GetCount > 0;
 end;
 
 procedure TMConveyor.HighLight(ASectionNumber : integer);
@@ -213,7 +213,7 @@ begin
       Conveyor.FWorkMode   := cwmOverlocking;
       Conveyor.FSignalMode := csmDisabled;
 
-      Conveyor := AddItem(Conveyor);
+      AddItem(Conveyor);
     end;
 end;
 
@@ -322,62 +322,57 @@ var
   i, j,
   conveyor_number,
   section_number,
-  count : integer;
+  conveyor_count,
+  section_count : integer;
 
-  range_min, range_max : single;
-
-  TempValueBuffer : TMTempBufferValue;
+  check_average : boolean;
 
   Conveyor : TMConveyor;
   Section  : TMColumn;
+
+  defailure_array : array of integer;
 begin
   DeHighLight; //Убираем все выделения на графике
 
-  count := ApplicationTempBufferValues.GetCount; //Количество датчиков в буфере
+  conveyor_count := GetCount;
 
-  for i := 0 to count - 1 do
+  for i := 0 to conveyor_count - 1 do
     begin
-      TempValueBuffer := ApplicationTempBufferValues.GetItem(i);
+      conveyor_number := i + 1;
 
-      if not Assigned(TempValueBuffer)
-        then Continue;
-
-      section_number  := TempValueBuffer.SectionNumber;
-      conveyor_number := TempValueBuffer.ConveyorNumber;
-
-      Conveyor := GetItem(IntToStr(conveyor_number));
+      Conveyor := GetItem(i);
 
       if not Assigned(Conveyor)
-        then Exit;
+        then Continue;
 
-      range_min := GetSectionYMinValue(section_number);
-      range_max := GetSectionYMaxValue(section_number);
+      for j := 1 to 10 do
+        begin
+          section_number := j;
 
-      if (TempValueBuffer.TempValue > range_max) or
-         (TempValueBuffer.TempValue < range_min)
-        then
-          begin
-            Conveyor.FailureSection(section_number);
+          check_average := ApplicationTempBufferValues.CheckAverage(section_number, conveyor_number);
+          if not check_average
+            then
+              begin
+                Conveyor.FailureSection(section_number);
 
-            if Conveyor.WorkMode = cwmWork
-              then
-                begin
-                  Conveyor.HighLight(section_number);
-                  if Conveyor.SignalMode = csmDisabled
-                    then
-                      begin
-                        Conveyor.SignalMode := csmEnabled; //Здесь должно инициироваться включение сигнализации
-                        FormMain.WriteLog('Включена сигнализация. Конвейер ' + IntToStr(Conveyor.Number));
-                      end;
-                end;
-          end;
+                if Conveyor.WorkMode = cwmWork
+                  then
+                    begin
+                      Conveyor.HighLight(section_number);
+                      if Conveyor.SignalMode = csmDisabled
+                        then
+                          begin
+                            Conveyor.SignalMode := csmEnabled; //Здесь должно инициироваться включение сигнализации
+                            FormMain.WriteLog('Включена сигнализация. Конвейер ' + IntToStr(Conveyor.Number));
+                          end;
+                    end;
+              end;
+        end;
     end;
 
+  conveyor_count := GetCount;
 
-  //Если
-  count := GetCount;
-
-  for i := 0 to count - 1 do
+  for i := 0 to conveyor_count - 1 do
     begin
       Conveyor := GetItem(i);
 
@@ -389,7 +384,11 @@ begin
 
       conveyor_number := Conveyor.Number;
 
-      for j := 0 to Conveyor.OutOfRangeSections.GetCount - 1 do
+      section_count := Conveyor.OutOfRangeSections.GetCount;
+
+      SetLength(defailure_array, 0);
+
+      for j := 0 to section_count - 1 do
         begin
           Section := Conveyor.OutOfRangeSections.GetItem(j);
 
@@ -398,17 +397,34 @@ begin
 
           section_number := Section.ColumnIndex;
 
-          if ApplicationTempBufferValues.CheckAverage(section_number, conveyor_number)
-            then Conveyor.DeFailureSection(section_number);
+          check_average := ApplicationTempBufferValues.CheckAverage(section_number, conveyor_number);
 
-          if not Conveyor.IsFailure
-            then
+          if check_average //сохраняем в массив номера всех секций, в которых уже нет ошибок
+            then           //если сразу удалять, то будет изменяться размер текущего цикла и куча ошибок
               begin
-                Conveyor.SignalMode := csmDisabled; //Здесь сигнализация должна выключаться
-                FormMain.WriteLog('Выключена сигнализация. Конвейер ' + IntToStr(Conveyor.Number));
+                SetLength(defailure_array, Length(defailure_array) + 1);
+                defailure_array[Length(defailure_array) - 1] := section_number;
               end;
         end;
-    end;                    
+
+        for j := 0 to Length(defailure_array) - 1 do
+          begin
+            section_number := defailure_array[j];
+
+            Conveyor.DeFailureSection(section_number);
+          end;
+
+        if Conveyor.WorkMode = cwmWork
+            then
+              begin
+                if (not Conveyor.IsFailure) and (Conveyor.SignalMode = csmEnabled)
+                  then
+                    begin
+                      Conveyor.SignalMode := csmDisabled; //Здесь сигнализация должна выключаться
+                      FormMain.WriteLog('Выключена сигнализация. Конвейер ' + IntToStr(Conveyor.Number));
+                    end;
+              end;  
+    end;
 end;
 
 

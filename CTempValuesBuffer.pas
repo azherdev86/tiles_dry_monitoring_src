@@ -197,8 +197,6 @@ var
 
   sum : single;
 begin
-  Result := 0;
-
   sum := 0;
 
   count := GetCount;

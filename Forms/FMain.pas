@@ -37,16 +37,6 @@ type
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
     ButtonApplyFloorAxisSettings: TButton;
-    ButtonChangeConveyor5Mode: TButton;
-    LabeledEditConveyor5Mode: TLabeledEdit;
-    ButtonChangeConveyor4Mode: TButton;
-    LabeledEditConveyor4Mode: TLabeledEdit;
-    ButtonChangeConveyor3Mode: TButton;
-    LabeledEditConveyor3Mode: TLabeledEdit;
-    ButtonChangeConveyor2Mode: TButton;
-    LabeledEditConveyor2Mode: TLabeledEdit;
-    ButtonChangeConveyor1Mode: TButton;
-    LabeledEditConveyor1Mode: TLabeledEdit;
     Label19: TLabel;
     StatusBar1: TStatusBar;
     ComPort: TComPort;
@@ -57,8 +47,31 @@ type
     TimerUpdateInfo: TTimer;
     MemoInfo: TMemo;
     ImageGraphLegend: TImage;
-    TrackBar1: TTrackBar;
+    TrackBarConveyor1: TTrackBar;
     Button1: TButton;
+    LabelConveyor1Overlocking: TLabel;
+    LabelConveyor1Work: TLabel;
+    TrackBarConveyor2: TTrackBar;
+    Label17: TLabel;
+    Label18: TLabel;
+    TrackBarConveyor3: TTrackBar;
+    Label20: TLabel;
+    Label21: TLabel;
+    TrackBarConveyor4: TTrackBar;
+    Label22: TLabel;
+    Label23: TLabel;
+    TrackBarConveyor5: TTrackBar;
+    Label24: TLabel;
+    Label26: TLabel;
+    TrackBarAllConveyors: TTrackBar;
+    Label27: TLabel;
+    Label28: TLabel;
+    Label29: TLabel;
+    Label30: TLabel;
+    Label31: TLabel;
+    Label32: TLabel;
+    Label33: TLabel;
+    Label34: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
     procedure PaintBoxMouseEnter(Sender: TObject);
@@ -83,11 +96,12 @@ type
       Shift: TShiftState);
     procedure Button7Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
-    procedure ButtonChangeConveyor5ModeClick(Sender: TObject);
-    procedure ButtonChangeConveyor4ModeClick(Sender: TObject);
-    procedure ButtonChangeConveyor3ModeClick(Sender: TObject);
-    procedure ButtonChangeConveyor2ModeClick(Sender: TObject);
-    procedure ButtonChangeConveyor1ModeClick(Sender: TObject);
+    procedure TrackBarConveyor5Change(Sender: TObject);
+    procedure TrackBarConveyor4Change(Sender: TObject);
+    procedure TrackBarConveyor3Change(Sender: TObject);
+    procedure TrackBarConveyor2Change(Sender: TObject);
+    procedure TrackBarConveyor1Change(Sender: TObject);
+    procedure TrackBarAllConveyorsChange(Sender: TObject);
   private
     { Private declarations }
     StartTime : double;
@@ -140,8 +154,8 @@ procedure TFormMain.FormCreate(Sender: TObject);
 begin
   FGraphMouseCoord := Point(0, 0);
 
-//  MemoLogs.Visible := False;
-  MemoInfo.Visible := False;
+//  MemoLogs.Visible := True;
+//  MemoInfo.Visible := True;
   FormMain.WindowState := wsMaximized;
   FormMain.DoubleBuffered := TRUE;
   DrawSeries;
@@ -256,9 +270,6 @@ begin
 
   for i := 0 to count - 1 do
   begin
-//    if i > 1
-//      then Continue;
-
     ComPortMessage := TMOutgoingComportMessage.Create;
 
     Box := ApplicationBoxes.GetItem(i);
@@ -272,8 +283,6 @@ begin
     if Assigned(ComPortMessage)
       then ApplicationComPortOutgoingMessages.AddItem(ComPortMessage);
   end;
-
-//  TimerCreateComPortMessages.Enabled := FALSE;
 end;
 
 procedure TFormMain.TimerUpdateInfoTimer(Sender: TObject);
@@ -304,6 +313,82 @@ begin
   ApplicationController.CheckTemperatureRanges;
 
   DrawSeries;
+end;
+
+procedure TFormMain.TrackBarAllConveyorsChange(Sender: TObject);
+var
+  position : integer;
+begin
+  case TrackBarAllConveyors.Position of
+    0 : position := 0;
+    1 : position := 1;
+  end;
+
+  TrackBarConveyor1.Position := position;
+  TrackBarConveyor2.Position := position;
+  TrackBarConveyor3.Position := position;
+  TrackBarConveyor4.Position := position;
+  TrackBarConveyor5.Position := position;
+end;
+
+procedure TFormMain.TrackBarConveyor1Change(Sender: TObject);
+var
+  Conveyor : TMConveyor;
+begin
+  Conveyor := ApplicationController.GetItem('1');
+
+  case TrackBarConveyor1.Position of
+    0 : Conveyor.WorkMode := cwmOverlocking;
+    1 : Conveyor.WorkMode := cwmWork;
+  end;
+end;
+
+procedure TFormMain.TrackBarConveyor2Change(Sender: TObject);
+var
+  Conveyor : TMConveyor;
+begin
+  Conveyor := ApplicationController.GetItem('2');
+
+  case TrackBarConveyor2.Position of
+    0 : Conveyor.WorkMode := cwmOverlocking;
+    1 : Conveyor.WorkMode := cwmWork;
+  end;
+end;
+
+procedure TFormMain.TrackBarConveyor3Change(Sender: TObject);
+var
+  Conveyor : TMConveyor;
+begin
+  Conveyor := ApplicationController.GetItem('3');
+
+  case TrackBarConveyor3.Position of
+    0 : Conveyor.WorkMode := cwmOverlocking;
+    1 : Conveyor.WorkMode := cwmWork;
+  end;
+end;
+
+procedure TFormMain.TrackBarConveyor4Change(Sender: TObject);
+var
+  Conveyor : TMConveyor;
+begin
+  Conveyor := ApplicationController.GetItem('4');
+
+  case TrackBarConveyor4.Position of
+    0 : Conveyor.WorkMode := cwmOverlocking;
+    1 : Conveyor.WorkMode := cwmWork;
+  end;
+end;
+
+procedure TFormMain.TrackBarConveyor5Change(Sender: TObject);
+var
+  Conveyor : TMConveyor;
+begin
+  Conveyor := ApplicationController.GetItem('5');
+
+  case TrackBarConveyor5.Position of
+    0 : Conveyor.WorkMode := cwmOverlocking;
+    1 : Conveyor.WorkMode := cwmWork;
+  end;
 end;
 
 procedure TFormMain.TimerComPortSendMessagesTimer(Sender: TObject);
@@ -561,76 +646,6 @@ begin
   PaintBox.Repaint;
 end;
 
-procedure TFormMain.ButtonChangeConveyor1ModeClick(Sender: TObject);
-var
-  Conveyor : TMConveyor;
-begin
-  Conveyor := ApplicationController.GetItem('1');
-
-  case Conveyor.WorkMode of
-    cwmOverlocking: Conveyor.WorkMode := cwmWork;
-    cwmWork:        Conveyor.WorkMode := cwmOverlocking;
-  end;
-
-  LabeledEditConveyor1Mode.Text := Conveyor.WorkModeString;
-end;
-
-procedure TFormMain.ButtonChangeConveyor2ModeClick(Sender: TObject);
-var
-  Conveyor : TMConveyor;
-begin
-  Conveyor := ApplicationController.GetItem('2');
-
-  case Conveyor.WorkMode of
-    cwmOverlocking: Conveyor.WorkMode := cwmWork;
-    cwmWork:        Conveyor.WorkMode := cwmOverlocking;
-  end;
-
-  LabeledEditConveyor2Mode.Text := Conveyor.WorkModeString;
-end;
-
-procedure TFormMain.ButtonChangeConveyor3ModeClick(Sender: TObject);
-var
-  Conveyor : TMConveyor;
-begin
-  Conveyor := ApplicationController.GetItem('3');
-
-  case Conveyor.WorkMode of
-    cwmOverlocking: Conveyor.WorkMode := cwmWork;
-    cwmWork:        Conveyor.WorkMode := cwmOverlocking;
-  end;
-
-  LabeledEditConveyor3Mode.Text := Conveyor.WorkModeString;
-end;
-
-procedure TFormMain.ButtonChangeConveyor4ModeClick(Sender: TObject);
-var
-  Conveyor : TMConveyor;
-begin
-  Conveyor := ApplicationController.GetItem('4');
-
-  case Conveyor.WorkMode of
-    cwmOverlocking: Conveyor.WorkMode := cwmWork;
-    cwmWork:        Conveyor.WorkMode := cwmOverlocking;
-  end;
-
-  LabeledEditConveyor4Mode.Text := Conveyor.WorkModeString;
-end;
-
-procedure TFormMain.ButtonChangeConveyor5ModeClick(Sender: TObject);
-var
-  Conveyor : TMConveyor;
-begin
-  Conveyor := ApplicationController.GetItem('5');
-
-  case Conveyor.WorkMode of
-    cwmOverlocking: Conveyor.WorkMode := cwmWork;
-    cwmWork:        Conveyor.WorkMode := cwmOverlocking;
-  end;
-
-  LabeledEditConveyor5Mode.Text := Conveyor.WorkModeString;
-end;
-
 procedure TFormMain.ComPortException(Sender: TObject;
   TComException: TComExceptions; ComportMessage: string; WinError: Int64;
   WinMessage: string);
@@ -800,8 +815,7 @@ end;
 function TFormMain.LoadSettings : boolean;
 var
   MinYValueText,
-  MaxYValueText,
-  ConveyorMode : string;
+  MaxYValueText : string;
 
   Conveyor : TMConveyor;
 begin
@@ -815,24 +829,34 @@ begin
   LabelAxisMaxYValue.Caption := MaxYValueText;
 
   Conveyor     := ApplicationController.GetItem('1');
-  ConveyorMode := Conveyor.WorkModeString;
-  LabeledEditConveyor1Mode.Text := ConveyorMode;
+  case Conveyor.WorkMode of
+    cwmOverlocking: TrackBarConveyor1.Position := 0;
+    cwmWork:        TrackBarConveyor1.Position := 1;
+  end;
 
   Conveyor     := ApplicationController.GetItem('2');
-  ConveyorMode := Conveyor.WorkModeString;
-  LabeledEditConveyor2Mode.Text := ConveyorMode;
+  case Conveyor.WorkMode of
+    cwmOverlocking: TrackBarConveyor2.Position := 0;
+    cwmWork:        TrackBarConveyor2.Position := 1;
+  end;
 
   Conveyor     := ApplicationController.GetItem('3');
-  ConveyorMode := Conveyor.WorkModeString;
-  LabeledEditConveyor3Mode.Text := ConveyorMode;
+  case Conveyor.WorkMode of
+    cwmOverlocking: TrackBarConveyor3.Position := 0;
+    cwmWork:        TrackBarConveyor3.Position := 1;
+  end;
 
   Conveyor     := ApplicationController.GetItem('4');
-  ConveyorMode := Conveyor.WorkModeString;
-  LabeledEditConveyor4Mode.Text := ConveyorMode;
+  case Conveyor.WorkMode of
+    cwmOverlocking: TrackBarConveyor4.Position := 0;
+    cwmWork:        TrackBarConveyor4.Position := 1;
+  end;
 
   Conveyor     := ApplicationController.GetItem('5');
-  ConveyorMode := Conveyor.WorkModeString;
-  LabeledEditConveyor5Mode.Text := ConveyorMode;
+  case Conveyor.WorkMode of
+    cwmOverlocking: TrackBarConveyor5.Position := 0;
+    cwmWork:        TrackBarConveyor5.Position := 1;
+  end;
 
   Result := TRUE;
 end;
