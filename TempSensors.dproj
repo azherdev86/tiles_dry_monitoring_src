@@ -68,6 +68,9 @@
     <DCCReference Include="DatabaseFrameWork\CTableRecords.pas" />
     <DCCReference Include="DatabaseFrameWork\CTableStructure.pas" />
     <DCCReference Include="DatabaseFrameWork\CTemplateEntity.pas" />
+    <DCCReference Include="FInputPassword.pas">
+      <Form>FormInputPassword</Form>
+    </DCCReference>
     <DCCReference Include="Forms\FEventHistory.pas">
       <Form>FormEventHistory</Form>
     </DCCReference>
@@ -81,6 +84,7 @@
       <Form>FormTemperatureRanges</Form>
     </DCCReference>
     <DCCReference Include="LApplicationGlobals.pas" />
+    <DCCReference Include="LHash.pas" />
     <DCCReference Include="uTDurationProcess.pas" />
   </ItemGroup>
 </Project>

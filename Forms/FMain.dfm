@@ -2447,6 +2447,12 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
   end
+  object Shape1: TShape
+    Left = 576
+    Top = 160
+    Width = 65
+    Height = 65
+  end
   object BitBtn1: TBitBtn
     Left = 1088
     Top = 162
@@ -2621,7 +2627,6 @@ object FormMain: TFormMain
       F1EAE8F1EAE8F1EAE8F1EAE8F1EAE8F1EAE7F1E9E7F1E9E7F0E9E7F0E9E7F0E9
       E7F0E9E6F0E8E6F0E8E6F0E8E6F0E8E6F0E8E6F0E8E6F0E8E6F0E8E6F0E8E6F0
       E8E6EFE8E6EFE8E6EFE8E5EFE8E6F0E9E6DED2CDD0B7AF000000}
-    ExplicitLeft = 1056
   end
   object GroupBoxFloorAxisSettings: TGroupBox
     Left = 1088
@@ -2637,7 +2642,6 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
     TabOrder = 3
-    ExplicitLeft = 1056
     DesignSize = (
       167
       95)
@@ -2846,7 +2850,6 @@ object FormMain: TFormMain
       FDF5FCD1DCD2B6D5BA89CC8F57C0623FBF5441C15141B54D44AB4D4BA54F66A7
       65BABDB7D9D9D8F1F1EFFDFDFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00}
-    ExplicitLeft = 1056
   end
   object BitBtn3: TBitBtn
     Left = 1088
@@ -3037,7 +3040,6 @@ object FormMain: TFormMain
       DED9D2E8E4DEFCFBFAFFFFFFFFFFFFFFFFFFFFFFFFFEFEFEFFFFFFFFFFFFFFFF
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000}
-    ExplicitLeft = 1056
   end
   object StatusBar1: TStatusBar
     Left = 0
@@ -3060,7 +3062,6 @@ object FormMain: TFormMain
         Text = 'Program version: 0.0.1'
         Width = 50
       end>
-    ExplicitWidth = 1289
   end
   object MemoLogs: TMemo
     Left = 480
@@ -3176,6 +3177,7 @@ object FormMain: TFormMain
     OnChange = TrackBarAllConveyorsChange
   end
   object TimerCreateComPortMessages: TTimer
+    Enabled = False
     Interval = 5000
     OnTimer = TimerCreateComPortMessagesTimer
     Left = 19
@@ -3202,12 +3204,14 @@ object FormMain: TFormMain
     Top = 187
   end
   object TimerComPortSendMessages: TTimer
+    Enabled = False
     Interval = 10
     OnTimer = TimerComPortSendMessagesTimer
     Left = 64
     Top = 15
   end
   object TimerUpdateInfo: TTimer
+    Enabled = False
     Interval = 3000
     OnTimer = TimerUpdateInfoTimer
     Left = 112

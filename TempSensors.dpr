@@ -33,7 +33,9 @@ uses
   CProgramGraphSettings in 'CProgramGraphSettings.pas',
   CTempValuesBuffer in 'CTempValuesBuffer.pas',
   CController in 'CController.pas',
-  CRows in 'CRows.pas';
+  CRows in 'CRows.pas',
+  FInputPassword in 'FInputPassword.pas' {FormInputPassword},
+  LHash in 'LHash.pas';
 
 {$R *.res}
 
@@ -41,5 +43,6 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TFormMain, FormMain);
+  Application.CreateForm(TFormInputPassword, FormInputPassword);
   Application.Run;
 end.

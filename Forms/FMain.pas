@@ -72,6 +72,7 @@ type
     Label32: TLabel;
     Label33: TLabel;
     Label34: TLabel;
+    Shape1: TShape;
     procedure FormCreate(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
     procedure PaintBoxMouseEnter(Sender: TObject);
@@ -140,7 +141,7 @@ implementation
 uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventHistory,
      FGraphHistory, CBoxes, CBasicComPortMessage, CIncomingComPortMessage,
      COutgoingComPortMessage, DateUtils, CTableRecords, ZDataset, CTempValuesBuffer,
-     CController;
+     CController, FInputPassword;
 
 
 procedure FreeAndNilMessage(out ComPortMessage : TMOutgoingComportMessage);
@@ -161,8 +162,8 @@ begin
   DrawSeries;
   TimerCreateComPortMessages.Enabled := TRUE;
 
-  StartTime := Now;
-  ComPort.Connected := TRUE;
+  StartTime := Now;                 
+  //ComPort.Connected := TRUE;
 
   SentMessagesCount           := 0;
   ReSentMessagesCount         := 0;
@@ -504,25 +505,18 @@ procedure TFormMain.BitBtn3Click(Sender: TObject);
 var
   pass : string;
 begin
-  if InputQuery('Password required', 'Input admin password to proceed', pass)
+  if not InputPassword
     then
       begin
-        if pass <> 'admin'
-          then
-            begin
-              ShowMessageUser('Wrong password');
-              BitBtn3.Click;
-            end
-          else
-            begin
-              Application.CreateForm(TFormTemperatureRanges, FormTemperatureRanges);
-              FormTemperatureRanges.ShowModal;
-              FormTemperatureRanges.Free;
-            end;
+        ShowMessage('Wrong password');
+        BitBtn3.Click;
       end
-
-
-//  Input
+    else
+      begin
+        Application.CreateForm(TFormTemperatureRanges, FormTemperatureRanges);
+        FormTemperatureRanges.ShowModal;
+        FormTemperatureRanges.Free;
+      end;
 end;
 
 procedure TFormMain.Button1Click(Sender: TObject);
@@ -623,8 +617,26 @@ var
   MinYValue,
   MaxYValue : single;
 begin
-  MinYValue := StrToFloat(LabeledEditAxisMinYValue.Text, ApplicationFormatSettings);
-  MaxYValue := StrToFloat(LabeledEditAxisMaxYValue.Text, ApplicationFormatSettings);
+  if not TryStrToFloat(LabeledEditAxisMinYValue.Text, MinYValue, ApplicationFormatSettings)
+    then
+      begin
+        ShowMessage('Incorrect input data');
+        LabeledEditAxisMinYValue.SetFocus;
+        LabeledEditAxisMinYValue.SelectAll;
+
+        Exit;
+      end;
+
+  if not TryStrToFloat(LabeledEditAxisMaxYValue.Text, MaxYValue, ApplicationFormatSettings)
+    then
+      begin
+        ShowMessage('Incorrect input data');
+        LabeledEditAxisMaxYValue.SetFocus;
+        LabeledEditAxisMaxYValue.SelectAll;
+
+        Exit;
+      end;
+
 
   if MinYValue >= MaxYValue
     then

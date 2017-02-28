@@ -46,6 +46,9 @@ type
   private
     function LoadSettings() : boolean;
     function SaveSettings() : boolean;
+    function CheckValues()  : boolean;
+    function GetLabelEdit(ALabelEditName : string) : TLabeledEdit;
+
     { Private declarations }
   public
     { Public declarations }
@@ -62,6 +65,9 @@ uses LApplicationGlobals;
 
 procedure TFormTemperatureRanges.ButtonApplyClick(Sender: TObject);
 begin
+  if not CheckValues
+    then Exit;
+
   SaveSettings;
   Close;
 end;
@@ -149,6 +155,104 @@ begin
   ApplicationGraph.LoadSettings;
 
   Result := ApplicationProgramSettings.SaveToInifile;
+end;
+
+function TFormTemperatureRanges.CheckValues() : boolean;
+var
+  i : integer;
+
+  LabelEditMin,
+  LabelEditMax : TLabeledEdit;
+
+  component_name : string;
+
+  min_value,
+  max_value : single;
+begin
+  Result := True;
+
+  for i := 1 to 10 do
+    begin
+      component_name := 'LabeledEditSection' + IntToStr(i) + 'MinYValue';
+      LabelEditMin := GetLabelEdit(component_name);
+
+      component_name := 'LabeledEditSection' + IntToStr(i) + 'MaxYValue';
+      LabelEditMax := GetLabelEdit(component_name);
+
+      if (not Assigned(LabelEditMin)) or (not Assigned(LabelEditMax))
+        then
+          begin
+            ShowMessage('Unknown error');
+
+            Result := False;
+            break;
+          end;
+
+      if not TryStrToFloat(LabelEditMin.Text, min_value, ApplicationFormatSettings)
+        then
+          begin
+            ShowMessage('Incorrect input data');
+            LabelEditMin.SetFocus;
+            LabelEditMin.SelectAll;
+
+            Result := False;
+            break;
+          end;
+
+      if not TryStrToFloat(LabelEditMax.Text, max_value, ApplicationFormatSettings)
+        then
+          begin
+            ShowMessage('Incorrect input data');
+            LabelEditMax.SetFocus;
+            LabelEditMax.SelectAll;
+
+            Result := False;
+            break;
+          end;
+
+      if min_value >= max_value
+        then
+          begin
+            ShowMessage('Min value should be less than Max');
+
+            LabelEditMin.SetFocus;
+            LabelEditMin.SelectAll;
+
+            Result := False;
+            break;
+          end;
+    end;
+
+end;
+
+function TFormTemperatureRanges.GetLabelEdit(ALabelEditName : string) : TLabeledEdit;
+var
+  count, i : integer;
+
+  Component : TComponent;
+begin
+  Result := nil;
+
+  count := ComponentCount;
+
+  for i := 0 to count - 1 do
+    begin
+      Component := Components[i];
+
+      if not Assigned(Component)
+        then Continue;
+
+      if not (Component is TLabeledEdit)
+        then Continue;
+
+      if Component.Name = ALabelEditName
+        then
+          begin
+            Result := Component as TLabeledEdit;
+
+            break;
+          end;
+    end;
 end;
 
 end.
