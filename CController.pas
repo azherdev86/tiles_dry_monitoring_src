@@ -192,19 +192,19 @@ procedure TMConveyor.SetSignalMode(ASignalMode : TypeConveyorSignalMode);
 var
   ComPortMessage : TMOutgoingComportMessage;
 begin
-//  ComPortMessage := TMOutgoingComportMessage.Create;
+  ComPortMessage := TMOutgoingComportMessage.Create;
 
   FSignalMode := ASignalMode;
 
-//  case ASignalMode of
-//    csmEnabled: ;
-//    csmDisabled: ;
-//  end;
-//
-//  if not SaveToComPortMessage(ComPortMessage) 
-//    then Exit;
-//
-//  ApplicationComPortOutgoingMessages.AddItem(ComPortMessage);
+  case ASignalMode of
+    csmEnabled: ;
+    csmDisabled: ;
+  end;
+
+  if not SaveToComPortMessage(ComPortMessage)
+    then Exit;
+
+  ApplicationComPortOutgoingMessages.AddItem(ComPortMessage);
 end;
 
 function TMConveyor.SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean;
@@ -224,9 +224,9 @@ begin
   DataBytes[3] := $0A;
 
   ComPortMessage.LoadDataBytes(DataBytes);
-  ComPortMessage.DeviceId  := $0A;//FBoxNumber;
+  ComPortMessage.DeviceId  := $02;//FBoxNumber;
 //  ComPortMessage.DebugDeviceId := FBoxNumber;
-  ComPortMessage.CommandId := $03;
+  ComPortMessage.CommandId := $06;
 
   ComPortMessage.Priority  := mpHigh;
 

@@ -237,8 +237,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object LabelAxisMinYValue: TLabel
-    Left = 193
-    Top = 116
+    Left = 177
+    Top = 335
     Width = 12
     Height = 14
     Caption = '90'
@@ -2447,12 +2447,6 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
   end
-  object Shape1: TShape
-    Left = 576
-    Top = 160
-    Width = 65
-    Height = 65
-  end
   object BitBtn1: TBitBtn
     Left = 1088
     Top = 162
@@ -3099,8 +3093,8 @@ object FormMain: TFormMain
     OnClick = Button8Click
   end
   object MemoInfo: TMemo
-    Left = 215
-    Top = 55
+    Left = 212
+    Top = 36
     Width = 506
     Height = 238
     Font.Charset = DEFAULT_CHARSET
@@ -3177,15 +3171,14 @@ object FormMain: TFormMain
     OnChange = TrackBarAllConveyorsChange
   end
   object TimerCreateComPortMessages: TTimer
-    Enabled = False
-    Interval = 5000
+    Interval = 3000
     OnTimer = TimerCreateComPortMessagesTimer
     Left = 19
     Top = 14
   end
   object ComPort: TComPort
-    BaudRate = br19200
-    Port = 'COM3'
+    BaudRate = br9600
+    Port = 'COM4'
     Parity.Bits = prEven
     StopBits = sbOneStopBit
     DataBits = dbEight
@@ -3204,15 +3197,13 @@ object FormMain: TFormMain
     Top = 187
   end
   object TimerComPortSendMessages: TTimer
-    Enabled = False
     Interval = 10
     OnTimer = TimerComPortSendMessagesTimer
     Left = 64
     Top = 15
   end
   object TimerUpdateInfo: TTimer
-    Enabled = False
-    Interval = 3000
+    Interval = 2000
     OnTimer = TimerUpdateInfoTimer
     Left = 112
     Top = 15

@@ -57,12 +57,14 @@ var
   Pass : string;
   Hash : string;
 begin
-  Pass := LabeledEditPassword.Text;
+//  Pass := LabeledEditPassword.Text;
 
 //  Hash := ApplicationProgramSettings.
 
-  if MD5DigestToStr(MD5String(Pass)) = ''
-    then PasswordIsCorrect := True;
+//if MD5DigestToStr(MD5String(Pass)) = ''
+//    then PasswordIsCorrect := True;
+
+  PasswordIsCorrect := True;
 
   Close;
 end;

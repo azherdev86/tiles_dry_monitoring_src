@@ -26,6 +26,9 @@ type
   public
     function SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean;
     function LoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean;
+
+  public
+    property BoxNumber : byte read FBoxNumber;
 end;
 
 type
@@ -134,8 +137,8 @@ begin
   DataBytes[3] := $0A;
 
   ComPortMessage.LoadDataBytes(DataBytes);
-  ComPortMessage.DeviceId  := $0A;//FBoxNumber;
-  ComPortMessage.DebugDeviceId := FBoxNumber;
+  ComPortMessage.DeviceId  := FBoxNumber;
+//  ComPortMessage.DebugDeviceId := FBoxNumber;
   ComPortMessage.CommandId := $03;
 
   ComPortMessage.Priority  := mpNormal;
@@ -187,7 +190,7 @@ begin
     TempValue := TMTempValue.Create;
 
     TempValue.SensorId  := GetSensorId(value_index);
-    TempValue.TempValue := TempToFloat(Value) - 10 + random(25);
+    TempValue.TempValue := TempToFloat(Value);
     TempValue.TempTime  := MessageTime;
 
     if (TempValue.RecordSensors.LoadRecord(TempValue.SensorId) = 0)

@@ -72,7 +72,6 @@ type
     Label32: TLabel;
     Label33: TLabel;
     Label34: TLabel;
-    Shape1: TShape;
     procedure FormCreate(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
     procedure PaintBoxMouseEnter(Sender: TObject);
@@ -163,7 +162,7 @@ begin
   TimerCreateComPortMessages.Enabled := TRUE;
 
   StartTime := Now;                 
-  //ComPort.Connected := TRUE;
+  ComPort.Connected := TRUE;
 
   SentMessagesCount           := 0;
   ReSentMessagesCount         := 0;
@@ -275,6 +274,9 @@ begin
 
     Box := ApplicationBoxes.GetItem(i);
 
+    if (Box.BoxNumber < 10) or (Box.BoxNumber = 20)
+      then Continue;
+
     if not Assigned(Box)
       then Continue;
 
@@ -284,6 +286,8 @@ begin
     if Assigned(ComPortMessage)
       then ApplicationComPortOutgoingMessages.AddItem(ComPortMessage);
   end;
+
+//  TimerCreateComPortMessages.Enabled := False;
 end;
 
 procedure TFormMain.TimerUpdateInfoTimer(Sender: TObject);
@@ -683,7 +687,7 @@ begin
 
   SendingComPortMessage := ApplicationComPortOutgoingMessages.SendingComPortMessage;
 
-  ApplicationComPortIncomingMessage.DebugDeviceId := SendingComPortMessage.DebugDeviceId;
+//  ApplicationComPortIncomingMessage.DebugDeviceId := SendingComPortMessage.DebugDeviceId;
 
   if not Assigned(SendingComPortMessage)
     then ApplicationComPortIncomingMessage.Error := imeNoSendingMessage;
@@ -696,8 +700,8 @@ begin
 
         Inc(RecievedMessagesCount);
 
-//        DeviceId := ApplicationComPortIncomingMessage.DeviceId;
-        DeviceId := ApplicationComPortIncomingMessage.DebugDeviceId;
+        DeviceId := ApplicationComPortIncomingMessage.DeviceId;
+//        DeviceId := ApplicationComPortIncomingMessage.DebugDeviceId;
 
         Box := ApplicationBoxes.GetItem(IntToStr(DeviceId));
 
@@ -707,7 +711,7 @@ begin
         if not Box.LoadFromComPortMessage(ApplicationComPortIncomingMessage)
           then Exit;
 
-        if (SendingComPortMessage.DebugDeviceId = ApplicationComPortIncomingMessage.DebugDeviceId) and
+        if (SendingComPortMessage.DeviceId = ApplicationComPortIncomingMessage.DeviceId) and
            (ApplicationComPortIncomingMessage.CommandId = $03) and
            (SendingComPortMessage.CommandId = $03)
           then
@@ -784,25 +788,30 @@ begin
             0 :
               begin
                 Series.Color := clRed;
-                Pair         := 'Top';
+//                Pair         := 'Top';
+                Pair := 'LeftTop';
               end;
 
             1 :
               begin
                 Series.Color := clGreen;
-                Pair         := 'Bottom';
+                Pair := 'LeftBottom';
+//                Pair         := 'Bottom';
               end;
 
             2 :
               begin
                 Series.Color := clBlue;
-                Pair         := 'Left';
+                Pair := 'RightTop';
+//                Pair         := 'Left';
               end;
 
             3 :
               begin
                 Series.Color := clAqua;
-                Pair         := 'Right';
+                Pair := 'RightBottom';
+//
+//                Pair         := 'Right';
               end;
           end;
 
@@ -812,7 +821,7 @@ begin
               SectionNumber  := k + 1;
 
               if i <> 5
-                then Value := ApplicationTempBufferValues.GetAverage(SectionNumber, ConveyorNumber, Pair) //для всех этажей
+                then Value := ApplicationTempBufferValues.GetItem(SectionNumber, ConveyorNumber, Pair).TempValue  //ApplicationTempBufferValues.GetAverage(SectionNumber, ConveyorNumber, Pair) //для всех этажей
                 else Value := ApplicationTempBufferValues.GetAverage(SectionNumber, Pair); //для осредненного графика
 
               Series.AddPoint(Value, k);
