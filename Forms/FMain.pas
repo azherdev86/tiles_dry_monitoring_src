@@ -30,12 +30,12 @@ type
     LabelAxisMinYValue: TLabel;
     LabelAxisMaxYValue: TLabel;
     Label25: TLabel;
-    BitBtn1: TBitBtn;
+    BitBtnKeyBoard: TBitBtn;
     GroupBoxFloorAxisSettings: TGroupBox;
     LabeledEditAxisMinYValue: TLabeledEdit;
     LabeledEditAxisMaxYValue: TLabeledEdit;
-    BitBtn2: TBitBtn;
-    BitBtn3: TBitBtn;
+    BitBtnEventHistory: TBitBtn;
+    BitBtnTemperatureRanges: TBitBtn;
     ButtonApplyFloorAxisSettings: TButton;
     Label19: TLabel;
     StatusBar1: TStatusBar;
@@ -72,15 +72,16 @@ type
     Label32: TLabel;
     Label33: TLabel;
     Label34: TLabel;
+    BitBtnChangePassword: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
     procedure PaintBoxMouseEnter(Sender: TObject);
     procedure PaintBoxMouseLeave(Sender: TObject);
     procedure PaintBoxMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
-    procedure BitBtn1Click(Sender: TObject);
-    procedure BitBtn3Click(Sender: TObject);
-    procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtnKeyBoardClick(Sender: TObject);
+    procedure BitBtnTemperatureRangesClick(Sender: TObject);
+    procedure BitBtnEventHistoryClick(Sender: TObject);
     procedure PaintBoxClick(Sender: TObject);
     procedure ComPortRxChar(Sender: TObject; Count: Integer);
     procedure TimerCreateComPortMessagesTimer(Sender: TObject);
@@ -102,6 +103,7 @@ type
     procedure TrackBarConveyor2Change(Sender: TObject);
     procedure TrackBarConveyor1Change(Sender: TObject);
     procedure TrackBarAllConveyorsChange(Sender: TObject);
+    procedure BitBtnChangePasswordClick(Sender: TObject);
   private
     { Private declarations }
     StartTime : double;
@@ -140,7 +142,7 @@ implementation
 uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventHistory,
      FGraphHistory, CBoxes, CBasicComPortMessage, CIncomingComPortMessage,
      COutgoingComPortMessage, DateUtils, CTableRecords, ZDataset, CTempValuesBuffer,
-     CController, FInputPassword;
+     CController, FInputPassword, FChangePassword;
 
 
 procedure FreeAndNilMessage(out ComPortMessage : TMOutgoingComportMessage);
@@ -162,7 +164,7 @@ begin
   TimerCreateComPortMessages.Enabled := TRUE;
 
   StartTime := Now;                 
-  ComPort.Connected := TRUE;
+//  ComPort.Connected := TRUE;
 
   SentMessagesCount           := 0;
   ReSentMessagesCount         := 0;
@@ -324,6 +326,8 @@ procedure TFormMain.TrackBarAllConveyorsChange(Sender: TObject);
 var
   position : integer;
 begin
+  position := 0;
+
   case TrackBarAllConveyors.Position of
     0 : position := 0;
     1 : position := 1;
@@ -493,34 +497,37 @@ begin
 end;
 
 
-procedure TFormMain.BitBtn1Click(Sender: TObject);
+procedure TFormMain.BitBtnKeyBoardClick(Sender: TObject);
 begin
   ShellExecute(0,nil,'osk.exe',nil,nil,SW_SHOW);
 end;
 
-procedure TFormMain.BitBtn2Click(Sender: TObject);
+procedure TFormMain.BitBtnChangePasswordClick(Sender: TObject);
+begin
+  Application.CreateForm(TFormChangePassword, FormChangePassword);
+  FormChangePassword.ShowModal;
+  FormChangePassword.Free;
+end;
+
+procedure TFormMain.BitBtnEventHistoryClick(Sender: TObject);
 begin
   Application.CreateForm(TFormEventHistory, FormEventHistory);
   FormEventHistory.ShowModal;
   FormEventHistory.Free;
 end;
 
-procedure TFormMain.BitBtn3Click(Sender: TObject);
-var
-  pass : string;
+procedure TFormMain.BitBtnTemperatureRangesClick(Sender: TObject);
 begin
-  if not InputPassword
-    then
-      begin
-        ShowMessage('Wrong password');
-        BitBtn3.Click;
-      end
-    else
+  case InputPassword of
+    pmWrong : ShowMessage('Wrong password');
+
+    pmCorrect :
       begin
         Application.CreateForm(TFormTemperatureRanges, FormTemperatureRanges);
         FormTemperatureRanges.ShowModal;
         FormTemperatureRanges.Free;
       end;
+  end;
 end;
 
 procedure TFormMain.Button1Click(Sender: TObject);
@@ -774,6 +781,8 @@ var
   SectionNumber,
   ConveyorNumber : integer;
 
+  TempValueBuffer : TMTempBufferValue;
+
   Value : single;
 begin
   ApplicationGraph.Series.Clear;
@@ -821,7 +830,13 @@ begin
               SectionNumber  := k + 1;
 
               if i <> 5
-                then Value := ApplicationTempBufferValues.GetItem(SectionNumber, ConveyorNumber, Pair).TempValue  //ApplicationTempBufferValues.GetAverage(SectionNumber, ConveyorNumber, Pair) //для всех этажей
+                then
+                  begin
+                    TempValueBuffer := ApplicationTempBufferValues.GetItem(SectionNumber, ConveyorNumber, Pair);  //ApplicationTempBufferValues.GetAverage(SectionNumber, ConveyorNumber, Pair) //для всех этажей
+                    if Assigned(TempValueBuffer)
+                      then Value := TempValueBuffer.TempValue
+                      else Value := 0
+                  end
                 else Value := ApplicationTempBufferValues.GetAverage(SectionNumber, Pair); //для осредненного графика
 
               Series.AddPoint(Value, k);

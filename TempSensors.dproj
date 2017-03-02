@@ -50,6 +50,7 @@
     <DCCReference Include="COutgoingComPortMessage.pas" />
     <DCCReference Include="CProgramGraphSettings.pas" />
     <DCCReference Include="CProgramSettings.pas" />
+    <DCCReference Include="CProgramUserSettings.pas" />
     <DCCReference Include="CRows.pas" />
     <DCCReference Include="CTempValues.pas" />
     <DCCReference Include="CTempValuesBuffer.pas" />
@@ -68,6 +69,9 @@
     <DCCReference Include="DatabaseFrameWork\CTableRecords.pas" />
     <DCCReference Include="DatabaseFrameWork\CTableStructure.pas" />
     <DCCReference Include="DatabaseFrameWork\CTemplateEntity.pas" />
+    <DCCReference Include="FChangePassword.pas">
+      <Form>FormChangePassword</Form>
+    </DCCReference>
     <DCCReference Include="FInputPassword.pas">
       <Form>FormInputPassword</Form>
     </DCCReference>

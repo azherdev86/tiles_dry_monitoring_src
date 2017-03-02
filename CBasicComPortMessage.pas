@@ -31,9 +31,8 @@ type
 
     FDeviceId       : Byte;
     FCommandId      : Byte;
-    FMSBRegisterAdd : Byte;
-    FLSBRegisterAdd : Byte;
-
+    FMSBRegisterAddr : Byte;
+    FLSBRegisterAddr : Byte;
 
     FCRCHi     : Byte;
     FCRCLo     : Byte;
@@ -55,11 +54,11 @@ type
     procedure Clear();
 
   public
-    property Priority        : TypeMessagePriority  read FPriority       write FPriority;
-    property DeviceId        : Byte                 read FDeviceId       write FDeviceId;
-    property CommandId       : Byte                 read FCommandId      write FCommandId;
-    property MSBRegisterAddr : Byte                 read FMSBRegisterAdd write FMSBRegisterAdd;
-    property LSBRegisterAddr : Byte                 read FLSBRegisterAdd write FLSBRegisterAdd;
+    property Priority        : TypeMessagePriority  read FPriority        write FPriority;
+    property DeviceId        : Byte                 read FDeviceId        write FDeviceId;
+    property CommandId       : Byte                 read FCommandId       write FCommandId;
+    property MSBRegisterAddr : Byte                 read FMSBRegisterAddr write FMSBRegisterAddr;
+    property LSBRegisterAddr : Byte                 read FLSBRegisterAddr write FLSBRegisterAddr;
     property MessageUid      : string               read FMessageUid;
   end;
 
@@ -149,10 +148,10 @@ begin
 
   FPriority     := mpNone;
 
-  FDeviceId       := $00;
-  FCommandId      := $00;
-  FMSBRegisterAdd := $00;
-  FLSBRegisterAdd := $00;
+  FDeviceId        := $00;
+  FCommandId       := $00;
+  FMSBRegisterAddr := $00;
+  FLSBRegisterAddr := $00;
 
   FCRCHi     := $00;
   FCRCLo     := $00;

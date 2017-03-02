@@ -116,15 +116,17 @@ var
   len,
   i : integer;
 begin
-  len := Length(FDataBytes) + 2;
+  len := Length(FDataBytes) + 4;
 
   SetLength(AMessageBytes, len);
 
   AMessageBytes[0] := FDeviceId;
   AMessageBytes[1] := FCommandId;
+  AMessageBytes[2] := FMSBRegisterAddr;
+  AMessageBytes[3] := FLSBRegisterAddr;     
 
-  for i := 2 to len - 1 do
-    AMessageBytes[i] := FDataBytes[i-2];
+  for i := 4 to len - 1 do
+    AMessageBytes[i] := FDataBytes[i-4];
 
   getCRC16(AMessageBytes, len, FCRCHi, FCRCLo);
 

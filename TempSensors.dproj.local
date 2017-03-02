@@ -32,5 +32,8 @@
     <Transaction>2017.02.28 08:00:37.732.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\FInputPassword.pas</Transaction>
     <Transaction>2017.02.28 08:00:37.732.dfm,F:\_programming\tempsensors\_sources\Unit1.dfm=F:\_programming\tempsensors\_sources\FInputPassword.dfm</Transaction>
     <Transaction>2017.02.28 08:12:54.861.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\LHash.pas</Transaction>
+    <Transaction>2017.03.02 18:07:37.115.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\FChangePassword.pas</Transaction>
+    <Transaction>2017.03.02 18:07:37.115.dfm,F:\_programming\tempsensors\_sources\Unit1.dfm=F:\_programming\tempsensors\_sources\FChangePassword.dfm</Transaction>
+    <Transaction>2017.03.02 18:28:35.429.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\CProgramUserSettings.pas</Transaction>
   </Transactions>
 </BorlandProject>

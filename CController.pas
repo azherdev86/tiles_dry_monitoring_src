@@ -11,9 +11,9 @@ type
                           cwmOverlocking,
                           cwmWork);
 
-  TypeConveyorSignalMode = (csmNone,
-                            csmEnabled,
-                            csmDisabled);
+  TypeSignalMode = (smNone,
+                    smEnabled,
+                    smDisabled);
 
 type
   TMConveyor = class
@@ -22,18 +22,12 @@ type
   private
     FNumber     : integer;
     FWorkMode   : TypeConveyorWorkMode;
-    FSignalMode : TypeConveyorSignalMode;
 
     FOutOfRangeSections : TMRow;
 
     procedure Reset;
     function IsFailure : boolean;
     function GetWorkModeString : string;
-
-    procedure SetSignalMode(ASignalMode : TypeConveyorSignalMode);
-
-    function SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean;
-    function LoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean;  //может этот метод не нужен
 
   public
     procedure HighLight(ASectionNumber : integer);
@@ -47,7 +41,6 @@ type
   public
     property Number     : integer                read FNumber;
     property WorkMode   : TypeConveyorWorkMode   read FWorkMode   write FWorkMode;
-    property SignalMode : TypeConveyorSignalMode read FSignalMode write SetSignalMode;
 
     property WorkModeString     : string read GetWorkModeString;
     property OutOfRangeSections : TMRow  read FOutOfRangeSections write FOutOfRangeSections;
@@ -72,13 +65,25 @@ type
 
     ////////////////////////////////////////////////////////////
     function CheckTemperatureRanges : boolean;
+
+    function SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean;
+    function LoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean;  //может этот метод не нужен
+
     procedure Init;
 
   private
     Items : TStringList;
 
+    FSignalMode : TypeSignalMode;
+
     procedure Reset;
     procedure DeHighLight();
+
+    procedure SetSignalMode(ASignalMode : TypeSignalMode);
+
+  public
+    property SignalMode : TypeSignalMode read FSignalMode write SetSignalMode;
+
   end;
 
 implementation
@@ -107,7 +112,6 @@ begin
   FNumber     := 0;
 
   FWorkMode   := cwmNone;
-  FSignalMode := csmNone;
 
   FOutOfRangeSections.Clear;
 end;
@@ -188,7 +192,7 @@ begin
 end;
 
 
-procedure TMConveyor.SetSignalMode(ASignalMode : TypeConveyorSignalMode);
+procedure TMController.SetSignalMode(ASignalMode : TypeSignalMode);
 var
   ComPortMessage : TMOutgoingComportMessage;
 begin
@@ -197,8 +201,8 @@ begin
   FSignalMode := ASignalMode;
 
   case ASignalMode of
-    csmEnabled: ;
-    csmDisabled: ;
+    smEnabled: ;
+    smDisabled: ;
   end;
 
   if not SaveToComPortMessage(ComPortMessage)
@@ -207,7 +211,7 @@ begin
   ApplicationComPortOutgoingMessages.AddItem(ComPortMessage);
 end;
 
-function TMConveyor.SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean;
+function TMController.SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean;
 var
   DataBytes : TDynamicByteArray;
 begin
@@ -216,17 +220,23 @@ begin
   if not Assigned(ComPortMessage)
     then Exit;
 
-  SetLength(DataBytes, 4);
+  SetLength(DataBytes, 2);
 
   DataBytes[0] := $00;
-  DataBytes[1] := $00;
-  DataBytes[2] := $00;
-  DataBytes[3] := $0A;
+
+  case FSignalMode of
+    smEnabled:  DataBytes[1] := $01;  //включение сигнализации
+    smDisabled: DataBytes[1] := $00;  //отключение сигнализации
+  end;
 
   ComPortMessage.LoadDataBytes(DataBytes);
   ComPortMessage.DeviceId  := $02;//FBoxNumber;
-//  ComPortMessage.DebugDeviceId := FBoxNumber;
+
+  //  ComPortMessage.DebugDeviceId := FBoxNumber;
   ComPortMessage.CommandId := $06;
+  ComPortMessage.MSBRegisterAddr := $00;
+  ComPortMessage.LSBRegisterAddr := $00;
+
 
   ComPortMessage.Priority  := mpHigh;
 
@@ -236,7 +246,7 @@ begin
 end;
 
 
-function TMConveyor.LoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean;
+function TMController.LoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean;
 var
   DataBytes : TDynamicByteArray;
   MessageTime : TDateTime;
@@ -248,10 +258,7 @@ begin
   if not Assigned(ComPortMessage)
     then Exit;
 
-//  if ComPortMessage.DeviceId <> FBoxNumber
-//    then Exit;
-
-  if ComPortMessage.CommandId <> $03
+  if ComPortMessage.CommandId <> $06
     then Exit;
 
   MessageTime := ComPortMessage.RecievedTime;
@@ -280,13 +287,13 @@ var
   Conveyor : TMConveyor;
   i : integer;
 begin
+  FSignalMode := smDisabled;
   for i := 0 to 4 do
     begin
       Conveyor := TMConveyor.Create;
 
       Conveyor.FNumber     := i + 1;
       Conveyor.FWorkMode   := cwmOverlocking;
-      Conveyor.FSignalMode := csmDisabled;
 
       AddItem(Conveyor);
     end;
@@ -364,6 +371,8 @@ begin
       then Item.Free;
   end;
 
+  FSignalMode := smNone;
+
   Items.Clear;
 end;
 
@@ -434,11 +443,11 @@ begin
                   then
                     begin
                       Conveyor.HighLight(section_number);
-                      if Conveyor.SignalMode = csmDisabled
+                      if FSignalMode = smDisabled
                         then
                           begin
-                            Conveyor.SignalMode := csmEnabled; //Здесь должно инициироваться включение сигнализации
-                            FormMain.WriteLog('Включена сигнализация. Конвейер ' + IntToStr(Conveyor.Number));
+                            FSignalMode := smEnabled; //Здесь должно инициироваться включение сигнализации
+                            FormMain.WriteLog('Включена сигнализация.');
                           end;
                     end;
               end;
@@ -492,13 +501,13 @@ begin
         if Conveyor.WorkMode = cwmWork
             then
               begin
-                if (not Conveyor.IsFailure) and (Conveyor.SignalMode = csmEnabled)
+                if (not Conveyor.IsFailure) and (FSignalMode = smEnabled)
                   then
                     begin
-                      Conveyor.SignalMode := csmDisabled; //Здесь сигнализация должна выключаться
-                      FormMain.WriteLog('Выключена сигнализация. Конвейер ' + IntToStr(Conveyor.Number));
+                      FSignalMode := smDisabled; //Здесь сигнализация должна выключаться
+                      FormMain.WriteLog('Выключена сигнализация. Конвейер');
                     end;
-              end;  
+              end;
     end;
 end;
 

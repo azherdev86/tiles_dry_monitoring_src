@@ -7,6 +7,11 @@ uses
   Dialogs, StdCtrls, ExtCtrls;
 
 type
+  TypePasswordMode = (pmNone,
+                      pmCorrect,
+                      pmWrong);
+
+type
   TFormInputPassword = class(TForm)
     LabeledEditPassword: TLabeledEdit;
     ButtonOk: TButton;
@@ -14,15 +19,17 @@ type
     procedure ButtonOkClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ButtonCancelClick(Sender: TObject);
+    procedure LabeledEditPasswordKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
 
   public
     { Public declarations }
-    PasswordIsCorrect : boolean;
+    PasswordMode : TypePasswordMode;
   end;
 
-function InputPassword() : boolean;
+function InputPassword() : TypePasswordMode;
 
 var
   FormInputPassword: TFormInputPassword;
@@ -34,20 +41,20 @@ uses LApplicationGlobals, LHash;
 
 {$R *.dfm}
 
-function InputPassword() : boolean;
+function InputPassword() : TypePasswordMode;
 begin
   Application.CreateForm(TFormInputPassword, FormInputPassword);
 
   FormInputPassword.ShowModal;
 
-  Result := FormInputPassword.PasswordIsCorrect;
+  Result := FormInputPassword.PasswordMode;
 
   FormInputPassword.Free;
 end;
 
 procedure TFormInputPassword.ButtonCancelClick(Sender: TObject);
 begin
-  PasswordIsCorrect := False;
+  PasswordMode := pmNone;
 
   Close;
 end;
@@ -57,21 +64,49 @@ var
   Pass : string;
   Hash : string;
 begin
-//  Pass := LabeledEditPassword.Text;
+  PasswordMode := pmWrong;
 
-//  Hash := ApplicationProgramSettings.
+  Pass := LabeledEditPassword.Text;  
 
-//if MD5DigestToStr(MD5String(Pass)) = ''
-//    then PasswordIsCorrect := True;
+  if Pass = ''
+    then
+      begin
+        ShowMessage('Password required');
+        LabeledEditPassword.SetFocus;
+        Exit;
+      end;
 
-  PasswordIsCorrect := True;
+  Hash := ApplicationProgramSettings.UserSettings.PasswordHash;
+
+  if MD5DigestToStr(MD5String(Pass)) <> Hash
+    then
+      begin
+        ShowMessage('Wrong password');
+        LabeledEditPassword.SetFocus;
+        Exit;
+      end;
+
+  PasswordMode := pmCorrect;
 
   Close;
 end;
 
 procedure TFormInputPassword.FormCreate(Sender: TObject);
 begin
-  PasswordIsCorrect := False;
+  PasswordMode := pmNone;
+end;
+
+procedure TFormInputPassword.LabeledEditPasswordKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  case Key of
+    VK_RETURN: ButtonOk.Click;
+    VK_ESCAPE:
+      begin
+        PasswordMode := pmNone;
+        Close;
+      end;
+  end;
 end;
 
 end.

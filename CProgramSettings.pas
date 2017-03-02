@@ -1,7 +1,7 @@
 unit CProgramSettings;
 
 interface
-uses Classes, CProgramGraphSettings;
+uses Classes, CProgramGraphSettings, CProgramUserSettings;
 
 const
   DEFAULT_INI_FILENAME = 'config.ini';
@@ -12,6 +12,7 @@ type
     destructor Destroy; override;
   public
     GraphSettings : TMProgramGraphSettings;
+    UserSettings  : TMProgramUserSettings;
 
   private
     function GetIniFileDir:string;
@@ -81,11 +82,13 @@ end;
 constructor TMProgramSettings.Create;
 begin
   GraphSettings := TMProgramGraphSettings.Create;
+  UserSettings  := TMProgramUserSettings.Create;
 end;
 
 destructor TMProgramSettings.Destroy;
 begin
   GraphSettings.Free;
+  UserSettings.Free;
 
   inherited;
 end;
@@ -120,6 +123,7 @@ begin
   if not Assigned(IniFile) then exit;
   try
     GraphSettings.LoadFromIniFile(IniFile);
+    UserSettings.LoadFromIniFile(IniFile);
 
     Result:=true;
   finally
@@ -139,6 +143,7 @@ begin
   if not Assigned(IniFile) then exit;
   try
     GraphSettings.SaveToInifile(IniFile);
+    UserSettings.SaveToIniFile(IniFile);
 
     Result := TRUE;
   finally

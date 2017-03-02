@@ -35,7 +35,9 @@ uses
   CController in 'CController.pas',
   CRows in 'CRows.pas',
   FInputPassword in 'FInputPassword.pas' {FormInputPassword},
-  LHash in 'LHash.pas';
+  LHash in 'LHash.pas',
+  FChangePassword in 'FChangePassword.pas' {FormChangePassword},
+  CProgramUserSettings in 'CProgramUserSettings.pas';
 
 {$R *.res}
 
@@ -43,6 +45,5 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TFormMain, FormMain);
-  Application.CreateForm(TFormInputPassword, FormInputPassword);
   Application.Run;
 end.

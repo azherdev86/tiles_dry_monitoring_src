@@ -129,17 +129,17 @@ begin
   if not Assigned(ComPortMessage)
     then Exit;
 
-  SetLength(DataBytes, 4);
+  SetLength(DataBytes, 2);
 
   DataBytes[0] := $00;
-  DataBytes[1] := $00;
-  DataBytes[2] := $00;
-  DataBytes[3] := $0A;
+  DataBytes[1] := $0A;
 
   ComPortMessage.LoadDataBytes(DataBytes);
   ComPortMessage.DeviceId  := FBoxNumber;
 //  ComPortMessage.DebugDeviceId := FBoxNumber;
-  ComPortMessage.CommandId := $03;
+  ComPortMessage.CommandId := $04;
+  ComPortMessage.MSBRegisterAddr := $03;
+  ComPortMessage.LSBRegisterAddr := $E8;
 
   ComPortMessage.Priority  := mpNormal;
 
@@ -166,7 +166,7 @@ begin
 //  if ComPortMessage.DeviceId <> FBoxNumber
 //    then Exit;
 
-  if ComPortMessage.CommandId <> $03
+  if ComPortMessage.CommandId <> $04
     then Exit;
 
   MessageTime := ComPortMessage.RecievedTime;
@@ -379,17 +379,42 @@ var
   i : integer;
 
   Item : TMBox;
+
+  BoxesNumbers : array [0..19] of Byte;
 begin
   Reset;
 
   FBoxesCount := BOXES_COUNT;
+
+  BoxesNumbers[0] := 11;
+  BoxesNumbers[1] := 12;
+  BoxesNumbers[2] := 21;
+  BoxesNumbers[3] := 22;
+  BoxesNumbers[4] := 31;
+  BoxesNumbers[5] := 32;
+  BoxesNumbers[6] := 41;
+  BoxesNumbers[7] := 42;
+  BoxesNumbers[8] := 51;
+  BoxesNumbers[9] := 52;
+  BoxesNumbers[10] := 61;
+  BoxesNumbers[11] := 62;
+  BoxesNumbers[12] := 71;
+  BoxesNumbers[13] := 72;
+  BoxesNumbers[14] := 81;
+  BoxesNumbers[15] := 82;
+  BoxesNumbers[16] := 91;
+  BoxesNumbers[17] := 92;
+  BoxesNumbers[18] := 101;
+  BoxesNumbers[19] := 102;
+
+  //11, 12, 21, 22, 31, 32,
 
   for i := 0 to FBoxesCount - 1 do
   begin
   //  if i <> 9
   //    then Continue; //На время отладки, пока на руках только одна коробка с № 10
 
-    Item := TMBox.Create(i+1);
+    Item := TMBox.Create(BoxesNumbers[i]);
 
     Item := AddItem(Item);
 

@@ -26,6 +26,7 @@ object FormInputPassword: TFormInputPassword
     EditLabel.Caption = 'Input admin password to continue:'
     PasswordChar = '*'
     TabOrder = 0
+    OnKeyDown = LabeledEditPasswordKeyDown
   end
   object ButtonOk: TButton
     Left = 32
