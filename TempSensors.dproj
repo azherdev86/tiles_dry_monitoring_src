@@ -48,6 +48,25 @@
     <DCCReference Include="CEventLog.pas" />
     <DCCReference Include="CGraph.pas" />
     <DCCReference Include="CIncomingComPortMessage.pas" />
+    <DCCReference Include="Clases\CEventLog.pas" />
+    <DCCReference Include="Clase\CEventLog.pas" />
+    <DCCReference Include="Classes\CBasicComPortMessage.pas" />
+    <DCCReference Include="Classes\CBoxes.pas" />
+    <DCCReference Include="Classes\CController.pas" />
+    <DCCReference Include="Classes\CEventLog.pas" />
+    <DCCReference Include="Classes\CGraph.pas" />
+    <DCCReference Include="Classes\CIncomingComPortMessage.pas" />
+    <DCCReference Include="Classes\COutgoingComPortMessage.pas" />
+    <DCCReference Include="Classes\CProgramGraphSettings.pas" />
+    <DCCReference Include="Classes\CProgramSettings.pas" />
+    <DCCReference Include="Classes\CRows.pas" />
+    <DCCReference Include="Classes\CTempValues.pas" />
+    <DCCReference Include="Classes\CTempValuesBuffer.pas" />
+    <DCCReference Include="Classe\CEventLog.pas" />
+    <DCCReference Include="Class\CEventLog.pas" />
+    <DCCReference Include="Clas\CEventLog.pas" />
+    <DCCReference Include="Cla\CEventLog.pas" />
+    <DCCReference Include="Cl\CEventLog.pas" />
     <DCCReference Include="COutgoingComPortMessage.pas" />
     <DCCReference Include="CProgramGraphSettings.pas" />
     <DCCReference Include="CProgramSettings.pas" />
@@ -55,6 +74,7 @@
     <DCCReference Include="CRows.pas" />
     <DCCReference Include="CTempValues.pas" />
     <DCCReference Include="CTempValuesBuffer.pas" />
+    <DCCReference Include="C\CEventLog.pas" />
     <DCCReference Include="DatabaseFrameWork\CBrowseFieldHints.pas" />
     <DCCReference Include="DatabaseFrameWork\CBrowseFieldImages.pas" />
     <DCCReference Include="DatabaseFrameWork\CBrowseFields.pas" />
@@ -73,8 +93,42 @@
     <DCCReference Include="FChangePassword.pas">
       <Form>FormChangePassword</Form>
     </DCCReference>
+    <DCCReference Include="FFChangePassword.pas">
+      <Form>FormChangePassword</Form>
+    </DCCReference>
+    <DCCReference Include="FFInputPassword.pas">
+      <Form>FormInputPassword</Form>
+    </DCCReference>
     <DCCReference Include="FInputPassword.pas">
       <Form>FormInputPassword</Form>
+    </DCCReference>
+    <DCCReference Include="FoFChangePassword.pas">
+      <Form>FormChangePassword</Form>
+    </DCCReference>
+    <DCCReference Include="FoFInputPassword.pas">
+      <Form>FormInputPassword</Form>
+    </DCCReference>
+    <DCCReference Include="ForFChangePassword.pas">
+      <Form>FormChangePassword</Form>
+    </DCCReference>
+    <DCCReference Include="ForFInputPassword.pas">
+      <Form>FormInputPassword</Form>
+    </DCCReference>
+    <DCCReference Include="FormFChangePassword.pas">
+      <Form>FormChangePassword</Form>
+    </DCCReference>
+    <DCCReference Include="FormFInputPassword.pas">
+      <Form>FormInputPassword</Form>
+    </DCCReference>
+    <DCCReference Include="FormsFChangePassword.pas">
+      <Form>FormChangePassword</Form>
+    </DCCReference>
+    <DCCReference Include="FormsFInputPassword.pas">
+      <Form>FormInputPassword</Form>
+    </DCCReference>
+    <DCCReference Include="Forms\CEventLog.pas" />
+    <DCCReference Include="Forms\FChangePassword.pas">
+      <Form>FormChangePassword</Form>
     </DCCReference>
     <DCCReference Include="Forms\FEventlogs.pas">
       <Form>FormEventLogs</Form>
@@ -85,14 +139,33 @@
     <DCCReference Include="Forms\FGraphHistory.pas">
       <Form>FormGraphHistory</Form>
     </DCCReference>
+    <DCCReference Include="Forms\FInputPassword.pas">
+      <Form>FormInputPassword</Form>
+    </DCCReference>
     <DCCReference Include="Forms\FMain.pas">
       <Form>FormMain</Form>
     </DCCReference>
     <DCCReference Include="Forms\FTemperatureRanges.pas">
       <Form>FormTemperatureRanges</Form>
     </DCCReference>
+    <DCCReference Include="ForsFInputPassword.pas">
+      <Form>FormInputPassword</Form>
+    </DCCReference>
     <DCCReference Include="LApplicationGlobals.pas" />
     <DCCReference Include="LHash.pas" />
+    <DCCReference Include="LibLApplicationGlobals.pas" />
+    <DCCReference Include="LibraLApplicationGlobals.pas" />
+    <DCCReference Include="LibrarieLApplicationGlobals.pas" />
+    <DCCReference Include="LibrariesLApplicationGlobals.pas" />
+    <DCCReference Include="Libraries\LApplicationGlobals.pas" />
+    <DCCReference Include="Libraries\LHash.pas" />
+    <DCCReference Include="Libraries\LUtils.pas" />
+    <DCCReference Include="Libraries\uTDurationProcess.pas" />
+    <DCCReference Include="LibrariLApplicationGlobals.pas" />
+    <DCCReference Include="LibrarLApplicationGlobals.pas" />
+    <DCCReference Include="LibrLApplicationGlobals.pas" />
+    <DCCReference Include="LiLApplicationGlobals.pas" />
+    <DCCReference Include="LLApplicationGlobals.pas" />
     <DCCReference Include="LUtils.pas" />
     <DCCReference Include="uTDurationProcess.pas" />
   </ItemGroup>

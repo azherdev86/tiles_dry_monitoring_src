@@ -1,4 +1,4 @@
-unit FEventlogs;
+unit FEventLogs;
 
 interface
 
