@@ -89,7 +89,7 @@ type
 implementation
 
 uses SysUtils, LApplicationGlobals, CTempValuesBuffer, Types,
-     FMain, CBasicComPortMessage;
+     FMain, CBasicComPortMessage, CEventLog;
 
 ///////////////////////TMConveyor//////////////////////////////////
 
@@ -219,7 +219,7 @@ begin
 
   DataBytes[0] := $00;
 
-  case FSignalMode of
+  case SignalMode of
     smEnabled:  DataBytes[1] := $01;  //включение сигнализации
     smDisabled: DataBytes[1] := $00;  //отключение сигнализации
   end;
@@ -438,12 +438,13 @@ begin
                   then
                     begin
                       Conveyor.HighLight(section_number);
-                      if FSignalMode = smDisabled
+                      if SignalMode = smDisabled
                         then
                           begin
-                            FSignalMode := smEnabled; //Здесь должно инициироваться включение сигнализации
-                            FormMain.WriteLog('Включена сигнализация.');
+                            SignalMode := smEnabled; //Включение сигнализации
+                            ApplicationEventLog.WriteLog(elSignalOn, 'Floor: ' + IntToStr(conveyor_number) + '; section: ' + IntToStr(section_number));
                           end;
+
                     end;
               end;
         end;
@@ -496,11 +497,11 @@ begin
         if Conveyor.WorkMode = cwmWork
             then
               begin
-                if (not Conveyor.IsFailure) and (FSignalMode = smEnabled)
+                if (not Conveyor.IsFailure) and (SignalMode = smEnabled)
                   then
                     begin
-                      FSignalMode := smDisabled; //Здесь сигнализация должна выключаться
-                      FormMain.WriteLog('Выключена сигнализация. Конвейер');
+                      SignalMode := smDisabled; //Здесь сигнализация должна выключаться
+                      ApplicationEventLog.WriteLog(elSignalOff);
                     end;
               end;
     end;

@@ -32,7 +32,7 @@ type
     procedure SetTableRecordData(); override;
     procedure SetPKFieldValue(Value : variant); override;
 
-    procedure Reset(); virtual;
+    procedure Reset(); override;
 
   public
     function WriteLog(AEventLogType : TypeEventLogs; ADetails : string) : boolean; overload;

@@ -3035,7 +3035,7 @@ object FormMain: TFormMain
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000}
   end
-  object StatusBar1: TStatusBar
+  object StatusBar: TStatusBar
     Left = 0
     Top = 624
     Width = 1321
@@ -3050,61 +3050,9 @@ object FormMain: TFormMain
         Width = 200
       end
       item
-        Width = 150
-      end
-      item
         Text = 'Program version: 0.0.1'
         Width = 50
       end>
-  end
-  object MemoLogs: TMemo
-    Left = 480
-    Top = 592
-    Width = 506
-    Height = 76
-    Anchors = [akLeft, akTop, akBottom]
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 5
-    Visible = False
-  end
-  object Button7: TButton
-    Left = 262
-    Top = 560
-    Width = 209
-    Height = 29
-    Caption = 'RESET BASE'
-    TabOrder = 6
-    Visible = False
-    OnClick = Button7Click
-  end
-  object Button8: TButton
-    Left = 262
-    Top = 530
-    Width = 209
-    Height = 24
-    Caption = 'STOP/START'
-    TabOrder = 7
-    Visible = False
-    OnClick = Button8Click
-  end
-  object MemoInfo: TMemo
-    Left = 212
-    Top = 36
-    Width = 506
-    Height = 238
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 8
-    Visible = False
   end
   object TrackBarConveyor1: TTrackBar
     Left = 80
@@ -3112,18 +3060,8 @@ object FormMain: TFormMain
     Width = 89
     Height = 32
     Max = 1
-    TabOrder = 9
+    TabOrder = 5
     OnChange = TrackBarConveyor1Change
-  end
-  object Button1: TButton
-    Left = 262
-    Top = 595
-    Width = 209
-    Height = 23
-    Caption = 'GENERATE BASE'
-    TabOrder = 10
-    Visible = False
-    OnClick = Button1Click
   end
   object TrackBarConveyor2: TTrackBar
     Left = 81
@@ -3131,7 +3069,7 @@ object FormMain: TFormMain
     Width = 89
     Height = 32
     Max = 1
-    TabOrder = 11
+    TabOrder = 6
     OnChange = TrackBarConveyor2Change
   end
   object TrackBarConveyor3: TTrackBar
@@ -3140,7 +3078,7 @@ object FormMain: TFormMain
     Width = 89
     Height = 32
     Max = 1
-    TabOrder = 12
+    TabOrder = 7
     OnChange = TrackBarConveyor3Change
   end
   object TrackBarConveyor4: TTrackBar
@@ -3149,7 +3087,7 @@ object FormMain: TFormMain
     Width = 89
     Height = 32
     Max = 1
-    TabOrder = 13
+    TabOrder = 8
     OnChange = TrackBarConveyor4Change
   end
   object TrackBarConveyor5: TTrackBar
@@ -3158,7 +3096,7 @@ object FormMain: TFormMain
     Width = 89
     Height = 32
     Max = 1
-    TabOrder = 14
+    TabOrder = 9
     OnChange = TrackBarConveyor5Change
   end
   object TrackBarAllConveyors: TTrackBar
@@ -3167,7 +3105,7 @@ object FormMain: TFormMain
     Width = 89
     Height = 32
     Max = 1
-    TabOrder = 15
+    TabOrder = 10
     OnChange = TrackBarAllConveyorsChange
   end
   object BitBtnChangePassword: TBitBtn
@@ -3183,7 +3121,7 @@ object FormMain: TFormMain
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
-    TabOrder = 16
+    TabOrder = 11
     OnClick = BitBtnChangePasswordClick
     Glyph.Data = {
       96150000424D961500000000000036000000280000002F000000260000000100
@@ -3360,15 +3298,6 @@ object FormMain: TFormMain
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000}
   end
-  object Button2: TButton
-    Left = 32
-    Top = 544
-    Width = 193
-    Height = 89
-    Caption = 'Button2'
-    TabOrder = 17
-    OnClick = Button2Click
-  end
   object BitBtbExportToCSV: TBitBtn
     Left = 1088
     Top = 379
@@ -3382,7 +3311,7 @@ object FormMain: TFormMain
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
-    TabOrder = 18
+    TabOrder = 12
     OnClick = BitBtbExportToCSVClick
     Glyph.Data = {
       96150000424D961500000000000036000000280000002F000000260000000100
@@ -3559,8 +3488,16 @@ object FormMain: TFormMain
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000}
   end
+  object ButtonDebug: TButton
+    Left = 333
+    Top = 4
+    Width = 129
+    Height = 25
+    Caption = 'Debug'
+    TabOrder = 13
+    OnClick = ButtonDebugClick
+  end
   object TimerCreateComPortMessages: TTimer
-    Enabled = False
     Interval = 5000
     OnTimer = TimerCreateComPortMessagesTimer
     Left = 19

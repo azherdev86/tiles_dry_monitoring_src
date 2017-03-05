@@ -46,5 +46,7 @@
     <Transaction>2017.03.05 10:41:57.408.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\LUtils.pas</Transaction>
     <Transaction>2017.03.05 21:01:03.745.pas,F:\_programming\tempsensors\_sources\Forms\FEventHistory.pas=F:\_programming\tempsensors\_sources\Forms\FEventlogs.pas</Transaction>
     <Transaction>2017.03.05 21:01:03.745.dfm,F:\_programming\tempsensors\_sources\Forms\FEventHistory.dfm=F:\_programming\tempsensors\_sources\Forms\FEventlogs.dfm</Transaction>
+    <Transaction>2017.03.05 23:28:07.055.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\Forms\FDebugPanel.pas</Transaction>
+    <Transaction>2017.03.05 23:28:07.055.dfm,F:\_programming\tempsensors\_sources\Unit1.dfm=F:\_programming\tempsensors\_sources\Forms\FDebugPanel.dfm</Transaction>
   </Transactions>
 </BorlandProject>

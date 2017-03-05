@@ -59,7 +59,9 @@
     <DCCReference Include="Classes\COutgoingComPortMessage.pas" />
     <DCCReference Include="Classes\CProgramGraphSettings.pas" />
     <DCCReference Include="Classes\CProgramSettings.pas" />
+    <DCCReference Include="Classes\CProgramUserSettings.pas" />
     <DCCReference Include="Classes\CRows.pas" />
+    <DCCReference Include="Classes\CTempValueBuffers.pas" />
     <DCCReference Include="Classes\CTempValues.pas" />
     <DCCReference Include="Classes\CTempValuesBuffer.pas" />
     <DCCReference Include="Classe\CEventLog.pas" />
@@ -129,6 +131,9 @@
     <DCCReference Include="Forms\CEventLog.pas" />
     <DCCReference Include="Forms\FChangePassword.pas">
       <Form>FormChangePassword</Form>
+    </DCCReference>
+    <DCCReference Include="Forms\FDebugPanel.pas">
+      <Form>FormDebugPanel</Form>
     </DCCReference>
     <DCCReference Include="Forms\FEventlogs.pas">
       <Form>FormEventLogs</Form>

@@ -38,17 +38,12 @@ type
     BitBtnTemperatureRanges: TBitBtn;
     ButtonApplyFloorAxisSettings: TButton;
     Label19: TLabel;
-    StatusBar1: TStatusBar;
+    StatusBar: TStatusBar;
     ComPort: TComPort;
-    MemoLogs: TMemo;
     TimerComPortSendMessages: TTimer;
-    Button7: TButton;
-    Button8: TButton;
     TimerUpdateInfo: TTimer;
-    MemoInfo: TMemo;
     ImageGraphLegend: TImage;
     TrackBarConveyor1: TTrackBar;
-    Button1: TButton;
     LabelConveyor1Overlocking: TLabel;
     LabelConveyor1Work: TLabel;
     TrackBarConveyor2: TTrackBar;
@@ -73,8 +68,8 @@ type
     Label33: TLabel;
     Label34: TLabel;
     BitBtnChangePassword: TBitBtn;
-    Button2: TButton;
     BitBtbExportToCSV: TBitBtn;
+    ButtonDebug: TButton;
     procedure FormCreate(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
     procedure PaintBoxMouseEnter(Sender: TObject);
@@ -91,14 +86,11 @@ type
     procedure TimerUpdateInfoTimer(Sender: TObject);
     procedure ComPortException(Sender: TObject; TComException: TComExceptions;
       ComportMessage: string; WinError: Int64; WinMessage: string);
-    procedure Button8Click(Sender: TObject);
     procedure ButtonApplyFloorAxisSettingsClick(Sender: TObject);
     procedure LabeledEditAxisMinYValueKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure LabeledEditAxisMaxYValueKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure Button7Click(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure TrackBarConveyor5Change(Sender: TObject);
     procedure TrackBarConveyor4Change(Sender: TObject);
     procedure TrackBarConveyor3Change(Sender: TObject);
@@ -106,13 +98,22 @@ type
     procedure TrackBarConveyor1Change(Sender: TObject);
     procedure TrackBarAllConveyorsChange(Sender: TObject);
     procedure BitBtnChangePasswordClick(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
     procedure BitBtbExportToCSVClick(Sender: TObject);
+    procedure ButtonDebugClick(Sender: TObject);
   private
     { Private declarations }
-    StartTime : double;
+    FStartTime : double;
     FGraphMouseCoord : TPoint;
 
+    procedure DrawSeries();
+    function LoadSettings : boolean;
+    function SaveSettings : boolean;
+    procedure UpdateStatusBar;
+
+    function GraphMouseToGridCoord(AMouseCoord : TPoint; out AConveyorNumber, ASectionNumber : integer) : boolean;
+
+  public
+    { Public declarations }
     SentMessagesCount           : integer;
     ReSentMessagesCount         : integer;
     RecievedMessagesCount       : integer;
@@ -124,16 +125,6 @@ type
     ErrorTimeOutEndPacketCount  : integer;
     ErrorWrongCmdOrDeviceId     : integer;
     ErrorTimeOutSendPacketCount : integer;
-
-    procedure DrawSeries();
-    function LoadSettings : boolean;
-    function SaveSettings : boolean;
-
-    function GraphMouseToGridCoord(AMouseCoord : TPoint; out AConveyorNumber, ASectionNumber : integer) : boolean;
-
-  public
-    { Public declarations }
-    procedure WriteLog(AMessage : string);
   end;
 
 var
@@ -146,7 +137,8 @@ implementation
 uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventLogs,
      FGraphHistory, CBoxes, CBasicComPortMessage, CIncomingComPortMessage,
      COutgoingComPortMessage, DateUtils, CTableRecords, ZDataset, CTempValuesBuffer,
-     CController, FInputPassword, FChangePassword, FExportToCSV, CEventLog;
+     CController, FInputPassword, FChangePassword, FExportToCSV, CEventLog, LUtils,
+  FDebugPanel;
 
 
 procedure FreeAndNilMessage(out ComPortMessage : TMOutgoingComportMessage);
@@ -160,14 +152,11 @@ procedure TFormMain.FormCreate(Sender: TObject);
 begin
   FGraphMouseCoord := Point(0, 0);
 
-//  MemoLogs.Visible := True;
-//  MemoInfo.Visible := True;
   FormMain.WindowState := wsMaximized;
   FormMain.DoubleBuffered := TRUE;
   DrawSeries;
-  TimerCreateComPortMessages.Enabled := TRUE;
 
-  StartTime := Now;                 
+  FStartTime := Now;
 
   SentMessagesCount           := 0;
   ReSentMessagesCount         := 0;
@@ -184,6 +173,8 @@ begin
   LoadSettings;
 
   ComPort.Connected := TRUE;
+
+  UpdateStatusBar;
 end;
 
 procedure TFormMain.LabeledEditAxisMaxYValueKeyDown(Sender: TObject;
@@ -202,10 +193,6 @@ begin
   end;
 end;
 
-procedure TFormMain.WriteLog(AMessage : string);
-begin
-  MemoLogs.Lines.Add('[' + DateTimeToStr(Now, ApplicationFormatSettings) + ']: ' + AMessage);
-end;
 
 
 procedure TFormMain.PaintBoxClick(Sender: TObject);
@@ -295,33 +282,12 @@ begin
 end;
 
 procedure TFormMain.TimerUpdateInfoTimer(Sender: TObject);
-var
-  QueueCount : integer;
 begin
-  QueueCount := ApplicationComPortOutgoingMessages.GetCount;
-
-  MemoInfo.Clear;
-
-  MemoInfo.Lines.Add('Сообщений в очереди:' + #9 + IntToStr(QueueCount));
-  MemoInfo.Lines.Add('');
-  MemoInfo.Lines.Add('Отправлено сообщений:' + #9 + IntToStr(SentMessagesCount));
-  MemoInfo.Lines.Add('Получено сообщений:' + #9 + IntToStr(RecievedMessagesCount));
-  MemoInfo.Lines.Add('');
-  MemoInfo.Lines.Add('Получено пачек:' + #9 + #9 + IntToStr(RecievedPackCount));
-  MemoInfo.Lines.Add('Обработано пачек:' + #9 + IntToStr(ProceedPackCount));
-  MemoInfo.Lines.Add('');
-  MemoInfo.Lines.Add('Повторных отправок:' + #9 + #9 + IntToStr(ReSentMessagesCount));
-  MemoInfo.Lines.Add('ErrorCRCCount:' + #9 + #9 + #9 + IntToStr(ErrorCRCCount));
-  MemoInfo.Lines.Add('ErrorNoSendingMessageCount:' + #9 + IntToStr(ErrorNoSendingMessageCount));
-  MemoInfo.Lines.Add('ErrorBufferOverFlowCout:' + #9 + #9 + IntToStr(ErrorBufferOverFlowCout));
-  MemoInfo.Lines.Add('ErrorTimeOutEndPacketCount:' + #9 + IntToStr(ErrorTimeOutEndPacketCount));
-  MemoInfo.Lines.Add('ErrorWrongCmdOrDeviceId:' + #9 + #9 + IntToStr(ErrorWrongCmdOrDeviceId));
-  MemoInfo.Lines.Add('');
-  MemoInfo.Lines.Add('ErrorTimeOutSendPacketCount:' + #9 + IntToStr(ErrorTimeOutSendPacketCount));
-
   ApplicationController.CheckTemperatureRanges;
 
   DrawSeries;
+
+  UpdateStatusBar;
 end;
 
 procedure TFormMain.TrackBarAllConveyorsChange(Sender: TObject);
@@ -349,8 +315,20 @@ begin
   Conveyor := ApplicationController.GetItem('1');
 
   case TrackBarConveyor1.Position of
-    0 : Conveyor.WorkMode := cwmOverlocking;
-    1 : Conveyor.WorkMode := cwmWork;
+    0 :
+      begin
+        if Conveyor.WorkMode = cwmOverlocking
+          then Exit;
+
+        Conveyor.WorkMode := cwmOverlocking;
+      end;
+    1 :
+      begin
+        if Conveyor.WorkMode = cwmWork
+          then Exit;
+
+        Conveyor.WorkMode := cwmWork;
+      end;
   end;
 
   case Conveyor.WorkMode of
@@ -366,8 +344,20 @@ begin
   Conveyor := ApplicationController.GetItem('2');
 
   case TrackBarConveyor2.Position of
-    0 : Conveyor.WorkMode := cwmOverlocking;
-    1 : Conveyor.WorkMode := cwmWork;
+    0 :
+      begin
+        if Conveyor.WorkMode = cwmOverlocking
+          then Exit;
+
+        Conveyor.WorkMode := cwmOverlocking;
+      end;
+    1 :
+      begin
+        if Conveyor.WorkMode = cwmWork
+          then Exit;
+
+        Conveyor.WorkMode := cwmWork;
+      end;
   end;
 
   case Conveyor.WorkMode of
@@ -383,8 +373,20 @@ begin
   Conveyor := ApplicationController.GetItem('3');
 
   case TrackBarConveyor3.Position of
-    0 : Conveyor.WorkMode := cwmOverlocking;
-    1 : Conveyor.WorkMode := cwmWork;
+    0 :
+      begin
+        if Conveyor.WorkMode = cwmOverlocking
+          then Exit;
+
+        Conveyor.WorkMode := cwmOverlocking;
+      end;
+    1 :
+      begin
+        if Conveyor.WorkMode = cwmWork
+          then Exit;
+
+        Conveyor.WorkMode := cwmWork;
+      end;
   end;
 
   case Conveyor.WorkMode of
@@ -400,8 +402,20 @@ begin
   Conveyor := ApplicationController.GetItem('4');
 
   case TrackBarConveyor4.Position of
-    0 : Conveyor.WorkMode := cwmOverlocking;
-    1 : Conveyor.WorkMode := cwmWork;
+    0 :
+      begin
+        if Conveyor.WorkMode = cwmOverlocking
+          then Exit;
+
+        Conveyor.WorkMode := cwmOverlocking;
+      end;
+    1 :
+      begin
+        if Conveyor.WorkMode = cwmWork
+          then Exit;
+
+        Conveyor.WorkMode := cwmWork;
+      end;
   end;
 
   case Conveyor.WorkMode of
@@ -417,8 +431,20 @@ begin
   Conveyor := ApplicationController.GetItem('5');
 
   case TrackBarConveyor5.Position of
-    0 : Conveyor.WorkMode := cwmOverlocking;
-    1 : Conveyor.WorkMode := cwmWork;
+    0 :
+      begin
+        if Conveyor.WorkMode = cwmOverlocking
+          then Exit;
+
+        Conveyor.WorkMode := cwmOverlocking;
+      end;
+    1 :
+      begin
+        if Conveyor.WorkMode = cwmWork
+          then Exit;
+
+        Conveyor.WorkMode := cwmWork;
+      end;
   end;
 
   case Conveyor.WorkMode of
@@ -562,104 +588,6 @@ begin
   end;
 end;
 
-procedure TFormMain.Button1Click(Sender: TObject);
-var
-  TableRecord : TMTableRecord;
-  i, j : integer;
-  CurrentDateTime : TDateTime;
-begin
-  TableRecord := TMTableRecord.Create('TempValues');
-  try
-    CurrentDateTime := Now;
-
-    for i := 1 to 200 do
-      begin
-        for j := 10*24*60 downto 0 do
-        begin
-          TableRecord.FieldByName['TempValue'].Value := 140 + Random(25);
-          TableRecord.FieldByName['TempTime'].Value  := CurrentDateTime - j*(1/(24*60));
-          TableRecord.FieldByName['SensorId'].Value  := i;
-
-          TableRecord.AddRecord;
-        end;
-        Caption := IntToStr(i);
-        Application.ProcessMessages;
-      end;
-  finally
-    TableRecord.Free;
-  end;
-end;
-
-procedure TFormMain.Button2Click(Sender: TObject);
-begin
-  ApplicationController.SignalMode := smDisabled;
-end;
-
-procedure TFormMain.Button7Click(Sender: TObject);
-var
-  TableRecord : TMTableRecord;
-  i, j, k,
-  BoxNumber,
-  ConveyorNumber,
-  SectionNumber : integer;
-  SensorPosition,
-  SensorSide : string;
-begin
-  TableRecord := TMTableRecord.Create('TempValues');
-  try
-    TableRecord.DeleteRecordsAll;
-  finally
-    TableRecord.Free;
-  end;
-
-
-  TableRecord := TMTableRecord.Create('Sensors');
-  try
-    TableRecord.DeleteRecordsAll;
-  finally
-    TableRecord.Free;
-  end;
-
-  TableRecord := TMTableRecord.Create('Sensors');
-  try
-    for i := 0 to 19 do //Коробки
-      begin
-        for j := 0 to 4 do //Этажи
-          begin
-            BoxNumber      := i + 1;
-            ConveyorNumber := j + 1;
-            SectionNumber  := ((BoxNumber - 1) div 2) + 1;
-
-            if (BoxNumber mod 2) = 1
-              then SensorSide := 'Left'
-              else SensorSide := 'Right';
-
-            for k := 0 to 1 do
-              begin
-                if k = 0
-                  then SensorPosition := SensorSide + 'Bottom'
-                  else SensorPosition := SensorSide + 'Top';
-
-                TableRecord.FieldByName['BoxNumber'].Value      := BoxNumber;
-                TableRecord.FieldByName['ConveyorNumber'].Value := ConveyorNumber;
-                TableRecord.FieldByName['SectionNumber'].Value  := SectionNumber;
-                TableRecord.FieldByName['SensorPosition'].Value := SensorPosition;
-
-                TableRecord.AddRecord;
-              end;
-          end;
-      end;
-  finally
-    TableRecord.Free;
-  end;
-end;
-
-procedure TFormMain.Button8Click(Sender: TObject);
-begin
-  TimerComPortSendMessages.Enabled := not TimerComPortSendMessages.Enabled;
-  TimerCreateComPortMessages.Enabled := not TimerCreateComPortMessages.Enabled;
-end;
-
 procedure TFormMain.ButtonApplyFloorAxisSettingsClick(Sender: TObject);
 var
   MinYValue,
@@ -704,6 +632,13 @@ begin
   SaveSettings;
 
   PaintBox.Repaint;
+end;
+
+procedure TFormMain.ButtonDebugClick(Sender: TObject);
+begin
+  Application.CreateForm(TFormDebugPanel, FormDebugPanel);
+  FormDebugPanel.ShowModal;
+  FormDebugPanel.Free;
 end;
 
 procedure TFormMain.ComPortException(Sender: TObject;
@@ -834,30 +769,31 @@ begin
             0 :
               begin
                 Series.Color := clRed;
-//                Pair         := 'Top';
-                Pair := 'LeftTop';
+                Pair         := 'Top';
+//                Pair := 'LeftTop';
               end;
 
             1 :
               begin
                 Series.Color := clGreen;
-                Pair := 'LeftBottom';
-//                Pair         := 'Bottom';
+                Pair         := 'Bottom';
+//                Pair := 'LeftBottom';
+
               end;
 
             2 :
               begin
                 Series.Color := clBlue;
-                Pair := 'RightTop';
-//                Pair         := 'Left';
+//                Pair := 'RightTop';
+                Pair         := 'Left';
               end;
 
             3 :
               begin
                 Series.Color := clAqua;
-                Pair := 'RightBottom';
+//                Pair := 'RightBottom';
 //
-//                Pair         := 'Right';
+                Pair         := 'Right';
               end;
           end;
 
@@ -867,13 +803,7 @@ begin
               SectionNumber  := k + 1;
 
               if i <> 5
-                then
-                  begin
-                    TempValueBuffer := ApplicationTempBufferValues.GetItem(SectionNumber, ConveyorNumber, Pair);  //ApplicationTempBufferValues.GetAverage(SectionNumber, ConveyorNumber, Pair) //для всех этажей
-                    if Assigned(TempValueBuffer)
-                      then Value := TempValueBuffer.TempValue
-                      else Value := 0
-                  end
+                then Value := ApplicationTempBufferValues.GetAverage(SectionNumber, ConveyorNumber, Pair) //для всех этажей
                 else Value := ApplicationTempBufferValues.GetAverage(SectionNumber, Pair); //для осредненного графика
 
               Series.AddPoint(Value, k);
@@ -969,6 +899,13 @@ begin
   ApplicationProgramSettings.GraphSettings.AxisMaxYValue := MaxYValue;
 
   Result := ApplicationProgramSettings.SaveToInifile;
+end;
+
+procedure TFormMain.UpdateStatusBar;
+begin
+  StatusBar.Panels[0].Text := 'Current time: '    + DateTimeToStr(Now, ApplicationFormatSettings);
+  StatusBar.Panels[1].Text := 'Program uptime: '  + DateTimeToDHMSString(Now - FStartTime);
+  StatusBar.Panels[2].Text := 'Program version: ' + '1.0.0';
 end;
 
 function TFormMain.GraphMouseToGridCoord(AMouseCoord : TPoint; out AConveyorNumber, ASectionNumber : integer) : boolean;

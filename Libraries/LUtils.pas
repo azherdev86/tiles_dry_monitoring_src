@@ -5,10 +5,38 @@ interface
 function TimeToFirebirdString(const Date: TDateTime): string;
 function DateToFirebirdString(const Date: TDateTime): string;
 function DateTimeToFirebirdString(const Date: TDateTime): string;
+function DateTimeToDHMSString(DateTime : TDateTime) : string;
+
 
 implementation
 
 uses SysUtils;
+
+function DateTimeToDHMSString(DateTime : TDateTime) : string;
+var
+  ADay,
+  AHour,
+  AMinute,
+  ASecond,
+  AMilliSecond: Word;
+begin
+  Result := '';
+
+  DecodeTime(DateTime, AHour, AMinute, ASecond, AMilliSecond);
+  ADay  := Trunc(DateTime);
+
+  if ADay > 0
+    then Result := Result + IntToStr(ADay) + 'd. ';
+
+  if (AHour > 0) or (ADay > 0)
+    then Result := Result + IntToStr(AHour) + 'h. ';
+
+  if (AHour > 0) or (ADay > 0) or (AMinute > 0)
+    then Result := Result + IntToStr(AMinute) + 'm. ';
+
+  Result := Result + IntToStr(ASecond) + 's.';
+end;
+
 
 function TimeToFirebirdString(const Date: TDateTime): string;
 var
