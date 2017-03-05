@@ -4,7 +4,8 @@ interface
 
 uses CDataBaseStructure, ZConnection, ZDataset, SysUtils, CController,
      Controls, StdCtrls, CGraph, CBoxes, CIncomingComPortMessage,
-     COutgoingComPortMessage, CProgramSettings, CTempValuesBuffer;
+     COutgoingComPortMessage, CProgramSettings, CTempValuesBuffer,
+     CEventLog;
 
 procedure CreateGlobals;
 procedure UpdateGlobals;
@@ -23,6 +24,7 @@ var
   ApplicationProgramSettings         : TMProgramSettings;
   ApplicationTempBufferValues        : TMTempBufferValuesList; //Последние 200 значений
   ApplicationController              : TMController;
+  ApplicationEventLog                : TMEventLog;
 
   GLOBAL_DATABASE_TYPE : TMDatabaseType = dtFireBird;
 
@@ -85,6 +87,9 @@ begin
   if not ApplicationDataBaseStructure.LoadStructure
     then Exit;
 
+  ApplicationEventLog := TMEventLog.Create;
+  ApplicationEventLog.WriteLog(elProgramStart);
+
   ApplicationBoxes.Init;
   ApplicationController.Init;
 end;
@@ -92,6 +97,8 @@ end;
 
 procedure DestroyGlobals;
 begin
+  ApplicationEventLog.WriteLog(elProgramStop);
+  ApplicationEventLog.Free;
   ApplicationBoxes.Free;
   ApplicationComPortOutgoingMessages.Free;
   ApplicationComPortIncomingMessage.Free;

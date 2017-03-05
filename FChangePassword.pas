@@ -39,7 +39,7 @@ var
 
 implementation
 
-uses LApplicationGlobals, LHash;
+uses LApplicationGlobals, LHash, CEventLog;
 
 {$R *.dfm}
 
@@ -108,6 +108,8 @@ begin
   ApplicationProgramSettings.UserSettings.PasswordHash := Hash;
 
   ApplicationProgramSettings.SaveToInifile;
+
+  ApplicationEventLog.WriteLog(elChangePass);
 
   Close;
 end;

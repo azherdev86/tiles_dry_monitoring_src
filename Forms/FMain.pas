@@ -143,10 +143,10 @@ implementation
 
 {$R *.dfm}
 
-uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventHistory,
+uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventLogs,
      FGraphHistory, CBoxes, CBasicComPortMessage, CIncomingComPortMessage,
      COutgoingComPortMessage, DateUtils, CTableRecords, ZDataset, CTempValuesBuffer,
-     CController, FInputPassword, FChangePassword, FExportToCSV;
+     CController, FInputPassword, FChangePassword, FExportToCSV, CEventLog;
 
 
 procedure FreeAndNilMessage(out ComPortMessage : TMOutgoingComportMessage);
@@ -352,6 +352,11 @@ begin
     0 : Conveyor.WorkMode := cwmOverlocking;
     1 : Conveyor.WorkMode := cwmWork;
   end;
+
+  case Conveyor.WorkMode of
+    cwmOverlocking : ApplicationEventLog.WriteLog(elWorkModeOff, 'floor 1');
+    cwmWork        : ApplicationEventLog.WriteLog(elWorkModeOn , 'floor 1');
+  end;
 end;
 
 procedure TFormMain.TrackBarConveyor2Change(Sender: TObject);
@@ -363,6 +368,11 @@ begin
   case TrackBarConveyor2.Position of
     0 : Conveyor.WorkMode := cwmOverlocking;
     1 : Conveyor.WorkMode := cwmWork;
+  end;
+
+  case Conveyor.WorkMode of
+    cwmOverlocking : ApplicationEventLog.WriteLog(elWorkModeOff, 'floor 2');
+    cwmWork        : ApplicationEventLog.WriteLog(elWorkModeOn , 'floor 2');
   end;
 end;
 
@@ -376,6 +386,11 @@ begin
     0 : Conveyor.WorkMode := cwmOverlocking;
     1 : Conveyor.WorkMode := cwmWork;
   end;
+
+  case Conveyor.WorkMode of
+    cwmOverlocking : ApplicationEventLog.WriteLog(elWorkModeOff, 'floor 3');
+    cwmWork        : ApplicationEventLog.WriteLog(elWorkModeOn , 'floor 3');
+  end;
 end;
 
 procedure TFormMain.TrackBarConveyor4Change(Sender: TObject);
@@ -388,6 +403,11 @@ begin
     0 : Conveyor.WorkMode := cwmOverlocking;
     1 : Conveyor.WorkMode := cwmWork;
   end;
+
+  case Conveyor.WorkMode of
+    cwmOverlocking : ApplicationEventLog.WriteLog(elWorkModeOff, 'floor 4');
+    cwmWork        : ApplicationEventLog.WriteLog(elWorkModeOn , 'floor 4');
+  end;
 end;
 
 procedure TFormMain.TrackBarConveyor5Change(Sender: TObject);
@@ -399,6 +419,11 @@ begin
   case TrackBarConveyor5.Position of
     0 : Conveyor.WorkMode := cwmOverlocking;
     1 : Conveyor.WorkMode := cwmWork;
+  end;
+
+  case Conveyor.WorkMode of
+    cwmOverlocking : ApplicationEventLog.WriteLog(elWorkModeOff, 'floor 5');
+    cwmWork        : ApplicationEventLog.WriteLog(elWorkModeOn , 'floor 5');
   end;
 end;
 
@@ -518,9 +543,9 @@ end;
 
 procedure TFormMain.BitBtnEventHistoryClick(Sender: TObject);
 begin
-  Application.CreateForm(TFormEventHistory, FormEventHistory);
-  FormEventHistory.ShowModal;
-  FormEventHistory.Free;
+  Application.CreateForm(TFormEventLogs, FormEventLogs);
+  FormEventLogs.ShowModal;
+  FormEventLogs.Free;
 end;
 
 procedure TFormMain.BitBtnTemperatureRangesClick(Sender: TObject);

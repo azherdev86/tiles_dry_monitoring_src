@@ -22,7 +22,7 @@ uses
   uTDurationProcess in 'uTDurationProcess.pas',
   CGraph in 'CGraph.pas',
   FTemperatureRanges in 'Forms\FTemperatureRanges.pas' {FormTemperatureRanges},
-  FEventHistory in 'Forms\FEventHistory.pas' {FormEventHistory},
+  FEventlogs in 'Forms\FEventlogs.pas' {FormEventLogs},
   FGraphHistory in 'Forms\FGraphHistory.pas' {FormGraphHistory},
   CTempValues in 'CTempValues.pas',
   CBoxes in 'CBoxes.pas',
@@ -39,7 +39,8 @@ uses
   FChangePassword in 'FChangePassword.pas' {FormChangePassword},
   CProgramUserSettings in 'CProgramUserSettings.pas',
   FExportToCSV in 'Forms\FExportToCSV.pas' {FormExportToCSV},
-  LUtils in 'LUtils.pas';
+  LUtils in 'LUtils.pas',
+  CEventLog in 'CEventLog.pas';
 
 {$R *.res}
 

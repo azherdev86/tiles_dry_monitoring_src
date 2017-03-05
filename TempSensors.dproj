@@ -45,6 +45,7 @@
     <DCCReference Include="CBasicComPortMessage.pas" />
     <DCCReference Include="CBoxes.pas" />
     <DCCReference Include="CController.pas" />
+    <DCCReference Include="CEventLog.pas" />
     <DCCReference Include="CGraph.pas" />
     <DCCReference Include="CIncomingComPortMessage.pas" />
     <DCCReference Include="COutgoingComPortMessage.pas" />
@@ -75,8 +76,8 @@
     <DCCReference Include="FInputPassword.pas">
       <Form>FormInputPassword</Form>
     </DCCReference>
-    <DCCReference Include="Forms\FEventHistory.pas">
-      <Form>FormEventHistory</Form>
+    <DCCReference Include="Forms\FEventlogs.pas">
+      <Form>FormEventLogs</Form>
     </DCCReference>
     <DCCReference Include="Forms\FExportToCSV.pas">
       <Form>FormExportToCSV</Form>

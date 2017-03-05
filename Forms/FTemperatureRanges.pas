@@ -44,6 +44,14 @@ type
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonApplyClick(Sender: TObject);
   private
+    MaxValuesStart,
+    MinValuesStart,
+    MinValuesFinal,
+    MaxValuesFinal :  array [1..10] of integer;
+
+    procedure LoadStartRanges(); //для того чтобы в конце сравнить и понять какие значения поменялись
+    procedure LoadFinalRanges();
+    procedure CompareRanges();   //сравнивает диапазоны на момент загрузки, с тем, что на момент сохранения.
     function LoadSettings() : boolean;
     function SaveSettings() : boolean;
     function CheckValues()  : boolean;
@@ -61,7 +69,7 @@ implementation
 
 {$R *.dfm}
 
-uses LApplicationGlobals;
+uses LApplicationGlobals, CEventLog;
 
 procedure TFormTemperatureRanges.ButtonApplyClick(Sender: TObject);
 begin
@@ -69,6 +77,8 @@ begin
     then Exit;
 
   SaveSettings;
+  LoadFinalRanges;
+  CompareRanges;
   Close;
 end;
 
@@ -80,8 +90,101 @@ end;
 procedure TFormTemperatureRanges.FormCreate(Sender: TObject);
 begin
   LoadSettings;
+  LoadStartRanges;
 
   Position := poDesktopCenter;
+end;
+
+procedure TFormTemperatureRanges.LoadStartRanges();
+begin
+  MinValuesStart[1] := StrToIntDef(LabeledEditSection1MinYValue.Text, 0);
+  MaxValuesStart[1] := StrToIntDef(LabeledEditSection1MaxYValue.Text, 0);
+
+  MinValuesStart[2] := StrToIntDef(LabeledEditSection2MinYValue.Text, 0);
+  MaxValuesStart[2] := StrToIntDef(LabeledEditSection2MaxYValue.Text, 0);
+
+  MinValuesStart[3] := StrToIntDef(LabeledEditSection3MinYValue.Text, 0);
+  MaxValuesStart[3] := StrToIntDef(LabeledEditSection3MaxYValue.Text, 0);
+
+  MinValuesStart[4] := StrToIntDef(LabeledEditSection4MinYValue.Text, 0);
+  MaxValuesStart[4] := StrToIntDef(LabeledEditSection4MaxYValue.Text, 0);
+
+  MinValuesStart[5] := StrToIntDef(LabeledEditSection5MinYValue.Text, 0);
+  MaxValuesStart[5] := StrToIntDef(LabeledEditSection5MaxYValue.Text, 0);
+
+  MinValuesStart[6] := StrToIntDef(LabeledEditSection6MinYValue.Text, 0);
+  MaxValuesStart[6] := StrToIntDef(LabeledEditSection6MaxYValue.Text, 0);
+
+  MinValuesStart[7] := StrToIntDef(LabeledEditSection7MinYValue.Text, 0);
+  MaxValuesStart[7] := StrToIntDef(LabeledEditSection7MaxYValue.Text, 0);
+
+  MinValuesStart[8] := StrToIntDef(LabeledEditSection8MinYValue.Text, 0);
+  MaxValuesStart[8] := StrToIntDef(LabeledEditSection8MaxYValue.Text, 0);
+
+  MinValuesStart[9] := StrToIntDef(LabeledEditSection9MinYValue.Text, 0);
+  MaxValuesStart[9] := StrToIntDef(LabeledEditSection9MaxYValue.Text, 0);
+
+  MinValuesStart[10] := StrToIntDef(LabeledEditSection10MinYValue.Text, 0);
+  MaxValuesStart[10] := StrToIntDef(LabeledEditSection10MaxYValue.Text, 0);
+end;
+
+procedure TFormTemperatureRanges.LoadFinalRanges();
+begin
+  MinValuesFinal[1] := StrToIntDef(LabeledEditSection1MinYValue.Text, 0);
+  MaxValuesFinal[1] := StrToIntDef(LabeledEditSection1MaxYValue.Text, 0);
+
+  MinValuesFinal[2] := StrToIntDef(LabeledEditSection2MinYValue.Text, 0);
+  MaxValuesFinal[2] := StrToIntDef(LabeledEditSection2MaxYValue.Text, 0);
+
+  MinValuesFinal[3] := StrToIntDef(LabeledEditSection3MinYValue.Text, 0);
+  MaxValuesFinal[3] := StrToIntDef(LabeledEditSection3MaxYValue.Text, 0);
+
+  MinValuesFinal[4] := StrToIntDef(LabeledEditSection4MinYValue.Text, 0);
+  MaxValuesFinal[4] := StrToIntDef(LabeledEditSection4MaxYValue.Text, 0);
+
+  MinValuesFinal[5] := StrToIntDef(LabeledEditSection5MinYValue.Text, 0);
+  MaxValuesFinal[5] := StrToIntDef(LabeledEditSection5MaxYValue.Text, 0);
+
+  MinValuesFinal[6] := StrToIntDef(LabeledEditSection6MinYValue.Text, 0);
+  MaxValuesFinal[6] := StrToIntDef(LabeledEditSection6MaxYValue.Text, 0);
+
+  MinValuesFinal[7] := StrToIntDef(LabeledEditSection7MinYValue.Text, 0);
+  MaxValuesFinal[7] := StrToIntDef(LabeledEditSection7MaxYValue.Text, 0);
+
+  MinValuesFinal[8] := StrToIntDef(LabeledEditSection8MinYValue.Text, 0);
+  MaxValuesFinal[8] := StrToIntDef(LabeledEditSection8MaxYValue.Text, 0);
+
+  MinValuesFinal[9] := StrToIntDef(LabeledEditSection9MinYValue.Text, 0);
+  MaxValuesFinal[9] := StrToIntDef(LabeledEditSection9MaxYValue.Text, 0);
+
+  MinValuesFinal[10] := StrToIntDef(LabeledEditSection10MinYValue.Text, 0);
+  MaxValuesFinal[10] := StrToIntDef(LabeledEditSection10MaxYValue.Text, 0);
+end;
+
+procedure TFormTemperatureRanges.CompareRanges();
+var
+  message_text,
+  tmp_str : string;
+  i : integer;
+begin
+  message_text := '';
+
+  for i := 1 to 10 do
+    begin
+      if (MinValuesStart[i] <> MinValuesFinal[i]) or
+         (MaxValuesStart[i] <> MaxValuesFinal[i])
+        then
+          begin
+            tmp_str := 'sec.' + IntToStr(i) + '.' +
+                       '(' + IntToStr(MinValuesStart[i]) + ',' + IntToStr(MaxValuesStart[i]) + ')=>' +
+                       '(' + IntToStr(MinValuesFinal[i]) + ',' + IntToStr(MaxValuesFinal[i]) + ');';
+
+            message_text := message_text + tmp_str;
+          end;
+    end;
+
+  if message_text <> ''
+    then ApplicationEventLog.WriteLog(elChangeRanges, message_text);
 end;
 
 function TFormTemperatureRanges.LoadSettings() : boolean;
