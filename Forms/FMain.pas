@@ -73,6 +73,8 @@ type
     Label33: TLabel;
     Label34: TLabel;
     BitBtnChangePassword: TBitBtn;
+    Button2: TButton;
+    BitBtbExportToCSV: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
     procedure PaintBoxMouseEnter(Sender: TObject);
@@ -104,6 +106,8 @@ type
     procedure TrackBarConveyor1Change(Sender: TObject);
     procedure TrackBarAllConveyorsChange(Sender: TObject);
     procedure BitBtnChangePasswordClick(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure BitBtbExportToCSVClick(Sender: TObject);
   private
     { Private declarations }
     StartTime : double;
@@ -142,7 +146,7 @@ implementation
 uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventHistory,
      FGraphHistory, CBoxes, CBasicComPortMessage, CIncomingComPortMessage,
      COutgoingComPortMessage, DateUtils, CTableRecords, ZDataset, CTempValuesBuffer,
-     CController, FInputPassword, FChangePassword;
+     CController, FInputPassword, FChangePassword, FExportToCSV;
 
 
 procedure FreeAndNilMessage(out ComPortMessage : TMOutgoingComportMessage);
@@ -164,7 +168,6 @@ begin
   TimerCreateComPortMessages.Enabled := TRUE;
 
   StartTime := Now;                 
-//  ComPort.Connected := TRUE;
 
   SentMessagesCount           := 0;
   ReSentMessagesCount         := 0;
@@ -179,6 +182,8 @@ begin
   ErrorTimeOutSendPacketCount := 0;
 
   LoadSettings;
+
+  ComPort.Connected := TRUE;
 end;
 
 procedure TFormMain.LabeledEditAxisMaxYValueKeyDown(Sender: TObject;
@@ -275,9 +280,6 @@ begin
     ComPortMessage := TMOutgoingComportMessage.Create;
 
     Box := ApplicationBoxes.GetItem(i);
-
-    if (Box.BoxNumber < 10) or (Box.BoxNumber = 20)
-      then Continue;
 
     if not Assigned(Box)
       then Continue;
@@ -451,22 +453,20 @@ begin
     then
       begin
         DeviceId := ApplicationComPortOutgoingMessages.LastSendingDeviceId;
-        if (DeviceId > $00) and (DeviceId <= $14)
-          then
-            begin
-              OutgoingMessage := TMOutgoingComportMessage.Create;
 
-              Box := ApplicationBoxes.GetItem(IntToStr(DeviceId));
+        OutgoingMessage := TMOutgoingComportMessage.Create;
 
-              if not Assigned(Box)
-                then Exit;
+        Box := ApplicationBoxes.GetItem(IntToStr(DeviceId));
 
-              if not Box.SaveToComPortMessage(OutgoingMessage)
-                then OutgoingMessage.Free;
+        if not Assigned(Box)
+          then Exit;
 
-              if Assigned(OutgoingMessage)
-                then ApplicationComPortOutgoingMessages.AddItem(OutgoingMessage);
-            end;
+        if not Box.SaveToComPortMessage(OutgoingMessage)
+          then OutgoingMessage.Free;
+
+        if Assigned(OutgoingMessage)
+          then ApplicationComPortOutgoingMessages.AddItem(OutgoingMessage);
+
       end;
 
   if not Assigned(OutgoingMessage) //Если сообщение не создано ранее, т.е. не идет повторная отправка
@@ -500,6 +500,13 @@ end;
 procedure TFormMain.BitBtnKeyBoardClick(Sender: TObject);
 begin
   ShellExecute(0,nil,'osk.exe',nil,nil,SW_SHOW);
+end;
+
+procedure TFormMain.BitBtbExportToCSVClick(Sender: TObject);
+begin
+  Application.CreateForm(TFormExportToCSV, FormExportToCSV);
+  FormExportToCSV.ShowModal;
+  FormExportToCSV.Free;
 end;
 
 procedure TFormMain.BitBtnChangePasswordClick(Sender: TObject);
@@ -556,6 +563,11 @@ begin
   finally
     TableRecord.Free;
   end;
+end;
+
+procedure TFormMain.Button2Click(Sender: TObject);
+begin
+  ApplicationController.SignalMode := smDisabled;
 end;
 
 procedure TFormMain.Button7Click(Sender: TObject);
@@ -719,8 +731,8 @@ begin
           then Exit;
 
         if (SendingComPortMessage.DeviceId = ApplicationComPortIncomingMessage.DeviceId) and
-           (ApplicationComPortIncomingMessage.CommandId = $03) and
-           (SendingComPortMessage.CommandId = $03)
+           (ApplicationComPortIncomingMessage.CommandId = $04) and
+           (SendingComPortMessage.CommandId = $04)
           then
             begin
               SendingComPortMessage.State := omsDelievered;
@@ -851,7 +863,12 @@ end;
 function TFormMain.LoadSettings : boolean;
 var
   MinYValueText,
-  MaxYValueText : string;
+  MaxYValueText,
+  Port,
+  BaudRate,
+  DataBits,
+  Parity,
+  FlowControl : string;
 
   Conveyor : TMConveyor;
 begin
@@ -893,6 +910,24 @@ begin
     cwmOverlocking: TrackBarConveyor5.Position := 0;
     cwmWork:        TrackBarConveyor5.Position := 1;
   end;
+
+  //Загрузка настроек COM-порта
+
+  Port := ApplicationProgramSettings.UserSettings.Port;
+  ComPort.Port := Port;
+
+  BaudRate := ApplicationProgramSettings.UserSettings.BaudRate;
+  ComPort.BaudRate := StrToBaudRate(BaudRate);
+
+  DataBits := ApplicationProgramSettings.UserSettings.DataBits;
+  ComPort.DataBits := StrToDataBits(DataBits);
+
+  Parity := ApplicationProgramSettings.UserSettings.Parity;
+  ComPort.Parity.Bits := StrToParity(Parity);
+
+  FlowControl := ApplicationProgramSettings.UserSettings.FlowControl;
+  ComPort.FlowControl.FlowControl:= StrToFlowControl(FlowControl);
+
 
   Result := TRUE;
 end;

@@ -37,7 +37,9 @@ uses
   FInputPassword in 'FInputPassword.pas' {FormInputPassword},
   LHash in 'LHash.pas',
   FChangePassword in 'FChangePassword.pas' {FormChangePassword},
-  CProgramUserSettings in 'CProgramUserSettings.pas';
+  CProgramUserSettings in 'CProgramUserSettings.pas',
+  FExportToCSV in 'Forms\FExportToCSV.pas' {FormExportToCSV},
+  LUtils in 'LUtils.pas';
 
 {$R *.res}
 

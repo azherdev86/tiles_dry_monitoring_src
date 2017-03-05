@@ -21,7 +21,7 @@ type
 
     procedure Reset();
 
-    function GetSensorId(ASensorIndex : integer) : integer;
+    function GetSensorId(AValueIndex : integer) : integer;
     function SaveToTempBufferValues() : boolean;
   public
     function SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean;
@@ -85,7 +85,7 @@ begin
 end;
 
 
-function TMBox.GetSensorId(ASensorIndex : integer) : integer;
+function TMBox.GetSensorId(AValueIndex : integer) : integer;
 var
   SensorPosition,
   SensorSide : string;
@@ -101,11 +101,11 @@ begin
     then SensorSide := 'Right'
     else SensorSide := 'Left';
 
-  if (ASensorIndex mod 2) = 0
+  if (AValueIndex mod 2) = 0
     then SensorPosition := SensorSide + 'Bottom'
     else SensorPosition := SensorSide + 'Top';
 
-  case ASensorIndex of
+  case AValueIndex of
     0, 1 : ConveyorNumber := 1;
     2, 3 : ConveyorNumber := 2;
     4, 5 : ConveyorNumber := 3;

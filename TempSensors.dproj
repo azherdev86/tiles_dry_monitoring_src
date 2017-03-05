@@ -78,6 +78,9 @@
     <DCCReference Include="Forms\FEventHistory.pas">
       <Form>FormEventHistory</Form>
     </DCCReference>
+    <DCCReference Include="Forms\FExportToCSV.pas">
+      <Form>FormExportToCSV</Form>
+    </DCCReference>
     <DCCReference Include="Forms\FGraphHistory.pas">
       <Form>FormGraphHistory</Form>
     </DCCReference>
@@ -89,6 +92,7 @@
     </DCCReference>
     <DCCReference Include="LApplicationGlobals.pas" />
     <DCCReference Include="LHash.pas" />
+    <DCCReference Include="LUtils.pas" />
     <DCCReference Include="uTDurationProcess.pas" />
   </ItemGroup>
 </Project>

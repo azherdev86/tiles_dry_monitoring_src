@@ -35,5 +35,14 @@
     <Transaction>2017.03.02 18:07:37.115.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\FChangePassword.pas</Transaction>
     <Transaction>2017.03.02 18:07:37.115.dfm,F:\_programming\tempsensors\_sources\Unit1.dfm=F:\_programming\tempsensors\_sources\FChangePassword.dfm</Transaction>
     <Transaction>2017.03.02 18:28:35.429.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\CProgramUserSettings.pas</Transaction>
+    <Transaction>2017.03.05 09:43:03.718.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\Forms\FExportToExcel.pas</Transaction>
+    <Transaction>2017.03.05 09:43:03.718.dfm,F:\_programming\tempsensors\_sources\Unit1.dfm=F:\_programming\tempsensors\_sources\Forms\FExportToExcel.dfm</Transaction>
+    <Transaction>2017.03.05 09:59:17.712.pas,F:\_programming\tempsensors\_sources\Forms\FExportToExcel.pas=F:\_programming\tempsensors\_sources\Forms\FExportToCSV.pas</Transaction>
+    <Transaction>2017.03.05 09:59:17.712.dfm,F:\_programming\tempsensors\_sources\Forms\FExportToExcel.dfm=F:\_programming\tempsensors\_sources\Forms\FExportToCSV.dfm</Transaction>
+    <Transaction>2017.03.05 10:40:37.987.pas,F:\_programming\tempsensors\_sources\Forms\FExportToCSV.pas=F:\_programming\tempsensors\_sources\LUtils.pas</Transaction>
+    <Transaction>2017.03.05 10:40:37.987.dfm,F:\_programming\tempsensors\_sources\Forms\FExportToCSV.dfm=F:\_programming\tempsensors\_sources\LUtils.dfm</Transaction>
+    <Transaction>2017.03.05 10:41:32.244.pas,F:\_programming\tempsensors\_sources\LUtils.pas=F:\_programming\tempsensors\_sources\Forms\FExportToCSV.pas</Transaction>
+    <Transaction>2017.03.05 10:41:32.244.dfm,F:\_programming\tempsensors\_sources\LUtils.dfm=F:\_programming\tempsensors\_sources\Forms\FExportToCSV.dfm</Transaction>
+    <Transaction>2017.03.05 10:41:57.408.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\LUtils.pas</Transaction>
   </Transactions>
 </BorlandProject>

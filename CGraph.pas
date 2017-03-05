@@ -1058,9 +1058,9 @@ begin
   DrawSelectedCell; //перерисовка выделенной области
   DrawGrid;            //координатная сетка
   DrawAverage;         //отрисовка линий со средними значениями
-  DrawSeries;          //отрисовка серий
-//  DrawRanges;          //отрисовка границ
+  DrawRanges;          //отрисовка границ
   DrawLegend;          //отрисовка легенды
+  DrawSeries;          //отрисовка серий
 
   PaintBox.Canvas.Draw(0, 0, FBitMap); //отрисовка BitMap на внешней Canvas
 end;

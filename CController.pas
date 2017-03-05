@@ -200,11 +200,6 @@ begin
 
   FSignalMode := ASignalMode;
 
-  case ASignalMode of
-    smEnabled: ;
-    smDisabled: ;
-  end;
-
   if not SaveToComPortMessage(ComPortMessage)
     then Exit;
 
