@@ -237,8 +237,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object LabelAxisMinYValue: TLabel
-    Left = 177
-    Top = 335
+    Left = 186
+    Top = 125
     Width = 12
     Height = 14
     Caption = '90'
@@ -3497,9 +3497,9 @@ object FormMain: TFormMain
     TabOrder = 13
     OnClick = ButtonDebugClick
   end
-  object TimerCreateComPortMessages: TTimer
+  object TimerCreateBoxMessages: TTimer
     Interval = 5000
-    OnTimer = TimerCreateComPortMessagesTimer
+    OnTimer = TimerCreateBoxMessagesTimer
     Left = 19
     Top = 14
   end
@@ -3520,11 +3520,11 @@ object FormMain: TFormMain
     TriggersOnRxChar = True
     OnRxChar = ComPortRxChar
     OnException = ComPortException
-    Left = 16
-    Top = 187
+    Left = 8
+    Top = 43
   end
   object TimerComPortSendMessages: TTimer
-    Interval = 10
+    Interval = 100
     OnTimer = TimerComPortSendMessagesTimer
     Left = 64
     Top = 15

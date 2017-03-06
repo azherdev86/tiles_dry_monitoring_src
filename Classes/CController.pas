@@ -64,10 +64,9 @@ type
     function GetCount : integer;
 
     ////////////////////////////////////////////////////////////
-    function CheckTemperatureRanges : boolean;
+    procedure CheckTemperatureRanges;
 
     function SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean;
-    function LoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean;  //может этот метод не нужен
 
     procedure Init;
 
@@ -81,6 +80,7 @@ type
 
     procedure SetSignalMode(ASignalMode : TypeSignalMode);
 
+    function IsFailure : boolean;
   public
     property SignalMode : TypeSignalMode read FSignalMode write SetSignalMode;
 
@@ -206,6 +206,34 @@ begin
   ApplicationComPortOutgoingMessages.AddItem(ComPortMessage);
 end;
 
+function TMController.IsFailure : boolean;
+var
+  i, count : integer;
+  Conveyor : TMConveyor;
+begin
+  Result := False;
+
+  count := GetCount;
+
+  for i := 0 to count - 1 do
+    begin
+      Conveyor := GetItem(i);
+
+      if not Assigned(Conveyor)
+        then Continue;
+
+      if not (Conveyor.WorkMode = cwmWork)
+        then Continue; //проверяем только конвейеры в рабочем режиме
+
+      if Conveyor.IsFailure
+        then
+          begin
+            Result := TRUE;
+            Break;
+          end;
+    end;
+end;
+
 function TMController.SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean;
 var
   DataBytes : TDynamicByteArray;
@@ -238,27 +266,6 @@ begin
   ComPortMessage.CreationTime := Now;
 
   Result := True;
-end;
-
-
-function TMController.LoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean;
-var
-  DataBytes : TDynamicByteArray;
-  MessageTime : TDateTime;
-
-  len : integer;
-begin
-  Result := False;
-
-  if not Assigned(ComPortMessage)
-    then Exit;
-
-  if ComPortMessage.CommandId <> $06
-    then Exit;
-
-  MessageTime := ComPortMessage.RecievedTime;
-
-  ComPortMessage.SaveDataBytes(DataBytes);
 end;
 
 
@@ -396,7 +403,7 @@ begin
 end;
 
 
-function TMController.CheckTemperatureRanges : boolean;
+procedure TMController.CheckTemperatureRanges;
 var
   i, j,
   conveyor_number,
@@ -416,7 +423,7 @@ begin
   conveyor_count := GetCount;
 
   for i := 0 to conveyor_count - 1 do
-    begin
+    begin //Проверяем для каждого конвейера
       conveyor_number := i + 1;
 
       Conveyor := GetItem(i);
@@ -425,20 +432,21 @@ begin
         then Continue;
 
       for j := 1 to 10 do
-        begin
+        begin //Для каждой секции в конвейере
           section_number := j;
 
+          //Проверяем. что среднее значение по любой из пар не выходит за пределы диапазона
           check_average := ApplicationTempBufferValues.CheckAverage(section_number, conveyor_number);
           if not check_average
-            then
+            then //Если выходит за границы
               begin
-                Conveyor.FailureSection(section_number);
+                Conveyor.FailureSection(section_number); //Фиксируем ошибку в секции
 
                 if Conveyor.WorkMode = cwmWork
-                  then
+                  then   //Если рабочий режим
                     begin
                       Conveyor.HighLight(section_number);
-                      if SignalMode = smDisabled
+                      if SignalMode = smDisabled  //Если сигнализация была выключена, то включаем
                         then
                           begin
                             SignalMode := smEnabled; //Включение сигнализации
@@ -452,15 +460,15 @@ begin
 
   conveyor_count := GetCount;
 
-  for i := 0 to conveyor_count - 1 do
-    begin
+  for i := 0 to conveyor_count - 1 do //Теперь нужно проверить секции, которые помечены ошибками
+    begin //Ошибки могут быть как полученные на этом шаге (в коде чуть выше), так и полученные на предыдущих шагах
       Conveyor := GetItem(i);
 
       if not Assigned(Conveyor)
         then Continue;
 
-      if not Conveyor.IsFailure
-        then Continue;
+      if not Conveyor.IsFailure //Если конвейер не находится в режиме ошибки
+        then Continue; //то переходим к следующему
 
       conveyor_number := Conveyor.Number;
 
@@ -488,22 +496,18 @@ begin
         end;
 
         for j := 0 to Length(defailure_array) - 1 do
-          begin
+          begin //Снимаем ошибки в определенных в предыдущем цикле секциях
             section_number := defailure_array[j];
 
             Conveyor.DeFailureSection(section_number);
           end;
 
-        if Conveyor.WorkMode = cwmWork
-            then
-              begin
-                if (not Conveyor.IsFailure) and (SignalMode = smEnabled)
-                  then
-                    begin
-                      SignalMode := smDisabled; //Здесь сигнализация должна выключаться
-                      ApplicationEventLog.WriteLog(elSignalOff);
-                    end;
-              end;
+        if (not IsFailure) and (SignalMode = smEnabled)
+          then  //Если ошибок нет, а сигнализация при это включена
+            begin
+              SignalMode := smDisabled; //Выключаем сигнализацию
+              ApplicationEventLog.WriteLog(elSignalOff);
+            end;
     end;
 end;
 

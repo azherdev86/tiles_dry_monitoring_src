@@ -17,12 +17,14 @@ type
     MemoInfo: TMemo;
     MemoLogs: TMemo;
     Timer: TTimer;
+    SendMessages: TButton;
     procedure ButtonStartStopTimersClick(Sender: TObject);
     procedure ButtonGenerateBaseClick(Sender: TObject);
     procedure ButtonResetBaseClick(Sender: TObject);
     procedure ButtonEnableSignalClick(Sender: TObject);
     procedure ButtonDisableSignalClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
+    procedure SendMessagesClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -148,7 +150,12 @@ end;
 procedure TFormDebugPanel.ButtonStartStopTimersClick(Sender: TObject);
 begin
   FormMain.TimerComPortSendMessages.Enabled := not FormMain.TimerComPortSendMessages.Enabled;
-  FormMain.TimerCreateComPortMessages.Enabled := not FormMain.TimerCreateComPortMessages.Enabled;
+  FormMain.TimerCreateBoxMessages.Enabled := not FormMain.TimerCreateBoxMessages.Enabled;
+end;
+
+procedure TFormDebugPanel.SendMessagesClick(Sender: TObject);
+begin
+  FormMain.TimerComPortSendMessagesTimer(FormMain);
 end;
 
 procedure TFormDebugPanel.TimerTimer(Sender: TObject);

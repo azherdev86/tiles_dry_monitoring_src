@@ -163,10 +163,7 @@ begin
   if not Assigned(ComPortMessage)
     then Exit;
 
-//  if ComPortMessage.DeviceId <> FBoxNumber
-//    then Exit;
-
-  if ComPortMessage.CommandId <> $04
+  if ComPortMessage.DeviceId <> FBoxNumber
     then Exit;
 
   MessageTime := ComPortMessage.RecievedTime;
@@ -225,7 +222,7 @@ var
   RecordSensors   : TMTableRecord;
 begin
   Result := TRUE;
-  
+
   count := FTempValuesList.GetCount;
 
   for i := 0 to count - 1 do

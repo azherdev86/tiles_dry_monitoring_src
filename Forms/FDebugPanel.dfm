@@ -98,9 +98,18 @@ object FormDebugPanel: TFormDebugPanel
     ParentFont = False
     TabOrder = 7
   end
+  object SendMessages: TButton
+    Left = 22
+    Top = 222
+    Width = 209
+    Height = 24
+    Caption = 'DISABLE SIGNAL'
+    TabOrder = 8
+    OnClick = SendMessagesClick
+  end
   object Timer: TTimer
     OnTimer = TimerTimer
     Left = 80
-    Top = 216
+    Top = 248
   end
 end

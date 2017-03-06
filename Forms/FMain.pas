@@ -10,7 +10,7 @@ uses
 type
   TFormMain = class(TForm)
     PaintBox: TPaintBox;
-    TimerCreateComPortMessages: TTimer;
+    TimerCreateBoxMessages: TTimer;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -81,7 +81,7 @@ type
     procedure BitBtnEventHistoryClick(Sender: TObject);
     procedure PaintBoxClick(Sender: TObject);
     procedure ComPortRxChar(Sender: TObject; Count: Integer);
-    procedure TimerCreateComPortMessagesTimer(Sender: TObject);
+    procedure TimerCreateBoxMessagesTimer(Sender: TObject);
     procedure TimerComPortSendMessagesTimer(Sender: TObject);
     procedure TimerUpdateInfoTimer(Sender: TObject);
     procedure ComPortException(Sender: TObject; TComException: TComExceptions;
@@ -244,7 +244,7 @@ begin
   ApplicationGraph.DrawGraph(PaintBox);
 end;
 
-procedure TFormMain.TimerCreateComPortMessagesTimer(Sender: TObject);
+procedure TFormMain.TimerCreateBoxMessagesTimer(Sender: TObject);
 var
   ComPortMessage : TMOutgoingComportMessage;
   Box : TMBox;
@@ -655,61 +655,66 @@ var
   Buffer : TDynamicByteArray;
 
   Box : TMBox;
-  SendingComPortMessage : TMOutgoingComportMessage;
+  SendingMessage : TMOutgoingComportMessage;
+  IncomingMessage : TMIncomingComportMessage;
 begin
   Inc(RecievedPackCount);
   SetLength(Buffer, Count);
   ComPort.Read(Buffer[0], Count);
 
-  if ApplicationComPortIncomingMessage.LoadFromBuffer(Buffer)
+  IncomingMessage := ApplicationComPortIncomingMessage; //Передаем значение по ссылке. Промежуточный объект используется для сокращения названия переменной
+
+  if IncomingMessage.LoadFromBuffer(Buffer)
     then Inc(ProceedPackCount);
 
-  SendingComPortMessage := ApplicationComPortOutgoingMessages.SendingComPortMessage;
+  SendingMessage := ApplicationComPortOutgoingMessages.SendingComPortMessage;
 
-//  ApplicationComPortIncomingMessage.DebugDeviceId := SendingComPortMessage.DebugDeviceId;
+  if not Assigned(SendingMessage)
+    then IncomingMessage.Error := imeNoSendingMessage;
 
-  if not Assigned(SendingComPortMessage)
-    then ApplicationComPortIncomingMessage.Error := imeNoSendingMessage;
-
-  if (ApplicationComPortIncomingMessage.State = imsRecieved) and
-     (not ApplicationComPortIncomingMessage.IsError)
-    then
+  if (IncomingMessage.State = imsRecieved) and (not IncomingMessage.IsError)
+    then //Если сообщение полностью получено и во время получения не возникло ошибок
       begin
         ApplicationComPortOutgoingMessages.LastMessageError := False;
-
         Inc(RecievedMessagesCount);
 
-        DeviceId := ApplicationComPortIncomingMessage.DeviceId;
-//        DeviceId := ApplicationComPortIncomingMessage.DebugDeviceId;
-
-        Box := ApplicationBoxes.GetItem(IntToStr(DeviceId));
-
-        if not Assigned(Box)
-          then Exit;
-
-        if not Box.LoadFromComPortMessage(ApplicationComPortIncomingMessage)
-          then Exit;
-
-        if (SendingComPortMessage.DeviceId = ApplicationComPortIncomingMessage.DeviceId) and
-           (ApplicationComPortIncomingMessage.CommandId = $04) and
-           (SendingComPortMessage.CommandId = $04)
-          then
+        case IncomingMessage.CommandId of
+          $03, $04 :
             begin
-              SendingComPortMessage.State := omsDelievered;
-              SendingComPortMessage.DelieveredTime := Now;
+              DeviceId := IncomingMessage.DeviceId;
 
-//              WriteLog('Данные сохранены. Сообщение доставлено: ' + SendingComPortMessage.MessageUid + '. Байт получено: ' + IntToStr(ApplicationComPortIncomingMessage.IncomingByteIndex));
-            end
-          else ApplicationComPortIncomingMessage.Error := imeWrongCmdOrDeviceId;
+              Box := ApplicationBoxes.GetItem(IntToStr(DeviceId));
 
+              if not Assigned(Box)
+                then Exit;
+
+              if not Box.LoadFromComPortMessage(IncomingMessage)
+                then Exit;
+
+              if (SendingMessage.DeviceId = IncomingMessage.DeviceId)
+                then
+                  begin
+                    SendingMessage.State := omsDelievered;
+                    SendingMessage.DelieveredTime := Now;
+                  end
+                else IncomingMessage.Error := imeWrongCmdOrDeviceId;
+            end;
+
+          $06      :
+            begin
+              //Вроде все ок, это был получен эхо-ответ от сигналки.
+              //Делать здесь ничего не надо. На всякий случай оставляю
+              //в коде здесь пустое место
+            end;
+        end;
       end;
 
-    if ApplicationComPortIncomingMessage.IsError
-    then
+    if IncomingMessage.IsError
+    then //Если полученное сообщение содержит информацию об ошибках
       begin
         ApplicationComPortOutgoingMessages.LastMessageError := TRUE;
 
-        case ApplicationComPortIncomingMessage.Error of
+        case IncomingMessage.Error of
           imeCRC :
             INC(ErrorCRCCount);
 
@@ -728,17 +733,15 @@ begin
       end;
 
 
-  if (ApplicationComPortIncomingMessage.State = imsRecieved) or
-      ApplicationComPortIncomingMessage.IsError
-    then
+  if (IncomingMessage.State = imsRecieved) or IncomingMessage.IsError
+    then //Если сообщение было получено или во время его получения возникли ошибки, удаляем его из очереди 
       begin
-        if Assigned(SendingComPortMessage)
-          then ApplicationComPortOutgoingMessages.DeleteItem(SendingComPortMessage.MessageUid);
+        if Assigned(SendingMessage)
+          then ApplicationComPortOutgoingMessages.DeleteItem(SendingMessage.MessageUid);
 
-        ApplicationComPortOutgoingMessages.SendingComPortMessage := nil;
-        SendingComPortMessage := nil;
+        ApplicationComPortOutgoingMessages.SendingComPortMessage := nil; //Убираем указатель, иначе при создании нового элемента он автоматически на него будет ссылаться. Проблем не оберешься
 
-        ApplicationComPortIncomingMessage.Clear;
+        IncomingMessage.Clear;
       end;
 end;
 
@@ -752,8 +755,6 @@ var
 
   SectionNumber,
   ConveyorNumber : integer;
-
-  TempValueBuffer : TMTempBufferValue;
 
   Value : single;
 begin

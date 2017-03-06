@@ -24,9 +24,7 @@ uses
   FInputPassword in 'Forms\FInputPassword.pas' {FormInputPassword},
   FMain in 'Forms\FMain.pas' {FormMain},
   FTemperatureRanges in 'Forms\FTemperatureRanges.pas' {FormTemperatureRanges},
-  CBasicComPortMessage in 'Classes\CBasicComPortMessage.pas',
   CBoxes in 'Classes\CBoxes.pas',
-  CController in 'Classes\CController.pas',
   CEventLog in 'Classes\CEventLog.pas',
   CGraph in 'Classes\CGraph.pas',
   CIncomingComPortMessage in 'Classes\CIncomingComPortMessage.pas',
@@ -41,8 +39,10 @@ uses
   LHash in 'Libraries\LHash.pas',
   LUtils in 'Libraries\LUtils.pas',
   uTDurationProcess in 'Libraries\uTDurationProcess.pas',
+  FDebugPanel in 'Forms\FDebugPanel.pas' {FormDebugPanel},
   LApplicationGlobals in 'Libraries\LApplicationGlobals.pas',
-  FDebugPanel in 'Forms\FDebugPanel.pas' {FormDebugPanel};
+  CBasicComPortMessage in 'Classes\CBasicComPortMessage.pas',
+  CController in 'Classes\CController.pas';
 
 {$R *.res}
 
