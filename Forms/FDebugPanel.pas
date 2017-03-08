@@ -110,12 +110,12 @@ end;
 
 procedure TFormDebugPanel.ButtonDisableSignalClick(Sender: TObject);
 begin
-  ApplicationController.SignalMode := smDisabled;
+  ApplicationController.GenerateSetSignalModeMessage(smDisabled);
 end;
 
 procedure TFormDebugPanel.ButtonEnableSignalClick(Sender: TObject);
 begin
-  ApplicationController.SignalMode := smEnabled;
+  ApplicationController.GenerateSetSignalModeMessage(smEnabled);
 end;
 
 procedure TFormDebugPanel.ButtonGenerateBaseClick(Sender: TObject);

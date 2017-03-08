@@ -2447,6 +2447,19 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
   end
+  object LabelSirenState: TLabel
+    Left = 511
+    Top = 17
+    Width = 78
+    Height = 14
+    Caption = 'Siren state: OFF'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
+  end
   object BitBtnKeyBoard: TBitBtn
     Left = 1088
     Top = 262
@@ -3489,19 +3502,41 @@ object FormMain: TFormMain
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000}
   end
   object ButtonDebug: TButton
-    Left = 333
-    Top = 4
+    Left = 247
+    Top = 8
     Width = 129
     Height = 25
     Caption = 'Debug'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 13
     OnClick = ButtonDebugClick
+  end
+  object ButtonSirenDisable: TButton
+    Left = 598
+    Top = 11
+    Width = 129
+    Height = 25
+    Caption = 'Disable'
+    Enabled = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 14
+    OnClick = ButtonSirenDisableClick
   end
   object TimerCreateBoxMessages: TTimer
     Interval = 5000
     OnTimer = TimerCreateBoxMessagesTimer
-    Left = 19
-    Top = 14
+    Left = 2
+    Top = 4
   end
   object ComPort: TComPort
     BaudRate = br9600
@@ -3520,19 +3555,25 @@ object FormMain: TFormMain
     TriggersOnRxChar = True
     OnRxChar = ComPortRxChar
     OnException = ComPortException
-    Left = 8
-    Top = 43
+    Left = 48
+    Top = 35
   end
   object TimerComPortSendMessages: TTimer
     Interval = 100
     OnTimer = TimerComPortSendMessagesTimer
-    Left = 64
-    Top = 15
+    Left = 63
+    Top = 4
   end
-  object TimerUpdateInfo: TTimer
+  object TimerRefreshView: TTimer
     Interval = 2000
-    OnTimer = TimerUpdateInfoTimer
-    Left = 112
-    Top = 15
+    OnTimer = TimerRefreshViewTimer
+    Left = 93
+    Top = 4
+  end
+  object TimerCreateCheckSignaModelMessages: TTimer
+    Interval = 2000
+    OnTimer = TimerCreateCheckSignaModelMessagesTimer
+    Left = 32
+    Top = 3
   end
 end

@@ -4,7 +4,8 @@ interface
 
 uses CIncomingComPortMessage, COutgoingComPortMessage, Classes, CRows;
 
-const CONVEYORS_COUNT = 5;
+const
+  CONVEYORS_COUNT = 5;
 
 type
   TypeConveyorWorkMode = (cwmNone,
@@ -26,7 +27,7 @@ type
     FOutOfRangeSections : TMRow;
 
     procedure Reset;
-    function IsFailure : boolean;
+    function getProblem : boolean;
     function GetWorkModeString : string;
 
   public
@@ -66,23 +67,31 @@ type
     ////////////////////////////////////////////////////////////
     procedure CheckTemperatureRanges;
 
-    function SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean;
+    procedure GenerateCheckSignalModeMessage(); //Отправка сообщения на запрос статуса сигнализации
+    procedure GenerateSetSignalModeMessage(ASignalMode : TypeSignalMode); //Отправка сообщения на включение/выключение сигнализации
+
+    function CheckSignalModeLoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean;
+    function SetSignalModeLoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean;
 
     procedure Init;
-
   private
     Items : TStringList;
 
     FSignalMode : TypeSignalMode;
+    FSignalEnabledForCurrentProblem : boolean; //флаг, который используется для того, чтобы сигнализация
+                                               //не включалась повторно после её выключения в рамках
+                                               //текущей проблемы
 
     procedure Reset;
     procedure DeHighLight();
 
-    procedure SetSignalMode(ASignalMode : TypeSignalMode);
+    function getProblem : boolean;
 
-    function IsFailure : boolean;
+    function ManageSignalSaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage) : boolean; //управление сигналом
+    function ModeSignalSaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)  : boolean; //запрос состояния сигнала
+
   public
-    property SignalMode : TypeSignalMode read FSignalMode write SetSignalMode;
+    property SignalMode : TypeSignalMode read FSignalMode;    //проверка статуса сигнализации
 
   end;
 
@@ -116,7 +125,7 @@ begin
   FOutOfRangeSections.Clear;
 end;
 
-function TMConveyor.IsFailure : boolean;
+function TMConveyor.getProblem : boolean;
 begin
   Result := FOutOfRangeSections.GetCount > 0;
 end;
@@ -189,83 +198,6 @@ begin
   end;
 
   Result := Value;
-end;
-
-
-procedure TMController.SetSignalMode(ASignalMode : TypeSignalMode);
-var
-  ComPortMessage : TMOutgoingComportMessage;
-begin
-  ComPortMessage := TMOutgoingComportMessage.Create;
-
-  FSignalMode := ASignalMode;
-
-  if not SaveToComPortMessage(ComPortMessage)
-    then Exit;
-
-  ApplicationComPortOutgoingMessages.AddItem(ComPortMessage);
-end;
-
-function TMController.IsFailure : boolean;
-var
-  i, count : integer;
-  Conveyor : TMConveyor;
-begin
-  Result := False;
-
-  count := GetCount;
-
-  for i := 0 to count - 1 do
-    begin
-      Conveyor := GetItem(i);
-
-      if not Assigned(Conveyor)
-        then Continue;
-
-      if not (Conveyor.WorkMode = cwmWork)
-        then Continue; //проверяем только конвейеры в рабочем режиме
-
-      if Conveyor.IsFailure
-        then
-          begin
-            Result := TRUE;
-            Break;
-          end;
-    end;
-end;
-
-function TMController.SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean;
-var
-  DataBytes : TDynamicByteArray;
-begin
-  Result := False;
-
-  if not Assigned(ComPortMessage)
-    then Exit;
-
-  SetLength(DataBytes, 2);
-
-  DataBytes[0] := $00;
-
-  case SignalMode of
-    smEnabled:  DataBytes[1] := $01;  //включение сигнализации
-    smDisabled: DataBytes[1] := $00;  //отключение сигнализации
-  end;
-
-  ComPortMessage.LoadDataBytes(DataBytes);
-  ComPortMessage.DeviceId  := $02;//FBoxNumber;
-
-  //  ComPortMessage.DebugDeviceId := FBoxNumber;
-  ComPortMessage.CommandId := $06;
-  ComPortMessage.MSBRegisterAddr := $00;
-  ComPortMessage.LSBRegisterAddr := $00;
-
-
-  ComPortMessage.Priority  := mpHigh;
-
-  ComPortMessage.CreationTime := Now;
-
-  Result := True;
 end;
 
 
@@ -374,6 +306,7 @@ begin
   end;
 
   FSignalMode := smNone;
+  FSignalEnabledForCurrentProblem := False;
 
   Items.Clear;
 end;
@@ -446,10 +379,13 @@ begin
                   then   //Если рабочий режим
                     begin
                       Conveyor.HighLight(section_number);
-                      if SignalMode = smDisabled  //Если сигнализация была выключена, то включаем
+                      if FSignalMode = smDisabled  //Если сигнализация была выключена, то включаем
                         then
                           begin
-                            SignalMode := smEnabled; //Включение сигнализации
+                            if not FSignalEnabledForCurrentProblem
+                              then GenerateSetSignalModeMessage(smEnabled);//Отправка запроса на включение. Статус изменяется при приеме
+
+                            ApplicationEventLog.WriteLog(elTempRangeOut, 'Floor: ' + IntToStr(conveyor_number) + '; section: ' + IntToStr(section_number));
                             ApplicationEventLog.WriteLog(elSignalOn, 'Floor: ' + IntToStr(conveyor_number) + '; section: ' + IntToStr(section_number));
                           end;
 
@@ -467,7 +403,7 @@ begin
       if not Assigned(Conveyor)
         then Continue;
 
-      if not Conveyor.IsFailure //Если конвейер не находится в режиме ошибки
+      if not Conveyor.getProblem //Если конвейер не находится в режиме ошибки
         then Continue; //то переходим к следующему
 
       conveyor_number := Conveyor.Number;
@@ -502,14 +438,193 @@ begin
             Conveyor.DeFailureSection(section_number);
           end;
 
-        if (not IsFailure) and (SignalMode = smEnabled)
+        if (not getProblem) and (FSignalMode = smEnabled)
           then  //Если ошибок нет, а сигнализация при это включена
             begin
-              SignalMode := smDisabled; //Выключаем сигнализацию
+              GenerateSetSignalModeMessage(smDisabled); //Добавляем сообщение о выключении сигнализации в очередь на отправку
+
+              ApplicationEventLog.WriteLog(elTempRangeIn);
               ApplicationEventLog.WriteLog(elSignalOff);
             end;
     end;
 end;
+
+procedure TMController.GenerateCheckSignalModeMessage();
+var
+  ComPortMessage : TMOutgoingComportMessage;
+begin
+  ComPortMessage := TMOutgoingComportMessage.Create;
+
+  if not ModeSignalSaveToComPortMessage(ComPortMessage)
+    then Exit;
+
+  ApplicationComPortOutgoingMessages.AddItem(ComPortMessage);
+end;
+
+
+procedure TMController.GenerateSetSignalModeMessage(ASignalMode : TypeSignalMode);
+var
+  ComPortMessage : TMOutgoingComportMessage;
+begin
+  ComPortMessage := TMOutgoingComportMessage.Create;
+
+  FSignalMode := ASignalMode;
+
+  if not ManageSignalSaveToComPortMessage(ComPortMessage)
+    then Exit;
+
+  ApplicationComPortOutgoingMessages.AddItem(ComPortMessage);
+end;
+
+function TMController.getProblem : boolean;
+var
+  i, count : integer;
+  Conveyor : TMConveyor;
+begin
+  Result := False;
+
+  count := GetCount;
+
+  for i := 0 to count - 1 do
+    begin
+      Conveyor := GetItem(i);
+
+      if not Assigned(Conveyor)
+        then Continue;
+
+      if not (Conveyor.WorkMode = cwmWork)
+        then Continue; //проверяем только конвейеры в рабочем режиме
+
+      if Conveyor.getProblem
+        then
+          begin
+            Result := TRUE;
+            Break;
+          end;
+    end;
+end;
+
+function TMController.ManageSignalSaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean;
+var
+  DataBytes : TDynamicByteArray;
+begin
+  Result := False;
+
+  if not Assigned(ComPortMessage)
+    then Exit;
+
+  SetLength(DataBytes, 2);
+
+  DataBytes[0] := $00;
+
+  case FSignalMode of
+    smEnabled:  DataBytes[1] := $01;  //включение сигнализации
+    smDisabled: DataBytes[1] := $00;  //отключение сигнализации
+  end;
+
+  ComPortMessage.LoadDataBytes(DataBytes);
+  ComPortMessage.DeviceId  := $02;//FBoxNumber;
+
+  //  ComPortMessage.DebugDeviceId := FBoxNumber;
+  ComPortMessage.CommandId := $06;
+  ComPortMessage.MSBRegisterAddr := $00;
+  ComPortMessage.LSBRegisterAddr := $00;
+
+
+  ComPortMessage.Priority  := mpHigh;
+
+  ComPortMessage.CreationTime := Now;
+
+  Result := True;
+end;
+
+function TMController.ModeSignalSaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)  : boolean; //запрос состояния сигнала
+var
+  DataBytes : TDynamicByteArray;
+begin
+  Result := False;
+
+  if not Assigned(ComPortMessage)
+    then Exit;
+
+  SetLength(DataBytes, 2);
+
+  DataBytes[0] := $00;
+  DataBytes[1] := $01;
+
+  ComPortMessage.LoadDataBytes(DataBytes);
+
+  ComPortMessage.DeviceId  := $02;
+  ComPortMessage.CommandId := $03;
+
+  ComPortMessage.MSBRegisterAddr := $00;
+  ComPortMessage.LSBRegisterAddr := $00;
+
+  ComPortMessage.Priority  := mpHigh;
+
+  ComPortMessage.CreationTime := Now;
+
+  Result := True;
+end;
+
+function TMController.CheckSignalModeLoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean;
+var
+  DataBytes : TDynamicByteArray;
+begin
+  Result := False;
+
+  if not Assigned(ComPortMessage)
+    then Exit;
+
+  if ComPortMessage.DeviceId <> $02
+    then Exit;
+
+  ComPortMessage.SaveDataBytes(DataBytes);
+
+  if Length(DataBytes) = 0
+    then Exit;
+
+  if DataBytes[0] = $00
+    then FSignalMode := smDisabled
+    else FSignalMode := smEnabled;
+
+  Result := True;
+end;
+
+
+function TMController.SetSignalModeLoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean;
+var
+  DataBytes : TDynamicByteArray;
+begin
+  Result := False;
+
+  if not Assigned(ComPortMessage)
+    then Exit;
+
+  if ComPortMessage.DeviceId <> $02
+    then Exit;
+
+  ComPortMessage.SaveDataBytes(DataBytes);
+
+  if Length(DataBytes) = 0
+    then Exit;
+
+  if DataBytes[1] = $00
+    then
+      begin
+        FSignalMode := smDisabled;
+        if not getProblem
+          then FSignalEnabledForCurrentProblem := False;
+      end
+    else
+      begin
+        FSignalMode := smEnabled;
+        FSignalEnabledForCurrentProblem := True;
+      end;
+
+  Result := True;
+end;
+
 
 
 end.

@@ -94,7 +94,7 @@
     </DCCReference>
     <DCCReference Include="Forms\FTemperatureRanges.pas">
       <Form>FormTemperatureRanges</Form>
-	</DCCReference> 
+    </DCCReference>
     <DCCReference Include="Libraries\LApplicationGlobals.pas" />
     <DCCReference Include="Libraries\LHash.pas" />
     <DCCReference Include="Libraries\LUtils.pas" />

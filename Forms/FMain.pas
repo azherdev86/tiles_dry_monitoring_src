@@ -41,7 +41,7 @@ type
     StatusBar: TStatusBar;
     ComPort: TComPort;
     TimerComPortSendMessages: TTimer;
-    TimerUpdateInfo: TTimer;
+    TimerRefreshView: TTimer;
     ImageGraphLegend: TImage;
     TrackBarConveyor1: TTrackBar;
     LabelConveyor1Overlocking: TLabel;
@@ -70,6 +70,9 @@ type
     BitBtnChangePassword: TBitBtn;
     BitBtbExportToCSV: TBitBtn;
     ButtonDebug: TButton;
+    ButtonSirenDisable: TButton;
+    LabelSirenState: TLabel;
+    TimerCreateCheckSignaModelMessages: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
     procedure PaintBoxMouseEnter(Sender: TObject);
@@ -83,7 +86,7 @@ type
     procedure ComPortRxChar(Sender: TObject; Count: Integer);
     procedure TimerCreateBoxMessagesTimer(Sender: TObject);
     procedure TimerComPortSendMessagesTimer(Sender: TObject);
-    procedure TimerUpdateInfoTimer(Sender: TObject);
+    procedure TimerRefreshViewTimer(Sender: TObject);
     procedure ComPortException(Sender: TObject; TComException: TComExceptions;
       ComportMessage: string; WinError: Int64; WinMessage: string);
     procedure ButtonApplyFloorAxisSettingsClick(Sender: TObject);
@@ -100,6 +103,8 @@ type
     procedure BitBtnChangePasswordClick(Sender: TObject);
     procedure BitBtbExportToCSVClick(Sender: TObject);
     procedure ButtonDebugClick(Sender: TObject);
+    procedure ButtonSirenDisableClick(Sender: TObject);
+    procedure TimerCreateCheckSignaModelMessagesTimer(Sender: TObject);
   private
     { Private declarations }
     FStartTime : double;
@@ -109,6 +114,7 @@ type
     function LoadSettings : boolean;
     function SaveSettings : boolean;
     procedure UpdateStatusBar;
+    procedure UpdateSignalMode;
 
     function GraphMouseToGridCoord(AMouseCoord : TPoint; out AConveyorNumber, ASectionNumber : integer) : boolean;
 
@@ -281,9 +287,16 @@ begin
 //  TimerCreateComPortMessages.Enabled := False;
 end;
 
-procedure TFormMain.TimerUpdateInfoTimer(Sender: TObject);
+procedure TFormMain.TimerCreateCheckSignaModelMessagesTimer(Sender: TObject);
+begin
+  ApplicationController.GenerateCheckSignalModeMessage;
+end;
+
+procedure TFormMain.TimerRefreshViewTimer(Sender: TObject);
 begin
   ApplicationController.CheckTemperatureRanges;
+
+  ButtonSirenDisable.Enabled := (ApplicationController.SignalMode = smEnabled);
 
   DrawSeries;
 
@@ -641,6 +654,12 @@ begin
   FormDebugPanel.Free;
 end;
 
+procedure TFormMain.ButtonSirenDisableClick(Sender: TObject);
+begin
+  ApplicationController.GenerateSetSignalModeMessage(smDisabled);
+  ApplicationEventLog.WriteLog(elSignalOff, 'by user');
+end;
+
 procedure TFormMain.ComPortException(Sender: TObject;
   TComException: TComExceptions; ComportMessage: string; WinError: Int64;
   WinMessage: string);
@@ -679,17 +698,28 @@ begin
         Inc(RecievedMessagesCount);
 
         case IncomingMessage.CommandId of
-          $03, $04 :
+          $03, $04 : //Получение информации с датчиков и статус сигнализации
             begin
-              DeviceId := IncomingMessage.DeviceId;
+              case IncomingMessage.CommandId of
+                $03 : //Статус сигнализации
+                  begin
+                    ApplicationController.CheckSignalModeLoadFromComPortMessage(IncomingMessage);
+                    UpdateSignalMode;
+                  end;
 
-              Box := ApplicationBoxes.GetItem(IntToStr(DeviceId));
+                $04 : //Данные с датчиков
+                  begin
+                    DeviceId := IncomingMessage.DeviceId;
 
-              if not Assigned(Box)
-                then Exit;
+                    Box := ApplicationBoxes.GetItem(IntToStr(DeviceId));
 
-              if not Box.LoadFromComPortMessage(IncomingMessage)
-                then Exit;
+                    if not Assigned(Box)
+                      then Exit;
+
+                    if not Box.LoadFromComPortMessage(IncomingMessage)
+                      then Exit;
+                  end;
+              end;
 
               if (SendingMessage.DeviceId = IncomingMessage.DeviceId)
                 then
@@ -700,12 +730,12 @@ begin
                 else IncomingMessage.Error := imeWrongCmdOrDeviceId;
             end;
 
-          $06      :
+          $06 : //Эхо-ответ от сигналки. Используется для подтверждения того, что статус поменялся
             begin
-              //Вроде все ок, это был получен эхо-ответ от сигналки.
-              //Делать здесь ничего не надо. На всякий случай оставляю
-              //в коде здесь пустое место
+              ApplicationController.SetSignalModeLoadFromComPortMessage(IncomingMessage);
+              UpdateSignalMode;
             end;
+
         end;
       end;
 
@@ -907,6 +937,27 @@ begin
   StatusBar.Panels[0].Text := 'Current time: '    + DateTimeToStr(Now, ApplicationFormatSettings);
   StatusBar.Panels[1].Text := 'Program uptime: '  + DateTimeToDHMSString(Now - FStartTime);
   StatusBar.Panels[2].Text := 'Program version: ' + '1.0.0';
+end;
+
+procedure TFormMain.UpdateSignalMode;
+begin
+  case ApplicationController.SignalMode of
+    smNone     :
+      begin
+        LabelSirenState.Caption := 'Siren state: ERROR';
+        ButtonSirenDisable.Enabled := False;
+      end;
+    smEnabled  :
+      begin
+        LabelSirenState.Caption := 'Siren state: ON';
+        ButtonSirenDisable.Enabled := TRUE;
+      end;
+    smDisabled :
+      begin
+        LabelSirenState.Caption := 'Siren state: OFF';
+        ButtonSirenDisable.Enabled := False;
+      end;
+  end;
 end;
 
 function TFormMain.GraphMouseToGridCoord(AMouseCoord : TPoint; out AConveyorNumber, ASectionNumber : integer) : boolean;
