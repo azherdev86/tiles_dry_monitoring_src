@@ -605,7 +605,6 @@ var
   color : TColor;
 
   Ratio : single;
-  text_x, text_y : integer;
 begin
   ser_count := FSeriesList.GetCount;
 
@@ -613,7 +612,7 @@ begin
 
   Ratio := CalculateRatio;
 
-  FBitMap.Canvas.Font.Size := 5;
+  FBitMap.Canvas.Font.Size := 6;
 
   for i := 0 to ser_count - 1 do
     begin
@@ -640,36 +639,29 @@ begin
             then y_int := FGridRowHeight*row + (FGridRowHeight - Round(Ratio*(tmpSeries.FloatPoints[j].Value - FAxis.MinY)))
             else Continue;
 
-          text_x := FGridColWidth*i;
           case color of
             clRed   :
               begin
                 x_int := FGridColWidth*j + 1*(FGridColWidth div 5);
-                text_y := FGridRowHeight*j + 1*(FGridRowHeight div 5);
               end;
             clGreen :
               begin
                 x_int := FGridColWidth*j + 2*(FGridColWidth div 5);
-                text_y := FGridRowHeight*j + 2*(FGridRowHeight div 5);
-
               end;
             clBlue  :
               begin
                 x_int := FGridColWidth*j + 3*(FGridColWidth div 5);
-                text_y := FGridRowHeight*j + 3*(FGridRowHeight div 5);
-
               end;
             clAqua  :
               begin
                 x_int := FGridColWidth*j + 4*(FGridColWidth div 5);
-                text_y := FGridRowHeight*j + 4*(FGridRowHeight div 5);
               end;
           end;
 
           DrawPoint(radius, x_int, y_int, color);
 
           FBitMap.Canvas.Brush.Color := clWhite;
-          FBitMap.Canvas.TextOut(x_int - 8, y_int - 15, FloatToStrF(tmpSeries.FloatPoints[j].Value, ffFixed, 4, 1));
+          FBitMap.Canvas.TextOut(x_int - 6, y_int - 12, FloatToStrF(tmpSeries.FloatPoints[j].Value, ffFixed, 4, 0, ApplicationFormatSettings));
         end;
 
     end;

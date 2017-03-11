@@ -16,7 +16,8 @@ type
   TypeIncomingMessageError = (imeNone,
                               imeCRC,
                               imeNoSendingMessage,
-                              imeWrongCmdOrDeviceId,
+                              imeSendingMessage, //ошибка в отправляемом сообщении
+                              imeWrongDeviceId,
                               imeBufferOverflow,
                               imeTimeoutEndPacket);
 
@@ -56,7 +57,7 @@ type
 
 implementation
 
-uses SysUtils, DateUtils;
+uses SysUtils, DateUtils, Dialogs;
 
 function TMIncomingComportMessage.IsError() : boolean;
 begin
@@ -215,8 +216,12 @@ begin
         AMessageBytes[1] := FCommandId;
         AMessageBytes[2] := FMessageLength;
 
-        for i := 3 to len - 1 do
-          AMessageBytes[i] := FDataBytes[i-3];
+        try
+          for i := 3 to len - 1 do
+            AMessageBytes[i] := FDataBytes[i-3];
+        except
+          ShowMessage('Len = ' + IntToStr(len) + '; FDataBytes = ' + IntToStr(Length(FDataBytes)));
+        end;
 
         AMessageBytes[len - 2] := FCRCHi;
         AMessageBytes[len - 1] := FCRCLo;
@@ -268,15 +273,20 @@ var
 
   MessageBytes : TDynamicByteArray;
 begin
+  Result := False;
+
   GenerateMessage(MessageBytes);
 
   len := Length(MessageBytes);
 
-  SetLength(MessageBytes, len - 2);
+  if (len - 2) > 0
+    then
+      begin
+        SetLength(MessageBytes, len - 2);
 
-  getCRC16(@MessageBytes[0], len - 2, Hi, Lo);
-
-  Result := (Hi = FCRCHi) and (Lo = FCRCLo);
+        getCRC16(@MessageBytes[0], len - 2, Hi, Lo);
+        Result := (Hi = FCRCHi) and (Lo = FCRCLo);
+      end;
 end;
 
 end.

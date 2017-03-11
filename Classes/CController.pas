@@ -386,7 +386,6 @@ begin
                               then GenerateSetSignalModeMessage(smEnabled);//Отправка запроса на включение. Статус изменяется при приеме
 
                             ApplicationEventLog.WriteLog(elTempRangeOut, 'Floor: ' + IntToStr(conveyor_number) + '; section: ' + IntToStr(section_number));
-                            ApplicationEventLog.WriteLog(elSignalOn, 'Floor: ' + IntToStr(conveyor_number) + '; section: ' + IntToStr(section_number));
                           end;
 
                     end;
@@ -438,13 +437,15 @@ begin
             Conveyor.DeFailureSection(section_number);
           end;
 
-        if (not getProblem) and (FSignalMode = smEnabled)
+        if (not getProblem) and ((FSignalMode = smEnabled) or (FSignalEnabledForCurrentProblem = True))
           then  //Если ошибок нет, а сигнализация при это включена
             begin
-              GenerateSetSignalModeMessage(smDisabled); //Добавляем сообщение о выключении сигнализации в очередь на отправку
+              if not (FSignalMode = smEnabled)
+                then GenerateSetSignalModeMessage(smDisabled) //Добавляем сообщение о выключении сигнализации в очередь на отправку
+                else FSignalEnabledForCurrentProblem := False; //Если сигнализация и так отключена, обнуляем флаг
 
               ApplicationEventLog.WriteLog(elTempRangeIn);
-              ApplicationEventLog.WriteLog(elSignalOff);
+
             end;
     end;
 end;
@@ -612,12 +613,14 @@ begin
   if DataBytes[1] = $00
     then
       begin
+        ApplicationEventLog.WriteLog(elSignalOff);
         FSignalMode := smDisabled;
         if not getProblem
           then FSignalEnabledForCurrentProblem := False;
       end
     else
       begin
+        ApplicationEventLog.WriteLog(elSignalOn);
         FSignalMode := smEnabled;
         FSignalEnabledForCurrentProblem := True;
       end;

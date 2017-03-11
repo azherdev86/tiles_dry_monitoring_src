@@ -17,7 +17,7 @@ type
     MemoInfo: TMemo;
     MemoLogs: TMemo;
     Timer: TTimer;
-    SendMessages: TButton;
+    ButtonGenerateBoxMessage: TButton;
     procedure ButtonStartStopTimersClick(Sender: TObject);
     procedure ButtonGenerateBaseClick(Sender: TObject);
     procedure ButtonResetBaseClick(Sender: TObject);
@@ -25,6 +25,7 @@ type
     procedure ButtonDisableSignalClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
     procedure SendMessagesClick(Sender: TObject);
+    procedure ButtonGenerateBoxMessageClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -147,10 +148,15 @@ begin
 
 end;
 
+procedure TFormDebugPanel.ButtonGenerateBoxMessageClick(Sender: TObject);
+begin
+  FormMain.TimerCreateBoxMessagesTimer(FormMain);
+end;
+
 procedure TFormDebugPanel.ButtonStartStopTimersClick(Sender: TObject);
 begin
   FormMain.TimerComPortSendMessages.Enabled := not FormMain.TimerComPortSendMessages.Enabled;
-  FormMain.TimerCreateBoxMessages.Enabled := not FormMain.TimerCreateBoxMessages.Enabled;
+//  FormMain.TimerCreateBoxMessages.Enabled := not FormMain.TimerCreateBoxMessages.Enabled;
 end;
 
 procedure TFormDebugPanel.SendMessagesClick(Sender: TObject);
@@ -166,23 +172,26 @@ begin
 
   MemoInfo.Clear;
 
-  MemoInfo.Lines.Add('Сообщений в очереди:' + #9 + IntToStr(QueueCount));
+  MemoInfo.Lines.Add('Messages in the queue:' + #9 + IntToStr(QueueCount));
   MemoInfo.Lines.Add('');
-  MemoInfo.Lines.Add('Отправлено сообщений:' + #9 + IntToStr(FormMain.SentMessagesCount));
-  MemoInfo.Lines.Add('Получено сообщений:' + #9 + IntToStr(FormMain.RecievedMessagesCount));
+  MemoInfo.Lines.Add('Messages sent:' + #9 + IntToStr(FormMain.SentMessagesCount));
+  MemoInfo.Lines.Add('Messages recieved:' + #9 + IntToStr(FormMain.RecievedMessagesCount));
   MemoInfo.Lines.Add('');
-  MemoInfo.Lines.Add('Получено пачек:' + #9 + #9 + IntToStr(FormMain.RecievedPackCount));
-  MemoInfo.Lines.Add('Обработано пачек:' + #9 + IntToStr(FormMain.ProceedPackCount));
+  MemoInfo.Lines.Add('Packs recieved:' + #9 + IntToStr(FormMain.RecievedPackCount));
+  MemoInfo.Lines.Add('Packs proceed:' + #9 + IntToStr(FormMain.ProceedPackCount));
   MemoInfo.Lines.Add('');
-  MemoInfo.Lines.Add('Повторных отправок:' + #9 + #9 + IntToStr(FormMain.ReSentMessagesCount));
-  MemoInfo.Lines.Add('ErrorCRCCount:' + #9 + #9 + #9 + IntToStr(FormMain.ErrorCRCCount));
-  MemoInfo.Lines.Add('ErrorNoSendingMessageCount:' + #9 + IntToStr(FormMain.ErrorNoSendingMessageCount));
-  MemoInfo.Lines.Add('ErrorBufferOverFlowCout:' + #9 + #9 + IntToStr(FormMain.ErrorBufferOverFlowCout));
-  MemoInfo.Lines.Add('ErrorTimeOutEndPacketCount:' + #9 + IntToStr(FormMain.ErrorTimeOutEndPacketCount));
-  MemoInfo.Lines.Add('ErrorWrongCmdOrDeviceId:' + #9 + #9 + IntToStr(FormMain.ErrorWrongCmdOrDeviceId));
+  MemoInfo.Lines.Add('Resent count:' + #9 + #9 + #9 + IntToStr(FormMain.ReSentMessagesCount));
   MemoInfo.Lines.Add('');
-  MemoInfo.Lines.Add('ErrorTimeOutSendPacketCount:' + #9 + IntToStr(FormMain.ErrorTimeOutSendPacketCount));
-
+  MemoInfo.Lines.Add('OutgoingErrorWrongAcknowledge:' + #9  + IntToStr(FormMain.OutgoingErrorWrongAcknowledge));
+  MemoInfo.Lines.Add('OutgoingErrorTimeOutCount:' + #9 + #9  + IntToStr(FormMain.OutgoingErrorTimeOutCount));
+  MemoInfo.Lines.Add('');
+  MemoInfo.Lines.Add('ErrorCRCCount:' + #9 + #9 + #9 + IntToStr(FormMain.IncomingErrorCRCCount));
+  MemoInfo.Lines.Add('ErrorNoSendingMessageCount:' + #9 + IntToStr(FormMain.IncomingErrorNoSendingMessageCount));
+  MemoInfo.Lines.Add('ErrorSendingMessageCount:' + #9 + #9 + IntToStr(FormMain.IncomingErrorSendingMessageCount));
+  MemoInfo.Lines.Add('ErrorBufferOverFlowCout:' + #9 + #9 + IntToStr(FormMain.IncomingErrorBufferOverFlowCout));
+  MemoInfo.Lines.Add('ErrorTimeOutEndPacketCount:' + #9 + IntToStr(FormMain.IncomingErrorTimeOutEndPacketCount));
+  MemoInfo.Lines.Add('ErrorWrongDeviceId:' + #9 + #9 + IntToStr(FormMain.IncomingErrorWrongDeviceIdCount));
+  MemoInfo.Lines.Add('');
 end;
 
 end.

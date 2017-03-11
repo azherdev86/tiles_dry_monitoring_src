@@ -3,7 +3,7 @@ object FormDebugPanel: TFormDebugPanel
   Top = 0
   BorderStyle = bsToolWindow
   Caption = 'FormDebugPanel'
-  ClientHeight = 387
+  ClientHeight = 406
   ClientWidth = 827
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -15,7 +15,7 @@ object FormDebugPanel: TFormDebugPanel
   Position = poDesktopCenter
   DesignSize = (
     827
-    387)
+    406)
   PixelsPerInch = 96
   TextHeight = 13
   object ButtonGenerateBase: TButton
@@ -29,7 +29,7 @@ object FormDebugPanel: TFormDebugPanel
   end
   object ButtonResetBase: TButton
     Left = 22
-    Top = 82
+    Top = 46
     Width = 209
     Height = 24
     Caption = 'RESET BASE'
@@ -38,7 +38,7 @@ object FormDebugPanel: TFormDebugPanel
   end
   object ButtonStartStopTimers: TButton
     Left = 22
-    Top = 52
+    Top = 87
     Width = 209
     Height = 24
     Caption = 'STOP/START TIMERS'
@@ -47,7 +47,7 @@ object FormDebugPanel: TFormDebugPanel
   end
   object ButtonSignalState: TButton
     Left = 22
-    Top = 112
+    Top = 173
     Width = 209
     Height = 24
     Caption = 'SIGNAL STATE'
@@ -55,7 +55,7 @@ object FormDebugPanel: TFormDebugPanel
   end
   object ButtonEnableSignal: TButton
     Left = 22
-    Top = 142
+    Top = 197
     Width = 209
     Height = 24
     Caption = 'ENABLE SIGNAL'
@@ -64,7 +64,7 @@ object FormDebugPanel: TFormDebugPanel
   end
   object ButtonDisableSignal: TButton
     Left = 22
-    Top = 172
+    Top = 221
     Width = 209
     Height = 24
     Caption = 'DISABLE SIGNAL'
@@ -75,7 +75,7 @@ object FormDebugPanel: TFormDebugPanel
     Left = 284
     Top = 8
     Width = 506
-    Height = 238
+    Height = 338
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -86,9 +86,9 @@ object FormDebugPanel: TFormDebugPanel
   end
   object MemoLogs: TMemo
     Left = 284
-    Top = 252
+    Top = 352
     Width = 506
-    Height = 127
+    Height = 43
     Anchors = [akLeft, akTop, akBottom]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -98,18 +98,18 @@ object FormDebugPanel: TFormDebugPanel
     ParentFont = False
     TabOrder = 7
   end
-  object SendMessages: TButton
+  object ButtonGenerateBoxMessage: TButton
     Left = 22
-    Top = 222
+    Top = 112
     Width = 209
     Height = 24
-    Caption = 'DISABLE SIGNAL'
+    Caption = 'GENERATE BOX MESSAGE'
     TabOrder = 8
-    OnClick = SendMessagesClick
+    OnClick = ButtonGenerateBoxMessageClick
   end
   object Timer: TTimer
     OnTimer = TimerTimer
     Left = 80
-    Top = 248
+    Top = 269
   end
 end

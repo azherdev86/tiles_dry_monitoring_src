@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, CPort, StdCtrls, TeEngine, Series, ExtCtrls, TeeProcs, Chart, Buttons,
-  ComCtrls;
+  ComCtrls, CIncomingComPortMessage, COutgoingComPortMessage;
 
 type
   TFormMain = class(TForm)
@@ -87,8 +87,6 @@ type
     procedure TimerCreateBoxMessagesTimer(Sender: TObject);
     procedure TimerComPortSendMessagesTimer(Sender: TObject);
     procedure TimerRefreshViewTimer(Sender: TObject);
-    procedure ComPortException(Sender: TObject; TComException: TComExceptions;
-      ComportMessage: string; WinError: Int64; WinMessage: string);
     procedure ButtonApplyFloorAxisSettingsClick(Sender: TObject);
     procedure LabeledEditAxisMinYValueKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -115,22 +113,32 @@ type
     function SaveSettings : boolean;
     procedure UpdateStatusBar;
     procedure UpdateSignalMode;
+    procedure ClearMessage(var SendingMessage : TMOutgoingComportMessage);
 
     function GraphMouseToGridCoord(AMouseCoord : TPoint; out AConveyorNumber, ASectionNumber : integer) : boolean;
+    function ProcessIncomingMessage(IncomingMessage : TMIncomingComportMessage) : boolean;
+    function ProcessIncomingMessageErrors(IncomingMessage : TMIncomingComportMessage) : boolean;
 
   public
     { Public declarations }
     SentMessagesCount           : integer;
-    ReSentMessagesCount         : integer;
     RecievedMessagesCount       : integer;
+
     RecievedPackCount           : integer;
     ProceedPackCount            : integer;
-    ErrorCRCCount               : integer;
-    ErrorNoSendingMessageCount  : integer;
-    ErrorBufferOverFlowCout     : integer;
-    ErrorTimeOutEndPacketCount  : integer;
-    ErrorWrongCmdOrDeviceId     : integer;
-    ErrorTimeOutSendPacketCount : integer;
+
+    ReSentMessagesCount         : integer;
+
+
+    IncomingErrorCRCCount                : integer;
+    IncomingErrorNoSendingMessageCount   : integer;
+    IncomingErrorSendingMessageCount     : integer;
+    IncomingErrorWrongDeviceIdCount      : integer;
+    IncomingErrorBufferOverFlowCout      : integer;
+    IncomingErrorTimeOutEndPacketCount   : integer;
+
+    OutgoingErrorWrongAcknowledge : integer;
+    OutgoingErrorTimeOutCount     : integer;
   end;
 
 var
@@ -141,18 +149,10 @@ implementation
 {$R *.dfm}
 
 uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventLogs,
-     FGraphHistory, CBoxes, CBasicComPortMessage, CIncomingComPortMessage,
-     COutgoingComPortMessage, DateUtils, CTableRecords, ZDataset, CTempValuesBuffer,
+     FGraphHistory, CBoxes, CBasicComPortMessage, DateUtils, CTableRecords, ZDataset, CTempValuesBuffer,
      CController, FInputPassword, FChangePassword, FExportToCSV, CEventLog, LUtils,
   FDebugPanel;
 
-
-procedure FreeAndNilMessage(out ComPortMessage : TMOutgoingComportMessage);
-begin
-  ApplicationComPortOutgoingMessages.DeleteItem(ComPortMessage.MessageUid);
-  ApplicationComPortOutgoingMessages.SendingComPortMessage := nil;
-  ComPortMessage := nil;
-end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
@@ -169,18 +169,28 @@ begin
   RecievedMessagesCount       := 0;
   RecievedPackCount           := 0;
   ProceedPackCount            := 0;
-  ErrorCRCCount               := 0;
-  ErrorNoSendingMessageCount  := 0;
-  ErrorBufferOverFlowCout     := 0;
-  ErrorTimeOutEndPacketCount  := 0;
-  ErrorWrongCmdOrDeviceId     := 0;
-  ErrorTimeOutSendPacketCount := 0;
+  IncomingErrorCRCCount                := 0;
+  IncomingErrorNoSendingMessageCount   := 0;
+  IncomingErrorSendingMessageCount     := 0;
+  IncomingErrorBufferOverFlowCout      := 0;
+  IncomingErrorTimeOutEndPacketCount   := 0;
+  IncomingErrorWrongDeviceIdCount      := 0;
+
+  OutgoingErrorWrongAcknowledge := 0;
+  OutgoingErrorTimeOutCount     := 0;
 
   LoadSettings;
 
-  ComPort.Connected := TRUE;
-
   UpdateStatusBar;
+
+  try
+    ComPort.Connected := TRUE;
+  except
+    ShowMessage('Couldn''t connect to COM port' + sLineBreak +
+                'Check device or program settings.');
+    ApplicationEventLog.WriteLog(elComPortError, 'Couldn''t connect to COM port during start application');
+    Application.Terminate;
+  end;
 end;
 
 procedure TFormMain.LabeledEditAxisMaxYValueKeyDown(Sender: TObject;
@@ -262,13 +272,10 @@ begin
   count := ApplicationBoxes.GetCount;
 
   if ApplicationComPortOutgoingMessages.GetCount >= ApplicationComPortOutgoingMessages.MaxMessagesCount
-    then Exit;
+    then Exit; //Если в очереди скопилось много неотправленных сообщений, то мы не создаем новые
 
 
-//  for j := 0 to 8 do
-//  begin
-
-  for i := 0 to count - 1 do
+  for i := 0 to {0} count - 1 do
   begin
     ComPortMessage := TMOutgoingComportMessage.Create;
 
@@ -289,6 +296,9 @@ end;
 
 procedure TFormMain.TimerCreateCheckSignaModelMessagesTimer(Sender: TObject);
 begin
+  if ApplicationComPortOutgoingMessages.GetCount > MAX_MESSAGES_COUNT
+    then Exit;
+  
   ApplicationController.GenerateCheckSignalModeMessage;
 end;
 
@@ -468,96 +478,77 @@ end;
 
 procedure TFormMain.TimerComPortSendMessagesTimer(Sender: TObject);
 var
-  OutgoingMessage : TMOutgoingComportMessage;
+  SendingMessage : TMOutgoingComportMessage;
   MessageBytes : TDynamicByteArray;
-
-  SentTime : TDateTime;
-  ms : integer;
-
-  Box : TMBox;
-
-  DeviceId : integer;
 begin
-  //!!!!!!!!!!!!!ОСТАВЛЯЮ НА ПОТОМ, Т.К. МОЖНО ЗАКОПАТЬСЯ!!!!!!!!!!!!!!!!!
-  //Нужно расписать сюда повторную отправку сообщений в случае
-  //Если при получении были ошибки. Сейчас эти ошибки фиксируются
-  //Но повторная отправка не происходит
+  SendingMessage := ApplicationComPortOutgoingMessages.SendingComPortMessage;
 
-  if ApplicationComPortOutgoingMessages.GetCount = 0
+  if (ApplicationComPortOutgoingMessages.GetCount = 0) and
+     (not Assigned(SendingMessage))
     then Exit; //Если нечего отсылать - выходим
 
-  OutgoingMessage := ApplicationComPortOutgoingMessages.SendingComPortMessage;
-
-  if Assigned(OutgoingMessage) and (not ApplicationComPortOutgoingMessages.LastMessageError)
-  //Если сообщение уже в отправке, а ошибок не зафиксировано, то проверям ТаймАут
+  if Assigned(SendingMessage) //Если есть отправленное сообщение
     then
       begin
-        try
-          SentTime := OutgoingMessage.SentTime;
-        except
-          SentTime := 0;
-          //одновременный доступ к объекту ComPortMessage из отправки сообщений
-          //и из получения сообщений
-        end;
-          ms := MilliSecondsBetween(SentTime, Now);
+        if SendingMessage.State = omsDelievered
+          then
+            if not SendingMessage.IsError
+              then ClearMessage(SendingMessage); //SendingMessage := nil
 
-          if ms < TIMEOUT_SEND_MESSAGE
-            then Exit //Если Таймаут еще не прошел, то выходим
-            else
-              begin //Если ТаймАут прошел, то помечаем сообщение соответствующим образом
-                OutgoingMessage.Error := omeTimeout;
+        if Assigned(SendingMessage)
+          then
+            begin
+              if not SendingMessage.IsError //Если нет ошибок, проверяем
+                then
+                  if not SendingMessage.IsTimeOutError //Проверка таймаута
+                    then Exit;
 
-                FreeAndNilMessage(OutgoingMessage);
-              end;
+              if SendingMessage.IsError
+                then
+                  begin
+                    case SendingMessage.Error of
+                      omeWrongAcknowledge : INC(OutgoingErrorWrongAcknowledge);
+                      omeTimeout          : INC(OutgoingErrorTimeOutCount);
+                    end;
+                  end;
+
+              if SendingMessage.SentTimeCounter < MESSAGE_RESEND_COUNT
+                then //Если есть зафиксированные ошибки, сообщение отправляется повторно
+                  begin
+                    SendingMessage.ResentPrepare;
+                    Inc(ReSentMessagesCount);
+                  end
+                else
+                  begin
+                    ClearMessage(SendingMessage);
+                    Exit;
+                  end;
+            end;
       end;
 
-  if ApplicationComPortOutgoingMessages.LastMessageError
-  //Если при обработке предыдущих сообщений возникли ошибки, то
-  //нужно эту отправку повторить (в дальнейшем нужен счетчик)
-    then
-      begin
-        DeviceId := ApplicationComPortOutgoingMessages.LastSendingDeviceId;
-
-        OutgoingMessage := TMOutgoingComportMessage.Create;
-
-        Box := ApplicationBoxes.GetItem(IntToStr(DeviceId));
-
-        if not Assigned(Box)
-          then Exit;
-
-        if not Box.SaveToComPortMessage(OutgoingMessage)
-          then OutgoingMessage.Free;
-
-        if Assigned(OutgoingMessage)
-          then ApplicationComPortOutgoingMessages.AddItem(OutgoingMessage);
-
-      end;
-
-  if not Assigned(OutgoingMessage) //Если сообщение не создано ранее, т.е. не идет повторная отправка
+  if not Assigned(SendingMessage) //Если сообщение не создано ранее, т.е. не идет повторная отправка
   //то мы берем сообщение из очереди в соответствии со временем создания и приоритетом
-    then OutgoingMessage := ApplicationComPortOutgoingMessages.GetMessageToSend;
+    then SendingMessage := ApplicationComPortOutgoingMessages.GetMessageToSend;
 
-  if not Assigned(OutgoingMessage)
+  if not Assigned(SendingMessage)
     then Exit;
 
-  OutgoingMessage.GenerateMessage(MessageBytes);
+  SendingMessage.GenerateMessage(MessageBytes);
 
-  if ComPort.Write(MessageBytes[0], Length(MessageBytes)) > 0
-    then
-      begin
-        OutgoingMessage.State           := omsWaitResponse;
-        OutgoingMessage.SentTime        := Now;
-//        OutgoingMessage.SentTimeCounter := OutgoingMessage.SentTimeCounter + 1;
+  try
+    if ComPort.Write(MessageBytes[0], Length(MessageBytes)) > 0
+      then
+        begin
+          SendingMessage.State           := omsWaitResponse;
+          SendingMessage.SentTime        := Now;
 
-        ApplicationComPortOutgoingMessages.SendingComPortMessage := OutgoingMessage;
+          ApplicationComPortOutgoingMessages.SendingComPortMessage := SendingMessage;
 
-//        WriteLog('Сообщение отправлено:' + OutgoingMessage.MessageUid + '. Коробка ' + IntToStr(OutgoingMessage.DebugDeviceId));
-
-        Inc(SentMessagesCount);
-
-        if OutgoingMessage.SentTimeCounter > 1
-          then Inc(ReSentMessagesCount);
-      end;
+          Inc(SentMessagesCount);
+        end;
+  except
+    ApplicationEventLog.WriteLog(elComPortError, 'Can''t send message to the device');
+  end;
 end;
 
 
@@ -660,24 +651,15 @@ begin
   ApplicationEventLog.WriteLog(elSignalOff, 'by user');
 end;
 
-procedure TFormMain.ComPortException(Sender: TObject;
-  TComException: TComExceptions; ComportMessage: string; WinError: Int64;
-  WinMessage: string);
-begin
-//  Inc(Excep);
-end;
-
 procedure TFormMain.ComPortRxChar(Sender: TObject; Count: Integer);
 var
-  DeviceId : Byte;
-
   Buffer : TDynamicByteArray;
 
-  Box : TMBox;
-  SendingMessage : TMOutgoingComportMessage;
   IncomingMessage : TMIncomingComportMessage;
+  SendingMessage : TMOutgoingComportMessage;
 begin
   Inc(RecievedPackCount);
+
   SetLength(Buffer, Count);
   ComPort.Read(Buffer[0], Count);
 
@@ -691,88 +673,20 @@ begin
   if not Assigned(SendingMessage)
     then IncomingMessage.Error := imeNoSendingMessage;
 
-  if (IncomingMessage.State = imsRecieved) and (not IncomingMessage.IsError)
-    then //Если сообщение полностью получено и во время получения не возникло ошибок
+  //Если сообщение полностью получено и во время получения не возникло ошибок
+  if (IncomingMessage.State = imsRecieved)
+    then ProcessIncomingMessage(IncomingMessage);
+
+  if IncomingMessage.IsError
+    then
       begin
-        ApplicationComPortOutgoingMessages.LastMessageError := False;
-        Inc(RecievedMessagesCount);
-
-        case IncomingMessage.CommandId of
-          $03, $04 : //Получение информации с датчиков и статус сигнализации
-            begin
-              case IncomingMessage.CommandId of
-                $03 : //Статус сигнализации
-                  begin
-                    ApplicationController.CheckSignalModeLoadFromComPortMessage(IncomingMessage);
-                    UpdateSignalMode;
-                  end;
-
-                $04 : //Данные с датчиков
-                  begin
-                    DeviceId := IncomingMessage.DeviceId;
-
-                    Box := ApplicationBoxes.GetItem(IntToStr(DeviceId));
-
-                    if not Assigned(Box)
-                      then Exit;
-
-                    if not Box.LoadFromComPortMessage(IncomingMessage)
-                      then Exit;
-                  end;
-              end;
-
-              if (SendingMessage.DeviceId = IncomingMessage.DeviceId)
-                then
-                  begin
-                    SendingMessage.State := omsDelievered;
-                    SendingMessage.DelieveredTime := Now;
-                  end
-                else IncomingMessage.Error := imeWrongCmdOrDeviceId;
-            end;
-
-          $06 : //Эхо-ответ от сигналки. Используется для подтверждения того, что статус поменялся
-            begin
-              ApplicationController.SetSignalModeLoadFromComPortMessage(IncomingMessage);
-              UpdateSignalMode;
-            end;
-
-        end;
+        ProcessIncomingMessageErrors(IncomingMessage);//Если полученное сообщение содержит информацию об ошибках
+        if Assigned(SendingMessage)
+          then SendingMessage.Error := omeWrongAcknowledge;
       end;
-
-    if IncomingMessage.IsError
-    then //Если полученное сообщение содержит информацию об ошибках
-      begin
-        ApplicationComPortOutgoingMessages.LastMessageError := TRUE;
-
-        case IncomingMessage.Error of
-          imeCRC :
-            INC(ErrorCRCCount);
-
-          imeNoSendingMessage :
-            Inc(ErrorNoSendingMessageCount);
-
-          imeBufferOverflow :
-            Inc(ErrorBufferOverFlowCout);
-
-          imeTimeoutEndPacket:
-            Inc(ErrorTimeOutEndPacketCount);
-
-          imeWrongCmdOrDeviceId:
-            Inc(ErrorWrongCmdOrDeviceId);
-        end;
-      end;
-
 
   if (IncomingMessage.State = imsRecieved) or IncomingMessage.IsError
-    then //Если сообщение было получено или во время его получения возникли ошибки, удаляем его из очереди 
-      begin
-        if Assigned(SendingMessage)
-          then ApplicationComPortOutgoingMessages.DeleteItem(SendingMessage.MessageUid);
-
-        ApplicationComPortOutgoingMessages.SendingComPortMessage := nil; //Убираем указатель, иначе при создании нового элемента он автоматически на него будет ссылаться. Проблем не оберешься
-
-        IncomingMessage.Clear;
-      end;
+    then IncomingMessage.Clear; //Есди сообщение получено или во время получения возникли ошибки
 end;
 
 procedure TFormMain.DrawSeries();
@@ -830,7 +744,7 @@ begin
 
           for k := 0 to 9 do //Секции
             begin
-              ConveyorNumber := i + 1;
+              ConveyorNumber := 5 - i;
               SectionNumber  := k + 1;
 
               if i <> 5
@@ -977,7 +891,117 @@ begin
   if (AConveyorNumber > 5) or (AConveyorNumber < 1)
     then Exit;
 
-  Result := TRUE;    
+  Result := TRUE;
+end;
+
+function TFormMain.ProcessIncomingMessage(IncomingMessage : TMIncomingComportMessage) : boolean;
+var
+  Box : TMBox;
+  DeviceId : Byte;
+  SendingMessage : TMOutgoingComportMessage;
+begin
+  Result := False;
+
+  if IncomingMessage.IsError
+    then Exit;
+
+  SendingMessage := ApplicationComPortOutgoingMessages.SendingComPortMessage;
+
+  if not Assigned(SendingMessage)
+    then Exit;
+
+  SendingMessage.IsTimeOutError; //Проверка таймаута
+
+  if SendingMessage.IsError
+    then
+      begin
+        IncomingMessage.Error := imeSendingMessage;
+
+        Exit;
+      end;
+
+  case IncomingMessage.CommandId of
+    $03, $04 : //Получение информации с датчиков и статус сигнализации
+      begin
+        case IncomingMessage.CommandId of
+          $03 : //Статус сигнализации
+            begin
+              ApplicationController.CheckSignalModeLoadFromComPortMessage(IncomingMessage);
+              UpdateSignalMode;
+            end;
+
+          $04 : //Данные с датчиков
+            begin
+              DeviceId := IncomingMessage.DeviceId;
+
+              Box := ApplicationBoxes.GetItem(IntToStr(DeviceId));
+
+              if not Assigned(Box)
+                then Exit;
+
+              if not Box.LoadFromComPortMessage(IncomingMessage)
+                then Exit;
+            end;
+        end;
+
+        if (SendingMessage.DeviceId = IncomingMessage.DeviceId)
+          then
+            begin
+              SendingMessage.State := omsDelievered;
+              SendingMessage.DelieveredTime := Now;
+            end
+          else IncomingMessage.Error := imeWrongDeviceId;
+      end;
+
+    $06 : //Эхо-ответ от сигналки. Используется для подтверждения того, что статус поменялся
+      begin
+        ApplicationController.SetSignalModeLoadFromComPortMessage(IncomingMessage);
+        UpdateSignalMode;
+
+        SendingMessage.State := omsDelievered;
+        SendingMessage.DelieveredTime := Now;
+      end;
+  end;
+
+  Inc(RecievedMessagesCount);
+
+  Result := True;
+end;
+
+function TFormMain.ProcessIncomingMessageErrors(IncomingMessage : TMIncomingComportMessage) : boolean;
+begin
+  case IncomingMessage.Error of
+    imeCRC :
+      INC(IncomingErrorCRCCount);
+
+    imeNoSendingMessage :
+      Inc(IncomingErrorNoSendingMessageCount);
+
+    imeSendingMessage : //ошибка в отправляемом сообщении на момент получения
+      Inc(IncomingErrorSendingMessageCount);
+
+    imeBufferOverflow :
+      Inc(IncomingErrorBufferOverFlowCout);
+
+    imeTimeoutEndPacket:
+      Inc(IncomingErrorTimeOutEndPacketCount);
+
+    imeWrongDeviceId:
+      Inc(IncomingErrorWrongDeviceIdCount);
+  end;
+
+  Result := True;
+end;
+
+procedure TFormMain.ClearMessage(var SendingMessage : TMOutgoingComportMessage);
+var
+  message_uid : string;
+begin
+  //Очистка сообщения
+  message_uid := SendingMessage.MessageUid;
+  ApplicationComPortOutgoingMessages.DeleteItem(message_uid);
+  ApplicationComPortOutgoingMessages.SendingComPortMessage := nil;
+  SendingMessage := nil;
 end;
 
 end.

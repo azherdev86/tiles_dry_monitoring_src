@@ -3533,7 +3533,7 @@ object FormMain: TFormMain
     OnClick = ButtonSirenDisableClick
   end
   object TimerCreateBoxMessages: TTimer
-    Interval = 5000
+    Interval = 2000
     OnTimer = TimerCreateBoxMessagesTimer
     Left = 2
     Top = 4
@@ -3554,24 +3554,21 @@ object FormMain: TFormMain
     StoredProps = [spBasic]
     TriggersOnRxChar = True
     OnRxChar = ComPortRxChar
-    OnException = ComPortException
     Left = 48
     Top = 35
   end
   object TimerComPortSendMessages: TTimer
-    Interval = 100
+    Interval = 50
     OnTimer = TimerComPortSendMessagesTimer
     Left = 63
     Top = 4
   end
   object TimerRefreshView: TTimer
-    Interval = 2000
     OnTimer = TimerRefreshViewTimer
     Left = 93
     Top = 4
   end
   object TimerCreateCheckSignaModelMessages: TTimer
-    Interval = 2000
     OnTimer = TimerCreateCheckSignaModelMessagesTimer
     Left = 32
     Top = 3

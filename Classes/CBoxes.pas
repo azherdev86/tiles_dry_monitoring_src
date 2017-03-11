@@ -59,7 +59,7 @@ type
 
 implementation
 
-uses SysUtils, LApplicationGlobals, CTempValuesBuffer;
+uses SysUtils, LApplicationGlobals, CTempValuesBuffer, FMain;
 
 //////////////////////////////TMBox/////////////////////////////////////////////
 
@@ -196,6 +196,10 @@ begin
           TempValue.Free;
           Continue;
         end;
+
+
+//    FormMain.Caption := FormMain.Caption + TempValue.RecordSensors.FieldByName['ConveyorNumber'].AsString;
+
 
     TempValue := FTempValuesList.AddItem(TempValue);
 
