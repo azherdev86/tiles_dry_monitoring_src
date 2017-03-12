@@ -38,12 +38,12 @@ const
 
 
 //Для подключения к FireBird серверу
-  FireBird_DBAliasName    = 'maintest5a.fdb';
+  FireBird_DBAliasName    = 'TILES_DRY_MONITORING';
   FireBird_ZeosProtocol   = 'firebird-2.5';
   FireBird_HostName       = '';
   FireBird_Catalog        = '';
   FireBird_LibFileName    = 'fbembed.dll';
-  FireBird_DBFilePath     = 'database\TempSensors.FDB';
+  FireBird_DBFilePath     = 'database\TILES_DRY_MONITORING.FDB';
   FireBird_DBUserName     = 'SYSDBA';
   FireBird_DBPassWord     = 'MASTERKEY';
   FireBird_ClientCodePage = 'WIN1251';

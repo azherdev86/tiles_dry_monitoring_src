@@ -18,9 +18,9 @@ object FormEventLogs: TFormEventLogs
   PixelsPerInch = 96
   TextHeight = 14
   object DBGrid: TDBGrid
-    Left = 0
+    Left = 2
     Top = 8
-    Width = 1305
+    Width = 1000
     Height = 325
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -38,7 +38,7 @@ object FormEventLogs: TFormEventLogs
     TitleFont.Style = []
   end
   object ButtonRefresh: TButton
-    Left = 529
+    Left = 385
     Top = 354
     Width = 81
     Height = 25
@@ -47,7 +47,7 @@ object FormEventLogs: TFormEventLogs
     OnClick = ButtonRefreshClick
   end
   object ButtonCancel: TButton
-    Left = 682
+    Left = 538
     Top = 354
     Width = 81
     Height = 25
