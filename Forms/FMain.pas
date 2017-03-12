@@ -149,9 +149,9 @@ implementation
 {$R *.dfm}
 
 uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventLogs,
-     FGraphHistory, CBoxes, CBasicComPortMessage, DateUtils, CTableRecords, ZDataset, CTempValuesBuffer,
-     CController, FInputPassword, FChangePassword, FExportToCSV, CEventLog, LUtils,
-  FDebugPanel;
+     FGraphHistory, CBoxes, CBasicComPortMessage, DateUtils, CTableRecords, ZDataset,
+     CTempValuesBuffer, CController, FInputPassword, FChangePassword, FExportToCSV,
+     CEventLog, LUtils, FDebugPanel;
 
 
 procedure TFormMain.FormCreate(Sender: TObject);
@@ -208,8 +208,6 @@ begin
     VK_RETURN : ButtonApplyFloorAxisSettings.Click;
   end;
 end;
-
-
 
 procedure TFormMain.PaintBoxClick(Sender: TObject);
 var
@@ -828,6 +826,14 @@ begin
   FlowControl := ApplicationProgramSettings.UserSettings.FlowControl;
   ComPort.FlowControl.FlowControl:= StrToFlowControl(FlowControl);
 
+  TimerCreateBoxMessages.Interval             := ApplicationProgramSettings.UserSettings.CreateBoxMessageInterval;
+  TimerComPortSendMessages.Interval           := ApplicationProgramSettings.UserSettings.ComPortSendMessagesInterval;
+  TimerCreateCheckSignaModelMessages.Interval := ApplicationProgramSettings.UserSettings.CreateCheckSignalModeMessagesInterval;
+  TimerRefreshView.Interval                   := ApplicationProgramSettings.UserSettings.RefreshViewInterval;
+
+  TimerCreateBoxMessages.Enabled             := ApplicationProgramSettings.UserSettings.EnableCreateBoxMessages;
+  TimerComPortSendMessages.Enabled           := ApplicationProgramSettings.UserSettings.EnableComPortSendMessages;
+  TimerCreateCheckSignaModelMessages.Enabled := ApplicationProgramSettings.UserSettings.EnableCreateCheckSignalModeMessagesInterval;
 
   Result := TRUE;
 end;

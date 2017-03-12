@@ -65,7 +65,8 @@ type
     function GetCount : integer;
 
     ////////////////////////////////////////////////////////////
-    procedure CheckTemperatureRanges;
+    procedure CheckTemperatureRanges;// Основной метод
+    ////////////////////////////////////////////////////////////
 
     procedure GenerateCheckSignalModeMessage(); //Отправка сообщения на запрос статуса сигнализации
     procedure GenerateSetSignalModeMessage(ASignalMode : TypeSignalMode); //Отправка сообщения на включение/выключение сигнализации
@@ -448,6 +449,12 @@ begin
 
             end;
     end;
+
+  //Этот кусок нужен для того, чтобы выключить включенную сигнализацию
+  //Для тех случаев, когда сигнализация была включена не из программы
+  //Т.е. сигнализация была запущена на момент запуска программы
+  if (not getProblem) and (FSignalMode = smEnabled)
+    then GenerateSetSignalModeMessage(smDisabled) //Добавляем сообщение о выключении сигнализации в очередь на отправку
 end;
 
 procedure TMController.GenerateCheckSignalModeMessage();

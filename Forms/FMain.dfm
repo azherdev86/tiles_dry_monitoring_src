@@ -3418,7 +3418,7 @@ object FormMain: TFormMain
     OnClick = ButtonSirenDisableClick
   end
   object TimerCreateBoxMessages: TTimer
-    Interval = 5000
+    Enabled = False
     OnTimer = TimerCreateBoxMessagesTimer
     Left = 2
     Top = 4
@@ -3443,7 +3443,7 @@ object FormMain: TFormMain
     Top = 116
   end
   object TimerComPortSendMessages: TTimer
-    Interval = 50
+    Enabled = False
     OnTimer = TimerComPortSendMessagesTimer
     Left = 3
     Top = 60
@@ -3454,7 +3454,7 @@ object FormMain: TFormMain
     Top = 88
   end
   object TimerCreateCheckSignaModelMessages: TTimer
-    Interval = 20000
+    Enabled = False
     OnTimer = TimerCreateCheckSignaModelMessagesTimer
     Left = 3
     Top = 32
