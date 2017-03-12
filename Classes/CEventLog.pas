@@ -15,7 +15,8 @@ type TypeEventLogs = (elNone,
                       elSignalOff,    //отключение сигнализации
                       elChangeRanges, //изменение границ температурного диапазона
                       elChangePass,   //изменение пароля администратора
-                      elComPortError  //ошибка при работе с Com-портом
+                      elComPortError, //ошибка при работе с Com-портом
+                      elProgramExcep  //исключение в программе причины которого не до конца понятны
                       );
 
 type
@@ -59,7 +60,7 @@ const
   LogEventStrings: array[TypeEventLogs] of string =
  ('None', 'ProgramStart', 'ProgramStop', 'WorkModeOn', 'WorkModeOff',
   'TempRangeOut', 'TempRangeIn', 'SignalOn', 'SignalOff', 'ChangeRanges',
-  'ChangePass', 'ComPortError');
+  'ChangePass', 'ComPortError', 'ProgramExcep');
 begin
   Result := LogEventStrings[ALogEvent];
 end;

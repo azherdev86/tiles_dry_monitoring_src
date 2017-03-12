@@ -18,27 +18,27 @@ object FormGraphHistory: TFormGraphHistory
   PixelsPerInch = 96
   TextHeight = 13
   object LabelSince: TLabel
-    Left = 141
-    Top = 17
-    Width = 33
-    Height = 14
+    Left = 122
+    Top = 13
+    Width = 40
+    Height = 16
     Caption = 'Since:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
     ParentFont = False
   end
   object LabelTo: TLabel
-    Left = 361
-    Top = 17
-    Width = 16
-    Height = 14
+    Left = 358
+    Top = 13
+    Width = 19
+    Height = 16
     Caption = 'To:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
     ParentFont = False
@@ -1681,8 +1681,8 @@ object FormGraphHistory: TFormGraphHistory
       C3C3C3C3C3C3C3C3C300}
   end
   object ButtonApply: TButton
-    Left = 556
-    Top = 11
+    Left = 564
+    Top = 10
     Width = 81
     Height = 25
     Caption = 'Apply'
@@ -1690,31 +1690,31 @@ object FormGraphHistory: TFormGraphHistory
     OnClick = ButtonApplyClick
   end
   object DatePickerSince: TDateTimePicker
-    Left = 181
-    Top = 13
-    Width = 73
-    Height = 22
+    Left = 165
+    Top = 9
+    Width = 102
+    Height = 26
     Date = 42785.011825775470000000
     Time = 42785.011825775470000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
     TabOrder = 1
   end
   object TimePickerSince: TDateTimePicker
-    Left = 269
-    Top = 13
-    Width = 52
-    Height = 22
+    Left = 273
+    Top = 9
+    Width = 64
+    Height = 26
     Date = 42785.011805555560000000
     Format = 'HH:mm'
     Time = 42785.011805555560000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = []
     Kind = dtkTime
@@ -1723,30 +1723,30 @@ object FormGraphHistory: TFormGraphHistory
   end
   object DatePickerTo: TDateTimePicker
     Left = 381
-    Top = 13
-    Width = 73
-    Height = 22
+    Top = 9
+    Width = 102
+    Height = 26
     Date = 42785.011825775470000000
     Time = 42785.011825775470000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
     TabOrder = 3
   end
   object TimePickerTo: TDateTimePicker
-    Left = 469
-    Top = 13
-    Width = 52
-    Height = 22
+    Left = 489
+    Top = 9
+    Width = 64
+    Height = 26
     Date = 42785.011805555560000000
     Format = 'HH:mm'
     Time = 42785.011805555560000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = []
     Kind = dtkTime

@@ -4,7 +4,7 @@ object FormExportToCSV: TFormExportToCSV
   BorderStyle = bsToolWindow
   Caption = 'Export data to CSV'
   ClientHeight = 87
-  ClientWidth = 592
+  ClientWidth = 614
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,41 +18,41 @@ object FormExportToCSV: TFormExportToCSV
   PixelsPerInch = 96
   TextHeight = 13
   object LabelSince: TLabel
-    Left = 45
+    Left = 37
     Top = 12
-    Width = 33
-    Height = 14
+    Width = 40
+    Height = 16
     Caption = 'Since:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
     ParentFont = False
   end
   object LabelTo: TLabel
-    Left = 265
+    Left = 270
     Top = 12
-    Width = 16
-    Height = 14
+    Width = 19
+    Height = 16
     Caption = 'To:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
     ParentFont = False
   end
   object Gauge: TGauge
-    Left = 45
+    Left = 51
     Top = 48
-    Width = 496
+    Width = 507
     Height = 25
     Progress = 0
     Visible = False
   end
   object ButtonExport: TButton
-    Left = 460
+    Left = 477
     Top = 8
     Width = 81
     Height = 25
@@ -63,29 +63,29 @@ object FormExportToCSV: TFormExportToCSV
   object DatePickerSince: TDateTimePicker
     Left = 85
     Top = 8
-    Width = 73
-    Height = 22
+    Width = 101
+    Height = 26
     Date = 42785.011825775470000000
     Time = 42785.011825775470000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
     TabOrder = 1
   end
   object TimePickerSince: TDateTimePicker
-    Left = 173
+    Left = 192
     Top = 8
-    Width = 52
-    Height = 22
+    Width = 67
+    Height = 26
     Date = 42785.011805555560000000
     Format = 'HH:mm'
     Time = 42785.011805555560000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = []
     Kind = dtkTime
@@ -93,31 +93,31 @@ object FormExportToCSV: TFormExportToCSV
     TabOrder = 2
   end
   object DatePickerTo: TDateTimePicker
-    Left = 285
+    Left = 296
     Top = 8
-    Width = 73
-    Height = 22
+    Width = 102
+    Height = 26
     Date = 42785.011825775470000000
     Time = 42785.011825775470000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
     TabOrder = 3
   end
   object TimePickerTo: TDateTimePicker
-    Left = 373
+    Left = 404
     Top = 8
-    Width = 52
-    Height = 22
+    Width = 67
+    Height = 26
     Date = 42785.011805555560000000
     Format = 'HH:mm'
     Time = 42785.011805555560000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = []
     Kind = dtkTime
@@ -126,7 +126,6 @@ object FormExportToCSV: TFormExportToCSV
   end
   object SaveDialog: TSaveDialog
     Filter = 'CSV (Comma separated values)|*.csv'
-    Left = 552
-    Top = 2
+    Top = 65535
   end
 end

@@ -440,7 +440,7 @@ begin
         if (not getProblem) and ((FSignalMode = smEnabled) or (FSignalEnabledForCurrentProblem = True))
           then  //Если ошибок нет, а сигнализация при это включена
             begin
-              if not (FSignalMode = smEnabled)
+              if (FSignalMode = smEnabled)
                 then GenerateSetSignalModeMessage(smDisabled) //Добавляем сообщение о выключении сигнализации в очередь на отправку
                 else FSignalEnabledForCurrentProblem := False; //Если сигнализация и так отключена, обнуляем флаг
 

@@ -4,7 +4,7 @@ object FormEventLogs: TFormEventLogs
   BorderStyle = bsSizeToolWin
   Caption = 'Event history'
   ClientHeight = 400
-  ClientWidth = 1309
+  ClientWidth = 1004
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

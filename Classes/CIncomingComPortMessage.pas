@@ -220,7 +220,10 @@ begin
           for i := 3 to len - 1 do
             AMessageBytes[i] := FDataBytes[i-3];
         except
-          ApplicationEventLog.WriteLog(elNone, 'Len = ' + IntToStr(len) + '; FDataBytes = ' + IntToStr(Length(FDataBytes)))
+          ApplicationEventLog.WriteLog(elProgramExcep,
+                                       'TMIncomingComPortMessage.GenerateMessage. ' +
+                                       'Len = ' + IntToStr(len) + '; FDataBytes = ' +
+                                        IntToStr(Length(FDataBytes)))
         end;
 
         AMessageBytes[len - 2] := FCRCHi;
