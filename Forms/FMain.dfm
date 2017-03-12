@@ -2,8 +2,8 @@ object FormMain: TFormMain
   Left = 0
   Top = 0
   Caption = 'Tiles drying monitoring'
-  ClientHeight = 655
-  ClientWidth = 1321
+  ClientHeight = 708
+  ClientWidth = 1008
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,13 +12,10 @@ object FormMain: TFormMain
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
-  DesignSize = (
-    1321
-    655)
   PixelsPerInch = 96
   TextHeight = 13
   object PaintBox: TPaintBox
-    Left = 210
+    Left = 120
     Top = 44
     Width = 861
     Height = 481
@@ -29,7 +26,7 @@ object FormMain: TFormMain
     OnPaint = PaintBoxPaint
   end
   object Label1: TLabel
-    Left = 185
+    Left = 95
     Top = 71
     Width = 9
     Height = 18
@@ -42,7 +39,7 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label2: TLabel
-    Left = 185
+    Left = 95
     Top = 151
     Width = 9
     Height = 18
@@ -55,7 +52,7 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label3: TLabel
-    Left = 185
+    Left = 95
     Top = 231
     Width = 9
     Height = 18
@@ -68,7 +65,7 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label4: TLabel
-    Left = 185
+    Left = 95
     Top = 311
     Width = 9
     Height = 18
@@ -81,7 +78,7 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label5: TLabel
-    Left = 185
+    Left = 95
     Top = 391
     Width = 9
     Height = 18
@@ -94,7 +91,7 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label6: TLabel
-    Left = 179
+    Left = 89
     Top = 471
     Width = 23
     Height = 18
@@ -107,8 +104,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label7: TLabel
-    Left = 247
-    Top = 536
+    Left = 157
+    Top = 531
     Width = 9
     Height = 18
     Caption = '1'
@@ -120,8 +117,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label8: TLabel
-    Left = 333
-    Top = 536
+    Left = 243
+    Top = 531
     Width = 9
     Height = 18
     Caption = '2'
@@ -133,8 +130,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label9: TLabel
-    Left = 419
-    Top = 536
+    Left = 329
+    Top = 531
     Width = 9
     Height = 18
     Caption = '3'
@@ -146,8 +143,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label10: TLabel
-    Left = 505
-    Top = 536
+    Left = 415
+    Top = 531
     Width = 9
     Height = 18
     Caption = '4'
@@ -159,8 +156,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label11: TLabel
-    Left = 591
-    Top = 536
+    Left = 501
+    Top = 531
     Width = 9
     Height = 18
     Caption = '5'
@@ -172,8 +169,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label12: TLabel
-    Left = 677
-    Top = 536
+    Left = 587
+    Top = 531
     Width = 9
     Height = 18
     Caption = '6'
@@ -185,8 +182,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label13: TLabel
-    Left = 763
-    Top = 536
+    Left = 673
+    Top = 531
     Width = 9
     Height = 18
     Caption = '7'
@@ -198,8 +195,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label14: TLabel
-    Left = 849
-    Top = 536
+    Left = 759
+    Top = 531
     Width = 9
     Height = 18
     Caption = '8'
@@ -211,8 +208,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label15: TLabel
-    Left = 941
-    Top = 536
+    Left = 851
+    Top = 531
     Width = 9
     Height = 18
     Caption = '9'
@@ -224,8 +221,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label16: TLabel
-    Left = 1013
-    Top = 536
+    Left = 923
+    Top = 531
     Width = 18
     Height = 18
     Caption = '10'
@@ -237,7 +234,7 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object LabelAxisMinYValue: TLabel
-    Left = 186
+    Left = 96
     Top = 125
     Width = 12
     Height = 14
@@ -250,7 +247,7 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object LabelAxisMaxYValue: TLabel
-    Left = 188
+    Left = 98
     Top = 39
     Width = 18
     Height = 14
@@ -263,7 +260,7 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label25: TLabel
-    Left = 1042
+    Left = 927
     Top = 560
     Width = 61
     Height = 18
@@ -276,7 +273,7 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label19: TLabel
-    Left = 179
+    Left = 89
     Top = 11
     Width = 44
     Height = 18
@@ -289,8 +286,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object ImageGraphLegend: TImage
-    Left = 385
-    Top = 568
+    Left = 277
+    Top = 550
     Width = 551
     Height = 37
     AutoSize = True
@@ -2213,12 +2210,12 @@ object FormMain: TFormMain
       C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3
       C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3000000}
   end
-  object LabelConveyor1Overlocking: TLabel
-    Left = 64
+  object LabelConveyor1Test: TLabel
+    Left = 16
     Top = 422
-    Width = 55
+    Width = 18
     Height = 14
-    Caption = 'overlocking'
+    Caption = 'test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -2227,7 +2224,7 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object LabelConveyor1Work: TLabel
-    Left = 145
+    Left = 43
     Top = 422
     Width = 25
     Height = 14
@@ -2239,12 +2236,12 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
   end
-  object Label17: TLabel
-    Left = 65
+  object LabelConveyor2Test: TLabel
+    Left = 17
     Top = 342
-    Width = 55
+    Width = 18
     Height = 14
-    Caption = 'overlocking'
+    Caption = 'test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -2252,8 +2249,8 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
   end
-  object Label18: TLabel
-    Left = 146
+  object LabelConveyor2Work: TLabel
+    Left = 44
     Top = 342
     Width = 25
     Height = 14
@@ -2265,12 +2262,12 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
   end
-  object Label20: TLabel
-    Left = 66
+  object LabelConveyor3Test: TLabel
+    Left = 18
     Top = 262
-    Width = 55
+    Width = 18
     Height = 14
-    Caption = 'overlocking'
+    Caption = 'test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -2278,8 +2275,8 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
   end
-  object Label21: TLabel
-    Left = 147
+  object LabelConveyor3Work: TLabel
+    Left = 45
     Top = 262
     Width = 25
     Height = 14
@@ -2291,12 +2288,12 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
   end
-  object Label22: TLabel
-    Left = 66
+  object LabelConveyor4Test: TLabel
+    Left = 18
     Top = 182
-    Width = 55
+    Width = 18
     Height = 14
-    Caption = 'overlocking'
+    Caption = 'test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -2304,8 +2301,8 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
   end
-  object Label23: TLabel
-    Left = 147
+  object LabelConveyor4Work: TLabel
+    Left = 45
     Top = 182
     Width = 25
     Height = 14
@@ -2317,12 +2314,12 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
   end
-  object Label24: TLabel
-    Left = 67
+  object LabelConveyor5Test: TLabel
+    Left = 19
     Top = 102
-    Width = 55
+    Width = 18
     Height = 14
-    Caption = 'overlocking'
+    Caption = 'test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -2330,8 +2327,8 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
   end
-  object Label26: TLabel
-    Left = 148
+  object LabelConveyor5Work: TLabel
+    Left = 46
     Top = 102
     Width = 25
     Height = 14
@@ -2341,37 +2338,11 @@ object FormMain: TFormMain
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
-    ParentFont = False
-  end
-  object Label27: TLabel
-    Left = 61
-    Top = 502
-    Width = 65
-    Height = 14
-    Caption = 'overlocking'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
-  object Label28: TLabel
-    Left = 144
-    Top = 502
-    Width = 29
-    Height = 14
-    Caption = 'work'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
     ParentFont = False
   end
   object Label29: TLabel
-    Left = 12
-    Top = 475
+    Left = 15
+    Top = 458
     Width = 55
     Height = 14
     Caption = 'Switch all:'
@@ -2383,8 +2354,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label30: TLabel
-    Left = 36
-    Top = 395
+    Left = 28
+    Top = 377
     Width = 29
     Height = 14
     Caption = 'Mode:'
@@ -2396,8 +2367,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label31: TLabel
-    Left = 36
-    Top = 315
+    Left = 28
+    Top = 297
     Width = 29
     Height = 14
     Caption = 'Mode:'
@@ -2409,8 +2380,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label32: TLabel
-    Left = 36
-    Top = 155
+    Left = 28
+    Top = 137
     Width = 29
     Height = 14
     Caption = 'Mode:'
@@ -2422,8 +2393,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label33: TLabel
-    Left = 36
-    Top = 235
+    Left = 28
+    Top = 217
     Width = 29
     Height = 14
     Caption = 'Mode:'
@@ -2435,8 +2406,8 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object Label34: TLabel
-    Left = 36
-    Top = 75
+    Left = 28
+    Top = 57
     Width = 29
     Height = 14
     Caption = 'Mode:'
@@ -2448,7 +2419,7 @@ object FormMain: TFormMain
     ParentFont = False
   end
   object LabelSirenState: TLabel
-    Left = 511
+    Left = 421
     Top = 17
     Width = 78
     Height = 14
@@ -2460,12 +2431,37 @@ object FormMain: TFormMain
     Font.Style = []
     ParentFont = False
   end
+  object LabelConveyorAllWork: TLabel
+    Left = 42
+    Top = 505
+    Width = 25
+    Height = 14
+    Caption = 'work'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
+  end
+  object LabelConveyorAllTest: TLabel
+    Left = 15
+    Top = 505
+    Width = 18
+    Height = 14
+    Caption = 'test'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
+  end
   object BitBtnKeyBoard: TBitBtn
-    Left = 1088
-    Top = 262
-    Width = 192
-    Height = 41
-    Anchors = [akTop, akRight]
+    Left = 661
+    Top = 590
+    Width = 167
+    Height = 38
     Caption = 'Keyboard'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -2636,11 +2632,10 @@ object FormMain: TFormMain
       E8E6EFE8E6EFE8E6EFE8E5EFE8E6F0E9E6DED2CDD0B7AF000000}
   end
   object GroupBoxFloorAxisSettings: TGroupBox
-    Left = 1088
-    Top = 155
-    Width = 192
-    Height = 95
-    Anchors = [akTop, akRight]
+    Left = 28
+    Top = 560
+    Width = 164
+    Height = 90
     Caption = 'Floor axis settings'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -2650,8 +2645,8 @@ object FormMain: TFormMain
     ParentFont = False
     TabOrder = 3
     DesignSize = (
-      192
-      95)
+      164
+      90)
     object LabeledEditAxisMinYValue: TLabeledEdit
       Left = 50
       Top = 25
@@ -2691,8 +2686,8 @@ object FormMain: TFormMain
       OnKeyDown = LabeledEditAxisMaxYValueKeyDown
     end
     object ButtonApplyFloorAxisSettings: TButton
-      Left = 95
-      Top = 60
+      Left = 77
+      Top = 57
       Width = 81
       Height = 25
       Anchors = [akTop, akRight]
@@ -2708,11 +2703,10 @@ object FormMain: TFormMain
     end
   end
   object BitBtnEventHistory: TBitBtn
-    Left = 1088
-    Top = 46
-    Width = 192
-    Height = 41
-    Anchors = [akTop, akRight]
+    Left = 277
+    Top = 590
+    Width = 167
+    Height = 38
     Caption = 'Event history'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -2859,12 +2853,11 @@ object FormMain: TFormMain
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00}
   end
   object BitBtnTemperatureRanges: TBitBtn
-    Left = 1088
-    Top = 102
-    Width = 192
-    Height = 41
-    Anchors = [akTop, akRight]
-    Caption = 'Temperature ranges'
+    Left = 277
+    Top = 631
+    Width = 167
+    Height = 38
+    Caption = 'Temp ranges'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -3050,8 +3043,8 @@ object FormMain: TFormMain
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 624
-    Width = 1321
+    Top = 677
+    Width = 1008
     Height = 31
     Panels = <
       item
@@ -3066,68 +3059,69 @@ object FormMain: TFormMain
         Text = 'Program version: 0.0.1'
         Width = 50
       end>
+    ExplicitTop = 624
+    ExplicitWidth = 1321
   end
   object TrackBarConveyor1: TTrackBar
-    Left = 80
+    Left = 13
     Top = 391
-    Width = 89
+    Width = 54
     Height = 32
     Max = 1
     TabOrder = 5
     OnChange = TrackBarConveyor1Change
   end
   object TrackBarConveyor2: TTrackBar
-    Left = 81
+    Left = 14
     Top = 311
-    Width = 89
+    Width = 54
     Height = 32
     Max = 1
     TabOrder = 6
     OnChange = TrackBarConveyor2Change
   end
   object TrackBarConveyor3: TTrackBar
-    Left = 82
+    Left = 15
     Top = 231
-    Width = 89
+    Width = 54
     Height = 32
     Max = 1
     TabOrder = 7
     OnChange = TrackBarConveyor3Change
   end
   object TrackBarConveyor4: TTrackBar
-    Left = 82
+    Left = 15
     Top = 151
-    Width = 89
+    Width = 54
     Height = 32
     Max = 1
     TabOrder = 8
     OnChange = TrackBarConveyor4Change
   end
   object TrackBarConveyor5: TTrackBar
-    Left = 83
+    Left = 16
     Top = 71
-    Width = 89
+    Width = 54
     Height = 32
     Max = 1
     TabOrder = 9
     OnChange = TrackBarConveyor5Change
   end
   object TrackBarAllConveyors: TTrackBar
-    Left = 81
+    Left = 13
     Top = 471
-    Width = 89
+    Width = 54
     Height = 32
     Max = 1
     TabOrder = 10
     OnChange = TrackBarAllConveyorsChange
   end
   object BitBtnChangePassword: TBitBtn
-    Left = 1088
-    Top = 320
-    Width = 192
-    Height = 41
-    Anchors = [akTop, akRight]
-    Caption = 'Change admin password'
+    Left = 470
+    Top = 631
+    Width = 167
+    Height = 38
+    Caption = 'Change password'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -3312,12 +3306,11 @@ object FormMain: TFormMain
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000}
   end
   object BitBtbExportToCSV: TBitBtn
-    Left = 1088
-    Top = 379
-    Width = 192
-    Height = 41
-    Anchors = [akTop, akRight]
-    Caption = 'Export temperature to CSV'
+    Left = 470
+    Top = 590
+    Width = 167
+    Height = 38
+    Caption = 'Export temp to CSV'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -3502,7 +3495,7 @@ object FormMain: TFormMain
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000}
   end
   object ButtonDebug: TButton
-    Left = 247
+    Left = 157
     Top = 8
     Width = 129
     Height = 25
@@ -3517,7 +3510,7 @@ object FormMain: TFormMain
     OnClick = ButtonDebugClick
   end
   object ButtonSirenDisable: TButton
-    Left = 598
+    Left = 508
     Top = 11
     Width = 129
     Height = 25
@@ -3533,7 +3526,7 @@ object FormMain: TFormMain
     OnClick = ButtonSirenDisableClick
   end
   object TimerCreateBoxMessages: TTimer
-    Interval = 2000
+    Interval = 20000
     OnTimer = TimerCreateBoxMessagesTimer
     Left = 2
     Top = 4
@@ -3554,23 +3547,23 @@ object FormMain: TFormMain
     StoredProps = [spBasic]
     TriggersOnRxChar = True
     OnRxChar = ComPortRxChar
-    Left = 48
-    Top = 35
+    Left = 3
+    Top = 116
   end
   object TimerComPortSendMessages: TTimer
     Interval = 50
     OnTimer = TimerComPortSendMessagesTimer
-    Left = 63
-    Top = 4
+    Left = 3
+    Top = 60
   end
   object TimerRefreshView: TTimer
     OnTimer = TimerRefreshViewTimer
-    Left = 93
-    Top = 4
+    Left = 3
+    Top = 88
   end
   object TimerCreateCheckSignaModelMessages: TTimer
     OnTimer = TimerCreateCheckSignaModelMessagesTimer
-    Left = 32
-    Top = 3
+    Left = 3
+    Top = 32
   end
 end

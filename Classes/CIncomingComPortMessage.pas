@@ -57,7 +57,7 @@ type
 
 implementation
 
-uses SysUtils, DateUtils, Dialogs;
+uses SysUtils, DateUtils, Dialogs, LApplicationGlobals, CEventLog;
 
 function TMIncomingComportMessage.IsError() : boolean;
 begin
@@ -220,7 +220,7 @@ begin
           for i := 3 to len - 1 do
             AMessageBytes[i] := FDataBytes[i-3];
         except
-          ShowMessage('Len = ' + IntToStr(len) + '; FDataBytes = ' + IntToStr(Length(FDataBytes)));
+          ApplicationEventLog.WriteLog(elNone, 'Len = ' + IntToStr(len) + '; FDataBytes = ' + IntToStr(Length(FDataBytes)))
         end;
 
         AMessageBytes[len - 2] := FCRCHi;

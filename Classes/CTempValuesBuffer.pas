@@ -4,6 +4,10 @@ interface
 
 uses Classes;
 
+const
+//  TEMP_VALUE_ACTUAL_TIME = 1.5*(1/24/60) ;//(1,5 минуты) Время, которое значение температуры считается актуальным
+  TEMP_VALUE_ACTUAL_TIME = 10*(1/24/60/60) ;//(10 секунд)
+
 type
   TMTempBufferValue = class
     constructor Create();
@@ -20,12 +24,14 @@ type
     FSensorPosition : string;
 
     procedure Reset();
+
+    function GetTempValue() : single;
   public
     property SensorId       : integer   read FSensorId       write FSensorId;
     property ConveyorNumber : integer   read FConveyorNumber write FConveyorNumber;
     property SectionNumber  : integer   read FSectionNumber  write FSectionNumber;
     property BoxNumber      : integer   read FBoxNumber      write FBoxNumber;
-    property TempValue      : single    read FTempValue      write FTempValue;
+    property TempValue      : single    read GetTempValue    write FTempValue;
     property TempTime    : TDateTime    read FTempTime       write FTempTime;
 
     property SensorPosition : string read FSensorPosition write FSensorPosition;
@@ -37,6 +43,8 @@ type
     destructor Destroy; override;
 
   public
+    function LoadFromDatabase() : boolean;
+
     function GetItem(ItemIndex : integer) : TMTempBufferValue;  overload;
     function GetItem(ItemTitle : string) : TMTempBufferValue; overload;
     function GetItem(ASectionNumber  : integer;
@@ -92,6 +100,15 @@ begin
   FSensorPosition := '';
 end;
 
+function TMTempBufferValue.GetTempValue() : single;
+begin
+  //Хитрая штука
+
+  if Now <= (FTempTime + TEMP_VALUE_ACTUAL_TIME)
+    then Result := FTempValue
+    else Result := 0;
+end;
+
 
 //////////////TMTempBufferValuesList//////////////////////////////////
 constructor TMTempBufferValuesList.Create;
@@ -106,6 +123,12 @@ begin
   Reset;
   Items.Free;
   inherited Destroy;
+end;
+
+function TMTempBufferValuesList.LoadFromDatabase() : boolean;
+begin
+  Result := True;
+  //Пока заготовка
 end;
 
 
