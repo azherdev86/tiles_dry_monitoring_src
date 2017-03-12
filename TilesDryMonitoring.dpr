@@ -1,4 +1,4 @@
-program TempSensors;
+program TilesDryMonitoring;
 
 uses
   Forms,
@@ -49,6 +49,7 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
+  Application.Title := 'Tiles dry monitoring';
   Application.CreateForm(TFormMain, FormMain);
   Application.Run;
 end.
