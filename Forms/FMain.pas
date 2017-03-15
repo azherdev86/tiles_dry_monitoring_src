@@ -191,6 +191,9 @@ begin
     ApplicationEventLog.WriteLog(elComPortError, 'Couldn''t connect to COM port during start application');
     Application.Terminate;
   end;
+
+  TimerCreateBoxMessagesTimer(Self);
+  TimerRefreshViewTimer(Self);
 end;
 
 procedure TFormMain.LabeledEditAxisMaxYValueKeyDown(Sender: TObject;

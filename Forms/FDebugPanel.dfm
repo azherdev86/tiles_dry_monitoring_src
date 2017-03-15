@@ -18,56 +18,105 @@ object FormDebugPanel: TFormDebugPanel
     406)
   PixelsPerInch = 96
   TextHeight = 13
-  object ButtonGenerateBase: TButton
-    Left = 22
-    Top = 23
+  object Label1: TLabel
+    Left = 40
+    Top = 248
+    Width = 195
+    Height = 16
+    Caption = 'Warning. Could delete all data'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clRed
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object ButtonEmulateDataInBase: TButton
+    Left = 38
+    Top = 307
     Width = 209
     Height = 23
-    Caption = 'GENERATE BASE'
+    Caption = 'EMULATE DATA IN BASE'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 0
-    OnClick = ButtonGenerateBaseClick
+    OnClick = ButtonEmulateDataInBaseClick
   end
   object ButtonResetBase: TButton
-    Left = 22
-    Top = 46
+    Left = 38
+    Top = 282
     Width = 209
     Height = 24
     Caption = 'RESET BASE'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 1
     OnClick = ButtonResetBaseClick
   end
   object ButtonStartStopTimers: TButton
-    Left = 22
+    Left = 38
     Top = 87
     Width = 209
     Height = 24
-    Caption = 'STOP/START TIMERS'
+    Caption = 'ON/OFF SEND COMPORT MESSAGES'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 2
     OnClick = ButtonStartStopTimersClick
   end
   object ButtonSignalState: TButton
-    Left = 22
-    Top = 173
+    Left = 38
+    Top = 133
     Width = 209
     Height = 24
-    Caption = 'SIGNAL STATE'
+    Caption = 'GET SIGNAL STATE'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 3
   end
   object ButtonEnableSignal: TButton
-    Left = 22
-    Top = 197
+    Left = 38
+    Top = 157
     Width = 209
     Height = 24
     Caption = 'ENABLE SIGNAL'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 4
     OnClick = ButtonEnableSignalClick
   end
   object ButtonDisableSignal: TButton
-    Left = 22
-    Top = 221
+    Left = 38
+    Top = 181
     Width = 209
     Height = 24
     Caption = 'DISABLE SIGNAL'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 5
     OnClick = ButtonDisableSignalClick
   end
@@ -79,7 +128,7 @@ object FormDebugPanel: TFormDebugPanel
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
-    Font.Name = 'Tahoma'
+    Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
     TabOrder = 6
@@ -99,17 +148,23 @@ object FormDebugPanel: TFormDebugPanel
     TabOrder = 7
   end
   object ButtonGenerateBoxMessage: TButton
-    Left = 22
-    Top = 112
+    Left = 38
+    Top = 63
     Width = 209
     Height = 24
     Caption = 'GENERATE BOX MESSAGE'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 8
     OnClick = ButtonGenerateBoxMessageClick
   end
   object Timer: TTimer
     OnTimer = TimerTimer
-    Left = 80
-    Top = 269
+    Left = 16
+    Top = 349
   end
 end

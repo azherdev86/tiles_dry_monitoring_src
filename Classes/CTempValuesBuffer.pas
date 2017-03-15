@@ -5,8 +5,8 @@ interface
 uses Classes;
 
 const
-//  TEMP_VALUE_ACTUAL_TIME = 1.5*(1/24/60) ;//(1,5 минуты) Время, которое значение температуры считается актуальным
-  TEMP_VALUE_ACTUAL_TIME = 10*(1/24/60/60) ;//(10 секунд)
+  TEMP_VALUE_ACTUAL_TIME = 1.5*(1/24/60) ;//(1,5 минуты) Время, которое значение температуры считается актуальным
+//  TEMP_VALUE_ACTUAL_TIME = 10*(1/24/60/60) ;//(10 секунд)
 
 type
   TMTempBufferValue = class

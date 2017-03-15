@@ -33,7 +33,6 @@ uses
   CProgramSettings in 'Classes\CProgramSettings.pas',
   CProgramUserSettings in 'Classes\CProgramUserSettings.pas',
   CRows in 'Classes\CRows.pas',
-  CTempValueBuffers in 'Classes\CTempValueBuffers.pas',
   CTempValues in 'Classes\CTempValues.pas',
   CTempValuesBuffer in 'Classes\CTempValuesBuffer.pas',
   LHash in 'Libraries\LHash.pas',

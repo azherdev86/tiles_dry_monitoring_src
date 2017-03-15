@@ -408,13 +408,8 @@ begin
   BoxesNumbers[18] := 101;
   BoxesNumbers[19] := 102;
 
-  //11, 12, 21, 22, 31, 32,
-
   for i := 0 to FBoxesCount - 1 do
   begin
-  //  if i <> 9
-  //    then Continue; //На время отладки, пока на руках только одна коробка с № 10
-
     Item := TMBox.Create(BoxesNumbers[i]);
 
     Item := AddItem(Item);
