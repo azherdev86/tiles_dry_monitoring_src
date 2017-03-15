@@ -68,11 +68,12 @@ type
     BitBtnChangePassword: TBitBtn;
     BitBtbExportToCSV: TBitBtn;
     ButtonDebug: TButton;
-    ButtonSirenDisable: TButton;
-    LabelSirenState: TLabel;
     TimerCreateCheckSignaModelMessages: TTimer;
     LabelConveyorAllWork: TLabel;
     LabelConveyorAllTest: TLabel;
+    BitBtnSirenDisable: TBitBtn;
+    BitBtnClose: TBitBtn;
+    BitBtn1: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
     procedure PaintBoxMouseEnter(Sender: TObject);
@@ -101,8 +102,9 @@ type
     procedure BitBtnChangePasswordClick(Sender: TObject);
     procedure BitBtbExportToCSVClick(Sender: TObject);
     procedure ButtonDebugClick(Sender: TObject);
-    procedure ButtonSirenDisableClick(Sender: TObject);
     procedure TimerCreateCheckSignaModelMessagesTimer(Sender: TObject);
+    procedure BitBtnCloseClick(Sender: TObject);
+    procedure BitBtnSirenDisableClick(Sender: TObject);
   private
     { Private declarations }
     FStartTime : double;
@@ -194,6 +196,8 @@ begin
 
   TimerCreateBoxMessagesTimer(Self);
   TimerRefreshViewTimer(Self);
+
+  ButtonDebug.Visible := ApplicationProgramSettings.UserSettings.DebugMode;
 end;
 
 procedure TFormMain.LabeledEditAxisMaxYValueKeyDown(Sender: TObject;
@@ -307,7 +311,7 @@ procedure TFormMain.TimerRefreshViewTimer(Sender: TObject);
 begin
   ApplicationController.CheckTemperatureRanges;
 
-  ButtonSirenDisable.Enabled := (ApplicationController.SignalMode = smEnabled);
+  BitBtnSirenDisable.Enabled := (ApplicationController.SignalMode = smEnabled);
 
   DrawSeries;
 
@@ -558,6 +562,12 @@ begin
   ShellExecute(0,nil,'osk.exe',nil,nil,SW_SHOW);
 end;
 
+procedure TFormMain.BitBtnSirenDisableClick(Sender: TObject);
+begin
+  ApplicationController.GenerateSetSignalModeMessage(smDisabled);
+  ApplicationEventLog.WriteLog(elSignalOff, 'by user');
+end;
+
 procedure TFormMain.BitBtbExportToCSVClick(Sender: TObject);
 begin
   Application.CreateForm(TFormExportToCSV, FormExportToCSV);
@@ -570,6 +580,11 @@ begin
   Application.CreateForm(TFormChangePassword, FormChangePassword);
   FormChangePassword.ShowModal;
   FormChangePassword.Free;
+end;
+
+procedure TFormMain.BitBtnCloseClick(Sender: TObject);
+begin
+  Close;
 end;
 
 procedure TFormMain.BitBtnEventHistoryClick(Sender: TObject);
@@ -644,12 +659,6 @@ begin
   Application.CreateForm(TFormDebugPanel, FormDebugPanel);
   FormDebugPanel.ShowModal;
   FormDebugPanel.Free;
-end;
-
-procedure TFormMain.ButtonSirenDisableClick(Sender: TObject);
-begin
-  ApplicationController.GenerateSetSignalModeMessage(smDisabled);
-  ApplicationEventLog.WriteLog(elSignalOff, 'by user');
 end;
 
 procedure TFormMain.ComPortRxChar(Sender: TObject; Count: Integer);
@@ -865,21 +874,9 @@ end;
 procedure TFormMain.UpdateSignalMode;
 begin
   case ApplicationController.SignalMode of
-    smNone     :
-      begin
-        LabelSirenState.Caption := 'Siren state: ERROR';
-        ButtonSirenDisable.Enabled := False;
-      end;
-    smEnabled  :
-      begin
-        LabelSirenState.Caption := 'Siren state: ON';
-        ButtonSirenDisable.Enabled := TRUE;
-      end;
-    smDisabled :
-      begin
-        LabelSirenState.Caption := 'Siren state: OFF';
-        ButtonSirenDisable.Enabled := False;
-      end;
+    smNone     : BitBtnSirenDisable.Enabled := False;
+    smEnabled  : BitBtnSirenDisable.Enabled := True;
+    smDisabled : BitBtnSirenDisable.Enabled := False;
   end;
 end;
 

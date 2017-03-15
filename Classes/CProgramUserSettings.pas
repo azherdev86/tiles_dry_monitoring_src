@@ -28,6 +28,8 @@ type
     EnableCreateBoxMessages                     : boolean;
     EnableCreateCheckSignalModeMessagesInterval : boolean;
 
+    DebugMode : boolean;
+
   public
     function SaveToIniFile(IniFile : TIniFile) : boolean;
     function LoadFromIniFile(IniFile : TIniFile)  : boolean;
@@ -94,6 +96,8 @@ begin
   IniFile.WriteBool('User', 'EnableCreateBoxMessages',                     EnableCreateBoxMessages);
   IniFile.WriteBool('User', 'EnableCreateCheckSignalModeMessagesInterval', EnableCreateCheckSignalModeMessagesInterval);
 
+  IniFile.WriteBool('User', 'DebugMode', DebugMode);
+
   Result := TRUE;
 end;
 
@@ -116,6 +120,8 @@ begin
   EnableComPortSendMessages                   := IniFile.ReadBool('User','EnableComPortSendMessages', True);
   EnableCreateBoxMessages                     := IniFile.ReadBool('User','EnableCreateBoxMessages', True);
   EnableCreateCheckSignalModeMessagesInterval := IniFile.ReadBool('User','EnableCreateCheckSignalModeMessagesInterval', True);
+
+  DebugMode := IniFile.ReadBool('User','DebugMode', False);
 
   Result := TRUE;
 end;
