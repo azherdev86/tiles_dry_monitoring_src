@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, StdCtrls, ExtCtrls, TeEngine, Series, TeeProcs, Chart,
-  ZDataset;
+  ZDataset, Gauges;
 
 type
   TFormGraphHistory = class(TForm)
@@ -26,6 +26,7 @@ type
     LabelConveyor: TLabel;
     LabelSection: TLabel;
     ImageGraphLegend: TImage;
+    Gauge: TGauge;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -100,12 +101,16 @@ var
   SQLQueryText,
   SensorPosition : string;
 
-  TempTime  : TDateTime;
-  TempValue : single;
+  TempTime,
+  AvgTempTime : TDateTime;
+
+  TempValue,
+  AvgTempValue : single;
 
   CurrentRecordIndex,
   RecordCount,
-  ShowRatio : integer;
+  AvgRatio,
+  AvgCount : integer;
 begin
   SensorPosition := '';
 
@@ -142,22 +147,40 @@ begin
 
   RecordCount := FQuery.RecordCount;
 
-  ShowRatio := 1;
+  //На графиках много значений не поместится.
+  //Выводим только CMaxSeriesPointsCount с осреднением.
+  AvgRatio := 1;
 
   if RecordCount > CMaxSeriesPointsCount
-    then ShowRatio := Round(RecordCount/CMaxSeriesPointsCount);
+    then AvgRatio := Round(RecordCount/CMaxSeriesPointsCount);
 
   CurrentRecordIndex := 1;
 
+  AvgTempTime  := 0;
+  AvgTempValue := 0;
+  AvgCount     := 0;
+
   while not FQuery.Eof do
     begin
-      if (CurrentRecordIndex mod ShowRatio) = 0
+      TempTime  := FQuery.FieldByName('TempTime').AsDateTime;
+      TempValue := FQuery.FieldByName('TempValue').AsFloat;
+
+      AvgTempTime  := AvgTempTime + TempTime;
+      AvgTempValue := AvgTempValue + TempValue;
+      Inc(AvgCount);
+
+      if ((CurrentRecordIndex mod AvgRatio) = 0) or
+         (CurrentRecordIndex = RecordCount)
         then
           begin
-            TempTime  := FQuery.FieldByName('TempTime').AsDateTime;
-            TempValue := FQuery.FieldByName('TempValue').AsFloat;
+            AvgTempTime  := AvgTempTime/AvgCount;
+            AvgTempValue := AvgTempValue/AvgCount;
 
-            Series.AddXY(TempTime, TempValue);
+            Series.AddXY(AvgTempTime, AvgTempValue);
+
+            AvgTempTime  := 0;
+            AvgTempValue := 0;
+            AvgCount     := 0;
           end;
 
       Inc(CurrentRecordIndex);
@@ -262,18 +285,25 @@ procedure TFormGraphHistory.DrawChart();
 begin
   ClearSeries;
 
-  SetSeriesSettings;
+  Gauge.Visible := True;
+  Gauge.MaxValue := 7;      Gauge.Progress := 0;
 
-  UpdateTimeRanges;
+  SetSeriesSettings;        Gauge.Progress := 1;
 
-  DrawSeries(sLeftTop);
-  DrawSeries(sLeftBottom);
-  DrawSeries(sRightTop);
-  DrawSeries(sRightBottom);
+  UpdateTimeRanges;         Gauge.Progress := 2;
+
+  DrawSeries(sLeftTop);     Gauge.Progress := 3;
+  DrawSeries(sLeftBottom);  Gauge.Progress := 4;
+  DrawSeries(sRightTop);    Gauge.Progress := 5;
+  DrawSeries(sRightBottom); Gauge.Progress := 6;
 
   DrawTempRanges;
 
-  SetTimeRanges;
+  SetTimeRanges;            Gauge.Progress := 7;
+
+  Sleep(250);
+
+  Gauge.Visible := False;
 end;
 
 procedure TFormGraphHistory.SetTimeRanges();

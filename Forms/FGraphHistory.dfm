@@ -1683,7 +1683,7 @@ object FormGraphHistory: TFormGraphHistory
   object ButtonApply: TButton
     Left = 564
     Top = 10
-    Width = 81
+    Width = 104
     Height = 25
     Caption = 'Apply'
     TabOrder = 0
@@ -1774,6 +1774,14 @@ object FormGraphHistory: TFormGraphHistory
       27
       15
       27)
+    object Gauge: TGauge
+      Left = 106
+      Top = 133
+      Width = 507
+      Height = 25
+      Progress = 0
+      Visible = False
+    end
     object sRangeMin: TLineSeries
       ColorEachLine = False
       Marks.Callout.Brush.Color = clBlack
