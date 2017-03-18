@@ -2620,32 +2620,33 @@ object FormMain: TFormMain
       E8E6EFE8E6EFE8E6EFE8E5EFE8E6F0E9E6DED2CDD0B7AF000000}
   end
   object GroupBoxFloorAxisSettings: TGroupBox
-    Left = 28
-    Top = 582
-    Width = 164
-    Height = 90
+    Left = 13
+    Top = 575
+    Width = 224
+    Height = 114
     Caption = 'Floor axis settings'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
     TabOrder = 3
     DesignSize = (
-      164
-      90)
+      224
+      114)
     object LabeledEditAxisMinYValue: TLabeledEdit
-      Left = 50
+      Left = 65
       Top = 25
-      Width = 28
-      Height = 22
-      EditLabel.Width = 33
-      EditLabel.Height = 14
+      Width = 36
+      Height = 25
+      Hint = 'Input min value'
+      EditLabel.Width = 47
+      EditLabel.Height = 17
       EditLabel.Caption = 'Min, '#176'C'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -11
+      Font.Height = -15
       Font.Name = 'Arial'
       Font.Style = []
       LabelPosition = lpLeft
@@ -2655,16 +2656,17 @@ object FormMain: TFormMain
       OnKeyDown = LabeledEditAxisMinYValueKeyDown
     end
     object LabeledEditAxisMaxYValue: TLabeledEdit
-      Left = 123
+      Left = 174
       Top = 25
-      Width = 28
-      Height = 22
-      EditLabel.Width = 37
-      EditLabel.Height = 14
+      Width = 36
+      Height = 25
+      Hint = 'Input max value'
+      EditLabel.Width = 51
+      EditLabel.Height = 17
       EditLabel.Caption = 'Max, '#176'C'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -11
+      Font.Height = -15
       Font.Name = 'Arial'
       Font.Style = []
       LabelPosition = lpLeft
@@ -2674,10 +2676,10 @@ object FormMain: TFormMain
       OnKeyDown = LabeledEditAxisMaxYValueKeyDown
     end
     object ButtonApplyFloorAxisSettings: TButton
-      Left = 77
-      Top = 57
-      Width = 81
-      Height = 25
+      Left = 120
+      Top = 64
+      Width = 90
+      Height = 33
       Anchors = [akTop, akRight]
       Caption = 'Apply'
       Font.Charset = DEFAULT_CHARSET

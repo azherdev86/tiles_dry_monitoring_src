@@ -5,16 +5,14 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, StdCtrls, ExtCtrls, TeEngine, Series, TeeProcs, Chart,
-  ZDataset, Gauges;
+  ZDataset, Gauges, FTerminalForm;
 
 type
-  TFormGraphHistory = class(TForm)
+  TFormGraphHistory = class(TFormTerminal)
     ButtonApply: TButton;
     DatePickerSince: TDateTimePicker;
-    TimePickerSince: TDateTimePicker;
     LabelSince: TLabel;
     DatePickerTo: TDateTimePicker;
-    TimePickerTo: TDateTimePicker;
     LabelTo: TLabel;
     Chart: TChart;
     sRangeMin: TLineSeries;
@@ -27,10 +25,20 @@ type
     LabelSection: TLabel;
     ImageGraphLegend: TImage;
     Gauge: TGauge;
+    LabeledEditSinceHours: TLabeledEdit;
+    Label1: TLabel;
+    LabeledEditSinceMinutes: TLabeledEdit;
+    LabeledEditToHours: TLabeledEdit;
+    Label2: TLabel;
+    LabeledEditToMinutes: TLabeledEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ButtonApplyClick(Sender: TObject);
+    procedure LabeledEditSinceHoursChange(Sender: TObject);
+    procedure LabeledEditToHoursChange(Sender: TObject);
+    procedure LabeledEditSinceMinutesChange(Sender: TObject);
+    procedure LabeledEditToMinutesChange(Sender: TObject);
   private
     { Private declarations }
     FQuery : TZQuery;
@@ -64,11 +72,14 @@ implementation
 
 {$R *.dfm}
 
-uses DateUtils, LApplicationGlobals, CProgramSettings, LUtils;
+uses DateUtils, LApplicationGlobals, CProgramSettings, LUtils,
+  FUserDigitalKeyboard;
 
 
 procedure TFormGraphHistory.FormCreate(Sender: TObject);
 begin
+  inherited;
+
   Position := poDesktopCenter;
 
   FDateTimeTo    := Now;
@@ -78,6 +89,11 @@ begin
 
   FQuery := TZQuery.Create(ApplicationDBConnection);
   FQuery.Connection := ApplicationDBConnection;
+
+  LabeledEditSinceHours.EditLabel.Caption   := '';
+  LabeledEditSinceMinutes.EditLabel.Caption := '';
+  LabeledEditToHours.EditLabel.Caption      := '';
+  LabeledEditToMinutes.EditLabel.Caption    := '';
 end;
 
 procedure TFormGraphHistory.FormDestroy(Sender: TObject);
@@ -92,6 +108,82 @@ begin
   LabelSection.Caption  := 'Section: ' + IntToStr(SectionNumber);
 
   DrawChart;
+end;
+
+procedure TFormGraphHistory.LabeledEditSinceHoursChange(Sender: TObject);
+var
+  value : integer;
+begin
+  if TryStrToInt((Sender as TLabeledEdit).Text, value)
+    then
+      begin
+        if (value < 0)
+          then value := 0;
+
+        if (value > 23)
+          then value := 23;
+
+        (Sender as TLabeledEdit).Text := IntToStr(value);
+      end
+    else
+      (Sender as TLabeledEdit).Text := '0';
+end;
+
+procedure TFormGraphHistory.LabeledEditSinceMinutesChange(Sender: TObject);
+var
+  value : integer;
+begin
+  if TryStrToInt((Sender as TLabeledEdit).Text, value)
+    then
+      begin
+        if (value < 0)
+          then value := 0;
+
+        if (value > 59)
+          then value := 59;
+
+        (Sender as TLabeledEdit).Text := IntToStr(value);
+      end
+    else
+      (Sender as TLabeledEdit).Text := '0';
+end;
+
+procedure TFormGraphHistory.LabeledEditToHoursChange(Sender: TObject);
+var
+  value : integer;
+begin
+  if TryStrToInt((Sender as TLabeledEdit).Text, value)
+    then
+      begin
+        if (value < 0)
+          then value := 0;
+
+        if (value > 23)
+          then value := 23;
+
+        (Sender as TLabeledEdit).Text := IntToStr(value);
+      end
+    else
+      (Sender as TLabeledEdit).Text := '0';
+end;
+
+procedure TFormGraphHistory.LabeledEditToMinutesChange(Sender: TObject);
+var
+  value : integer;
+begin
+  if TryStrToInt((Sender as TLabeledEdit).Text, value)
+    then
+      begin
+        if (value < 0)
+          then value := 0;
+
+        if (value > 59)
+          then value := 59;
+
+        (Sender as TLabeledEdit).Text := IntToStr(value);
+      end
+    else
+      (Sender as TLabeledEdit).Text := '0';
 end;
 
 procedure TFormGraphHistory.DrawSeries(Series : TLineSeries);
@@ -312,24 +404,32 @@ begin
     then
       begin
         DatePickerTo.DateTime := FDateTimeTo;
-        TimePickerTo.DateTime := FDateTimeTo;
+
+        LabeledEditToHours.Text   := IntToStr(DecodeHour(FDateTimeTo));
+        LabeledEditToMinutes.Text := IntToStr(DecodeMinute(FDateTimeTo));
       end
     else
       begin
         DatePickerTo.DateTime := Now;
-        TimePickerTo.DateTime := Now;
+
+        LabeledEditToHours.Text   := IntToStr(DecodeHour(Now));
+        LabeledEditToMinutes.Text := IntToStr(DecodeMinute(Now));
       end;
 
   if not (FDateTimeSince = 0)
     then
       begin
         DatePickerSince.DateTime := FDateTimeSince;
-        TimePickerSince.DateTime := FDateTimeSince;
+
+        LabeledEditSinceHours.Text   := IntToStr(DecodeHour(FDateTimeSince));
+        LabeledEditSinceMinutes.Text := IntToStr(DecodeMinute(FDateTimeSince));
       end
     else
       begin
         DatePickerSince.DateTime := Now - 1/24;
-        TimePickerSince.DateTime := Now - 1/24;
+
+        LabeledEditSinceHours.Text   := IntToStr(DecodeHour(Now - 1/24));
+        LabeledEditSinceMinutes.Text := IntToStr(DecodeMinute(Now - 1/24));
       end;
 end;
 
@@ -337,11 +437,21 @@ function TFormGraphHistory.CheckValues() : boolean;
 var
   tmpDateTimeSince,
   tmpDateTimeTo : TDateTime;
+
+  iHours,
+  iMinutes : integer;
 begin
   Result := False;
 
-  tmpDateTimeSince := Trunc(DatePickerSince.Date) + TimeOf(TimePickerSince.Time);
-  tmpDateTimeTo    := Trunc(DatePickerTo.Date)    + TimeOf(TimePickerTo.Time);
+  iHours   := StrToInt(LabeledEditSinceHours.Text);
+  iMinutes := StrToInt(LabeledEditSinceMinutes.Text);
+
+  tmpDateTimeSince := Trunc(DatePickerSince.Date) + iHours/24 + iMinutes/24/60;
+
+  iHours   := StrToInt(LabeledEditToHours.Text);
+  iMinutes := StrToInt(LabeledEditToMinutes.Text);
+
+  tmpDateTimeTo    := Trunc(DatePickerTo.Date)    + iHours/24 + iMinutes/24/60;
 
   if tmpDateTimeTo > Now
     then

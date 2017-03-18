@@ -95,6 +95,12 @@
     <DCCReference Include="Forms\FTemperatureRanges.pas">
       <Form>FormTemperatureRanges</Form>
     </DCCReference>
+    <DCCReference Include="Forms\FTerminalForm.pas">
+      <Form>FormTerminal</Form>
+    </DCCReference>
+    <DCCReference Include="Forms\FUserDigitalKeyboard.pas">
+      <Form>FormUserDigitalKeyboard</Form>
+    </DCCReference>
     <DCCReference Include="Libraries\LApplicationGlobals.pas" />
     <DCCReference Include="Libraries\LHash.pas" />
     <DCCReference Include="Libraries\LUtils.pas" />

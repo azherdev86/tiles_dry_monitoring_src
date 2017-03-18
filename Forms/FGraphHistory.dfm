@@ -18,7 +18,7 @@ object FormGraphHistory: TFormGraphHistory
   PixelsPerInch = 96
   TextHeight = 13
   object LabelSince: TLabel
-    Left = 122
+    Left = 81
     Top = 13
     Width = 40
     Height = 16
@@ -71,7 +71,7 @@ object FormGraphHistory: TFormGraphHistory
   end
   object ImageGraphLegend: TImage
     Left = 160
-    Top = 389
+    Top = 392
     Width = 461
     Height = 37
     AutoSize = True
@@ -1680,8 +1680,34 @@ object FormGraphHistory: TFormGraphHistory
       C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3
       C3C3C3C3C3C3C3C3C300}
   end
+  object Label1: TLabel
+    Left = 264
+    Top = 13
+    Width = 6
+    Height = 19
+    Caption = ':'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Label2: TLabel
+    Left = 522
+    Top = 13
+    Width = 6
+    Height = 19
+    Caption = ':'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
   object ButtonApply: TButton
-    Left = 564
+    Left = 568
     Top = 10
     Width = 104
     Height = 25
@@ -1690,7 +1716,7 @@ object FormGraphHistory: TFormGraphHistory
     OnClick = ButtonApplyClick
   end
   object DatePickerSince: TDateTimePicker
-    Left = 165
+    Left = 124
     Top = 9
     Width = 102
     Height = 26
@@ -1703,23 +1729,6 @@ object FormGraphHistory: TFormGraphHistory
     Font.Style = []
     ParentFont = False
     TabOrder = 1
-  end
-  object TimePickerSince: TDateTimePicker
-    Left = 273
-    Top = 9
-    Width = 64
-    Height = 26
-    Date = 42785.011805555560000000
-    Format = 'HH:mm'
-    Time = 42785.011805555560000000
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -16
-    Font.Name = 'Arial'
-    Font.Style = []
-    Kind = dtkTime
-    ParentFont = False
-    TabOrder = 2
   end
   object DatePickerTo: TDateTimePicker
     Left = 381
@@ -1734,24 +1743,7 @@ object FormGraphHistory: TFormGraphHistory
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
-    TabOrder = 3
-  end
-  object TimePickerTo: TDateTimePicker
-    Left = 489
-    Top = 9
-    Width = 64
-    Height = 26
-    Date = 42785.011805555560000000
-    Format = 'HH:mm'
-    Time = 42785.011805555560000000
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -16
-    Font.Name = 'Arial'
-    Font.Style = []
-    Kind = dtkTime
-    ParentFont = False
-    TabOrder = 4
+    TabOrder = 2
   end
   object Chart: TChart
     Left = 24
@@ -1762,13 +1754,26 @@ object FormGraphHistory: TFormGraphHistory
     Title.Text.Strings = (
       'TChart')
     Title.Visible = False
+    DepthAxis.Automatic = False
+    DepthAxis.AutomaticMaximum = False
+    DepthAxis.AutomaticMinimum = False
+    DepthAxis.Maximum = 0.470000000000000000
+    DepthAxis.Minimum = -0.530000000000000000
+    DepthTopAxis.Automatic = False
+    DepthTopAxis.AutomaticMaximum = False
+    DepthTopAxis.AutomaticMinimum = False
+    DepthTopAxis.Maximum = 0.470000000000000000
+    DepthTopAxis.Minimum = -0.530000000000000000
     LeftAxis.Automatic = False
     LeftAxis.AutomaticMaximum = False
     LeftAxis.AutomaticMinimum = False
-    LeftAxis.Maximum = 185.000000000000000000
-    LeftAxis.Minimum = 90.000000000000000000
+    LeftAxis.Maximum = 182.150000000000000000
+    LeftAxis.Minimum = 87.150000000000010000
+    RightAxis.Automatic = False
+    RightAxis.AutomaticMaximum = False
+    RightAxis.AutomaticMinimum = False
     View3D = False
-    TabOrder = 5
+    TabOrder = 3
     PrintMargins = (
       15
       27
@@ -1868,5 +1873,81 @@ object FormGraphHistory: TFormGraphHistory
       YValues.Name = 'Y'
       YValues.Order = loNone
     end
+  end
+  object LabeledEditSinceHours: TLabeledEdit
+    Left = 235
+    Top = 9
+    Width = 26
+    Height = 27
+    Hint = 'Input since hours'
+    EditLabel.Width = 108
+    EditLabel.Height = 13
+    EditLabel.Caption = 'LabeledEditSinceHours'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 4
+    Text = '01'
+    OnChange = LabeledEditSinceHoursChange
+  end
+  object LabeledEditSinceMinutes: TLabeledEdit
+    Left = 272
+    Top = 9
+    Width = 26
+    Height = 27
+    Hint = 'Input since minutes'
+    EditLabel.Width = 117
+    EditLabel.Height = 13
+    EditLabel.Caption = 'LabeledEditSinceMinutes'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 5
+    Text = '12'
+    OnChange = LabeledEditSinceMinutesChange
+  end
+  object LabeledEditToHours: TLabeledEdit
+    Left = 493
+    Top = 9
+    Width = 26
+    Height = 27
+    Hint = 'Input to hours'
+    EditLabel.Width = 95
+    EditLabel.Height = 13
+    EditLabel.Caption = 'LabeledEditToHours'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 6
+    Text = '02'
+    OnChange = LabeledEditToHoursChange
+  end
+  object LabeledEditToMinutes: TLabeledEdit
+    Left = 530
+    Top = 9
+    Width = 26
+    Height = 27
+    Hint = 'Input since minutes'
+    EditLabel.Width = 104
+    EditLabel.Height = 13
+    EditLabel.Caption = 'LabeledEditToMinutes'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 7
+    Text = '12'
+    OnChange = LabeledEditToMinutesChange
   end
 end

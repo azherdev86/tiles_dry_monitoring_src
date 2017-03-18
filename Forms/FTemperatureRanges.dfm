@@ -1,10 +1,10 @@
 object FormTemperatureRanges: TFormTemperatureRanges
   Left = 0
   Top = 0
-  BorderStyle = bsToolWindow
+  BorderIcons = [biSystemMenu]
   Caption = 'Temperature Ranges'
-  ClientHeight = 224
-  ClientWidth = 523
+  ClientHeight = 237
+  ClientWidth = 578
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,162 +18,181 @@ object FormTemperatureRanges: TFormTemperatureRanges
   object LabelSection1: TLabel
     Left = 23
     Top = 20
-    Width = 50
-    Height = 14
+    Width = 61
+    Height = 17
     Caption = 'Section 1'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
-    Font.Style = [fsBold]
+    Font.Style = []
     ParentFont = False
   end
   object LabelSection2: TLabel
     Left = 23
-    Top = 48
-    Width = 50
-    Height = 14
+    Top = 49
+    Width = 61
+    Height = 17
     Caption = 'Section 2'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
-    Font.Style = [fsBold]
+    Font.Style = []
     ParentFont = False
   end
   object LabelSection4: TLabel
     Left = 23
-    Top = 104
-    Width = 50
-    Height = 14
+    Top = 107
+    Width = 61
+    Height = 17
     Caption = 'Section 4'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
-    Font.Style = [fsBold]
+    Font.Style = []
     ParentFont = False
   end
   object LabelSection3: TLabel
     Left = 23
-    Top = 76
-    Width = 50
-    Height = 14
+    Top = 78
+    Width = 61
+    Height = 17
     Caption = 'Section 3'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
-    Font.Style = [fsBold]
+    Font.Style = []
     ParentFont = False
   end
   object LabelSection5: TLabel
     Left = 23
-    Top = 133
-    Width = 50
-    Height = 14
+    Top = 137
+    Width = 61
+    Height = 17
     Caption = 'Section 5'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
-    Font.Style = [fsBold]
+    Font.Style = []
     ParentFont = False
   end
   object LabelSection6: TLabel
-    Left = 274
+    Left = 305
     Top = 20
-    Width = 50
-    Height = 14
+    Width = 61
+    Height = 17
     Caption = 'Section 6'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
-    Font.Style = [fsBold]
+    Font.Style = []
     ParentFont = False
   end
   object LabelSection7: TLabel
-    Left = 274
-    Top = 48
-    Width = 50
-    Height = 14
+    Left = 305
+    Top = 49
+    Width = 61
+    Height = 17
     Caption = 'Section 7'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
-    Font.Style = [fsBold]
+    Font.Style = []
     ParentFont = False
   end
   object LabelSection9: TLabel
-    Left = 274
-    Top = 104
-    Width = 50
-    Height = 14
+    Left = 305
+    Top = 107
+    Width = 61
+    Height = 17
     Caption = 'Section 9'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
-    Font.Style = [fsBold]
+    Font.Style = []
     ParentFont = False
   end
   object LabelSection8: TLabel
-    Left = 274
-    Top = 76
-    Width = 50
-    Height = 14
+    Left = 305
+    Top = 78
+    Width = 61
+    Height = 17
     Caption = 'Section 8'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
-    Font.Style = [fsBold]
+    Font.Style = []
     ParentFont = False
   end
   object LabelSection10: TLabel
-    Left = 274
-    Top = 133
-    Width = 56
-    Height = 14
+    Left = 305
+    Top = 137
+    Width = 69
+    Height = 17
     Caption = 'Section 10'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
-    Font.Style = [fsBold]
+    Font.Style = []
     ParentFont = False
   end
   object ButtonApply: TButton
-    Left = 128
-    Top = 178
-    Width = 81
-    Height = 25
+    Left = 167
+    Top = 175
+    Width = 92
+    Height = 33
     Caption = 'Apply'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -15
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 20
     OnClick = ButtonApplyClick
   end
   object ButtonCancel: TButton
-    Left = 304
-    Top = 178
-    Width = 81
-    Height = 25
+    Left = 327
+    Top = 175
+    Width = 92
+    Height = 33
     Caption = 'Cancel'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -15
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 21
     OnClick = ButtonCancelClick
   end
   object LabeledEditSection1MinYValue: TLabeledEdit
-    Left = 125
+    Left = 140
     Top = 16
-    Width = 28
-    Height = 22
-    EditLabel.Width = 35
-    EditLabel.Height = 13
+    Width = 35
+    Height = 25
+    Hint = 'Input min value'
+    EditLabel.Width = 43
+    EditLabel.Height = 16
     EditLabel.Caption = 'min, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -182,16 +201,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '90'
   end
   object LabeledEditSection1MaxYValue: TLabeledEdit
-    Left = 213
+    Left = 234
     Top = 16
-    Width = 28
-    Height = 22
-    EditLabel.Width = 39
-    EditLabel.Height = 13
+    Width = 35
+    Height = 25
+    Hint = 'Input max value'
+    EditLabel.Width = 46
+    EditLabel.Height = 16
     EditLabel.Caption = 'max, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -200,16 +226,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '110'
   end
   object LabeledEditSection2MinYValue: TLabeledEdit
-    Left = 125
-    Top = 44
-    Width = 28
-    Height = 22
-    EditLabel.Width = 35
-    EditLabel.Height = 13
+    Left = 140
+    Top = 45
+    Width = 35
+    Height = 25
+    Hint = 'Input min value'
+    EditLabel.Width = 43
+    EditLabel.Height = 16
     EditLabel.Caption = 'min, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -218,16 +251,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '100'
   end
   object LabeledEditSection2MaxYValue: TLabeledEdit
-    Left = 213
-    Top = 44
-    Width = 28
-    Height = 22
-    EditLabel.Width = 39
-    EditLabel.Height = 13
+    Left = 234
+    Top = 45
+    Width = 35
+    Height = 25
+    Hint = 'Input max value'
+    EditLabel.Width = 46
+    EditLabel.Height = 16
     EditLabel.Caption = 'max, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -236,16 +276,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '120'
   end
   object LabeledEditSection3MinYValue: TLabeledEdit
-    Left = 125
-    Top = 72
-    Width = 28
-    Height = 22
-    EditLabel.Width = 35
-    EditLabel.Height = 13
+    Left = 140
+    Top = 74
+    Width = 35
+    Height = 25
+    Hint = 'Input min value'
+    EditLabel.Width = 43
+    EditLabel.Height = 16
     EditLabel.Caption = 'min, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -254,16 +301,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '110'
   end
   object LabeledEditSection3MaxYValue: TLabeledEdit
-    Left = 213
-    Top = 72
-    Width = 28
-    Height = 22
-    EditLabel.Width = 39
-    EditLabel.Height = 13
+    Left = 234
+    Top = 74
+    Width = 35
+    Height = 25
+    Hint = 'Input max value'
+    EditLabel.Width = 46
+    EditLabel.Height = 16
     EditLabel.Caption = 'max, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -272,16 +326,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '130'
   end
   object LabeledEditSection4MinYValue: TLabeledEdit
-    Left = 125
-    Top = 100
-    Width = 28
-    Height = 22
-    EditLabel.Width = 35
-    EditLabel.Height = 13
+    Left = 140
+    Top = 103
+    Width = 35
+    Height = 25
+    Hint = 'Input min value'
+    EditLabel.Width = 43
+    EditLabel.Height = 16
     EditLabel.Caption = 'min, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -290,16 +351,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '120'
   end
   object LabeledEditSection4MaxYValue: TLabeledEdit
-    Left = 213
-    Top = 100
-    Width = 28
-    Height = 22
-    EditLabel.Width = 39
-    EditLabel.Height = 13
+    Left = 234
+    Top = 103
+    Width = 35
+    Height = 25
+    Hint = 'Input max value'
+    EditLabel.Width = 46
+    EditLabel.Height = 16
     EditLabel.Caption = 'max, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -308,16 +376,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '140'
   end
   object LabeledEditSection5MinYValue: TLabeledEdit
-    Left = 125
-    Top = 128
-    Width = 28
-    Height = 22
-    EditLabel.Width = 35
-    EditLabel.Height = 13
+    Left = 140
+    Top = 132
+    Width = 35
+    Height = 25
+    Hint = 'Input min value'
+    EditLabel.Width = 43
+    EditLabel.Height = 16
     EditLabel.Caption = 'min, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -326,16 +401,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '130'
   end
   object LabeledEditSection5MaxYValue: TLabeledEdit
-    Left = 213
-    Top = 128
-    Width = 28
-    Height = 22
-    EditLabel.Width = 39
-    EditLabel.Height = 13
+    Left = 234
+    Top = 132
+    Width = 35
+    Height = 25
+    Hint = 'Input max value'
+    EditLabel.Width = 46
+    EditLabel.Height = 16
     EditLabel.Caption = 'max, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -344,16 +426,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '150'
   end
   object LabeledEditSection6MinYValue: TLabeledEdit
-    Left = 376
+    Left = 422
     Top = 16
-    Width = 28
-    Height = 22
-    EditLabel.Width = 35
-    EditLabel.Height = 13
+    Width = 35
+    Height = 25
+    Hint = 'Input min value'
+    EditLabel.Width = 43
+    EditLabel.Height = 16
     EditLabel.Caption = 'min, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -362,16 +451,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '120'
   end
   object LabeledEditSection6MaxYValue: TLabeledEdit
-    Left = 464
+    Left = 517
     Top = 16
-    Width = 28
-    Height = 22
-    EditLabel.Width = 39
-    EditLabel.Height = 13
+    Width = 35
+    Height = 25
+    Hint = 'Input max value'
+    EditLabel.Width = 46
+    EditLabel.Height = 16
     EditLabel.Caption = 'max, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -380,16 +476,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '140'
   end
   object LabeledEditSection7MinYValue: TLabeledEdit
-    Left = 376
-    Top = 44
-    Width = 28
-    Height = 22
-    EditLabel.Width = 35
-    EditLabel.Height = 13
+    Left = 422
+    Top = 45
+    Width = 35
+    Height = 25
+    Hint = 'Input min value'
+    EditLabel.Width = 43
+    EditLabel.Height = 16
     EditLabel.Caption = 'min, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -398,16 +501,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '110'
   end
   object LabeledEditSection7MaxYValue: TLabeledEdit
-    Left = 464
-    Top = 44
-    Width = 28
-    Height = 22
-    EditLabel.Width = 39
-    EditLabel.Height = 13
+    Left = 517
+    Top = 45
+    Width = 35
+    Height = 25
+    Hint = 'Input max value'
+    EditLabel.Width = 46
+    EditLabel.Height = 16
     EditLabel.Caption = 'max, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -416,16 +526,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '130'
   end
   object LabeledEditSection8MinYValue: TLabeledEdit
-    Left = 376
-    Top = 72
-    Width = 28
-    Height = 22
-    EditLabel.Width = 35
-    EditLabel.Height = 13
+    Left = 422
+    Top = 74
+    Width = 35
+    Height = 25
+    Hint = 'Input min value'
+    EditLabel.Width = 43
+    EditLabel.Height = 16
     EditLabel.Caption = 'min, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -434,16 +551,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '100'
   end
   object LabeledEditSection8MaxYValue: TLabeledEdit
-    Left = 464
-    Top = 72
-    Width = 28
-    Height = 22
-    EditLabel.Width = 39
-    EditLabel.Height = 13
+    Left = 517
+    Top = 74
+    Width = 35
+    Height = 25
+    Hint = 'Input max value'
+    EditLabel.Width = 46
+    EditLabel.Height = 16
     EditLabel.Caption = 'max, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -452,16 +576,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '120'
   end
   object LabeledEditSection9MinYValue: TLabeledEdit
-    Left = 376
-    Top = 100
-    Width = 28
-    Height = 22
-    EditLabel.Width = 35
-    EditLabel.Height = 13
+    Left = 422
+    Top = 103
+    Width = 35
+    Height = 25
+    Hint = 'Input min value'
+    EditLabel.Width = 43
+    EditLabel.Height = 16
     EditLabel.Caption = 'min, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -470,16 +601,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '90'
   end
   object LabeledEditSection9MaxYValue: TLabeledEdit
-    Left = 464
-    Top = 100
-    Width = 28
-    Height = 22
-    EditLabel.Width = 39
-    EditLabel.Height = 13
+    Left = 517
+    Top = 103
+    Width = 35
+    Height = 25
+    Hint = 'Input max value'
+    EditLabel.Width = 46
+    EditLabel.Height = 16
     EditLabel.Caption = 'max, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -488,16 +626,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '110'
   end
   object LabeledEditSection10MinYValue: TLabeledEdit
-    Left = 376
-    Top = 128
-    Width = 28
-    Height = 22
-    EditLabel.Width = 35
-    EditLabel.Height = 13
+    Left = 422
+    Top = 132
+    Width = 35
+    Height = 25
+    Hint = 'Input min value'
+    EditLabel.Width = 43
+    EditLabel.Height = 16
     EditLabel.Caption = 'min, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft
@@ -506,16 +651,23 @@ object FormTemperatureRanges: TFormTemperatureRanges
     Text = '80'
   end
   object LabeledEditSection10MaxYValue: TLabeledEdit
-    Left = 464
-    Top = 128
-    Width = 28
-    Height = 22
-    EditLabel.Width = 39
-    EditLabel.Height = 13
+    Left = 517
+    Top = 132
+    Width = 35
+    Height = 25
+    Hint = 'Input max value'
+    EditLabel.Width = 46
+    EditLabel.Height = 16
     EditLabel.Caption = 'max, '#176'C'
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWindowText
+    EditLabel.Font.Height = -13
+    EditLabel.Font.Name = 'Tahoma'
+    EditLabel.Font.Style = []
+    EditLabel.ParentFont = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -15
     Font.Name = 'Arial'
     Font.Style = []
     LabelPosition = lpLeft

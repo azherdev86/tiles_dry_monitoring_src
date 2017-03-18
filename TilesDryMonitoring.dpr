@@ -42,7 +42,9 @@ uses
   LApplicationGlobals in 'Libraries\LApplicationGlobals.pas',
   CBasicComPortMessage in 'Classes\CBasicComPortMessage.pas',
   CController in 'Classes\CController.pas',
-  CExportToCSV in 'Classes\CExportToCSV.pas';
+  CExportToCSV in 'Classes\CExportToCSV.pas',
+  FUserDigitalKeyboard in 'Forms\FUserDigitalKeyboard.pas' {FormUserDigitalKeyboard},
+  FTerminalForm in 'Forms\FTerminalForm.pas' {FormTerminal};
 
 {$R *.res}
 

@@ -5,10 +5,10 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, CPort, StdCtrls, TeEngine, Series, ExtCtrls, TeeProcs, Chart, Buttons,
-  ComCtrls, CIncomingComPortMessage, COutgoingComPortMessage;
+  ComCtrls, CIncomingComPortMessage, COutgoingComPortMessage, FTerminalForm;
 
 type
-  TFormMain = class(TForm)
+  TFormMain = class(TFormTerminal)
     PaintBox: TPaintBox;
     TimerCreateBoxMessages: TTimer;
     Label1: TLabel;
@@ -166,11 +166,14 @@ implementation
 uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventLogs,
      FGraphHistory, CBoxes, CBasicComPortMessage, DateUtils, CTableRecords, ZDataset,
      CTempValuesBuffer, CController, FInputPassword, FChangePassword, FExportToCSV,
-     CEventLog, LUtils, FDebugPanel, CQueryConstructor, CConditions, CExportToCSV;
+     CEventLog, LUtils, FDebugPanel, CQueryConstructor, CConditions, CExportToCSV,
+  FUserDigitalKeyboard;
 
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
+  inherited;
+
   FGraphMouseCoord := Point(0, 0);
 
   FormMain.WindowState := wsMaximized;
@@ -1072,6 +1075,8 @@ var
 
   before : TDateTime;
 begin
+  Result := False;
+
   //Удаляем значения температуры, старшие 15 дней, каждый день после 0:00 часов ночи.
   TableRecord := TMTableRecord.Create('TempValues');
   try
@@ -1114,7 +1119,7 @@ begin
   try
     before := Now;
 
-    rows_affected := ExportToCSV.SaveToCSVFile(Now - CRecentDayCount, Now);
+    rows_affected := ExportToCSV.SaveToCSVFile(Now - CRecentDayCount - 1/24, Now - 1/24);
 
     ms_between := MilliSecondsBetween(before, Now);
 

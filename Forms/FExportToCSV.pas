@@ -4,22 +4,28 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, StdCtrls, Gauges, ZDataset;
+  Dialogs, ComCtrls, StdCtrls, Gauges, ZDataset, ExtCtrls, FTerminalForm;
 
 type
-  TFormExportToCSV = class(TForm)
+  TFormExportToCSV = class(TFormTerminal)
     LabelSince: TLabel;
     LabelTo: TLabel;
     ButtonExport: TButton;
     DatePickerSince: TDateTimePicker;
-    TimePickerSince: TDateTimePicker;
     DatePickerTo: TDateTimePicker;
-    TimePickerTo: TDateTimePicker;
     Gauge: TGauge;
     SaveDialog: TSaveDialog;
+    LabeledEditSinceHours: TLabeledEdit;
+    LabeledEditSinceMinutes: TLabeledEdit;
+    LabeledEditToHours: TLabeledEdit;
+    LabeledEditToMinutes: TLabeledEdit;
     procedure ButtonExportClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure LabeledEditSinceHoursChange(Sender: TObject);
+    procedure LabeledEditToHoursChange(Sender: TObject);
+    procedure LabeledEditSinceMinutesChange(Sender: TObject);
+    procedure LabeledEditToMinutesChange(Sender: TObject);
   private
     { Private declarations }
     FQuery : TZQuery;
@@ -60,15 +66,101 @@ begin
 end;
 
 
+procedure TFormExportToCSV.LabeledEditSinceHoursChange(Sender: TObject);
+var
+  value : integer;
+begin
+  if TryStrToInt((Sender as TLabeledEdit).Text, value)
+    then
+      begin
+        if (value < 0)
+          then value := 0;
+
+        if (value > 23)
+          then value := 23;
+
+        (Sender as TLabeledEdit).Text := IntToStr(value);
+      end
+    else
+      (Sender as TLabeledEdit).Text := '0';
+end;
+
+procedure TFormExportToCSV.LabeledEditSinceMinutesChange(Sender: TObject);
+var
+  value : integer;
+begin
+  if TryStrToInt((Sender as TLabeledEdit).Text, value)
+    then
+      begin
+        if (value < 0)
+          then value := 0;
+
+        if (value > 59)
+          then value := 59;
+
+        (Sender as TLabeledEdit).Text := IntToStr(value);
+      end
+    else
+      (Sender as TLabeledEdit).Text := '0';
+end;
+
+procedure TFormExportToCSV.LabeledEditToHoursChange(Sender: TObject);
+var
+  value : integer;
+begin
+  if TryStrToInt((Sender as TLabeledEdit).Text, value)
+    then
+      begin
+        if (value < 0)
+          then value := 0;
+
+        if (value > 23)
+          then value := 23;
+
+        (Sender as TLabeledEdit).Text := IntToStr(value);
+      end
+    else
+      (Sender as TLabeledEdit).Text := '0';
+end;
+
+procedure TFormExportToCSV.LabeledEditToMinutesChange(Sender: TObject);
+var
+  value : integer;
+begin
+  if TryStrToInt((Sender as TLabeledEdit).Text, value)
+    then
+      begin
+        if (value < 0)
+          then value := 0;
+
+        if (value > 59)
+          then value := 59;
+
+        (Sender as TLabeledEdit).Text := IntToStr(value);
+      end
+    else
+      (Sender as TLabeledEdit).Text := '0';
+end;
+
 function TFormExportToCSV.CheckValues() : boolean;
 var
   tmpDateTimeSince,
   tmpDateTimeTo : TDateTime;
+
+  iHours,
+  iMinutes : integer;
 begin
   Result := False;
 
-  tmpDateTimeSince := Trunc(DatePickerSince.Date) + TimeOf(TimePickerSince.Time);
-  tmpDateTimeTo    := Trunc(DatePickerTo.Date)    + TimeOf(TimePickerTo.Time);
+  iHours   := StrToInt(LabeledEditSinceHours.Text);
+  iMinutes := StrToInt(LabeledEditSinceMinutes.Text);
+
+  tmpDateTimeSince := Trunc(DatePickerSince.Date) + iHours/24 + iMinutes/24/60;
+
+  iHours   := StrToInt(LabeledEditToHours.Text);
+  iMinutes := StrToInt(LabeledEditToMinutes.Text);
+
+  tmpDateTimeTo    := Trunc(DatePickerTo.Date)    + iHours/24 + iMinutes/24/60;
 
   if tmpDateTimeTo > Now
     then
@@ -150,6 +242,8 @@ end;
 
 procedure TFormExportToCSV.FormCreate(Sender: TObject);
 begin
+  inherited;
+
   FQuery := TZQuery.Create(ApplicationDBConnection);
   FQuery.Connection := ApplicationDBConnection;
 
@@ -157,6 +251,11 @@ begin
   FDateTimeTo := 0;
 
   SetTimeRanges;
+
+  LabeledEditSinceHours.EditLabel.Caption   := '';
+  LabeledEditSinceMinutes.EditLabel.Caption := '';
+  LabeledEditToHours.EditLabel.Caption      := '';
+  LabeledEditToMinutes.EditLabel.Caption    := '';
 end;
 
 procedure TFormExportToCSV.FormDestroy(Sender: TObject);
@@ -262,24 +361,32 @@ begin
     then
       begin
         DatePickerTo.DateTime := FDateTimeTo;
-        TimePickerTo.DateTime := FDateTimeTo;
+
+        LabeledEditToHours.Text   := IntToStr(DecodeHour(FDateTimeTo));
+        LabeledEditToMinutes.Text := IntToStr(DecodeMinute(FDateTimeTo));
       end
     else
       begin
         DatePickerTo.DateTime := Now;
-        TimePickerTo.DateTime := Now;
+
+        LabeledEditToHours.Text   := IntToStr(DecodeHour(Now));
+        LabeledEditToMinutes.Text := IntToStr(DecodeMinute(Now));
       end;
 
   if not (FDateTimeSince = 0)
     then
       begin
         DatePickerSince.DateTime := FDateTimeSince;
-        TimePickerSince.DateTime := FDateTimeSince;
+
+        LabeledEditSinceHours.Text   := IntToStr(DecodeHour(FDateTimeSince));
+        LabeledEditSinceMinutes.Text := IntToStr(DecodeMinute(FDateTimeSince));
       end
     else
       begin
         DatePickerSince.DateTime := Now - 1;
-        TimePickerSince.DateTime := Now - 1;
+
+        LabeledEditSinceHours.Text   := IntToStr(DecodeHour(Now - 1));
+        LabeledEditSinceMinutes.Text := IntToStr(DecodeMinute(Now - 1));
       end;
 end;
 

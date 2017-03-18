@@ -21,6 +21,7 @@ object FormInputPassword: TFormInputPassword
     Top = 24
     Width = 209
     Height = 21
+    Hint = 'Input password'
     EditLabel.Width = 167
     EditLabel.Height = 13
     EditLabel.Caption = 'Input admin password to continue:'

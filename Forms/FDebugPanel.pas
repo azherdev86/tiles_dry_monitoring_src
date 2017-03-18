@@ -38,7 +38,8 @@ var
 
 implementation
 
-uses FMain, CTableRecords, LApplicationGlobals, CController, LUtils;
+uses FMain, CTableRecords, LApplicationGlobals, CController, LUtils,
+  FUserDigitalKeyboard;
 
 {$R *.dfm}
 

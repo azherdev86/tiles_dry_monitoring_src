@@ -52,5 +52,11 @@
     <Transaction>2017.03.13 01:34:33.586.pas,F:\_programming\tiles_dry_monitoring\_sources\Classes\CTempValueBuffers.pas=</Transaction>
     <Transaction>2017.03.18 11:37:02.886.pas,F:\_programming\tiles_dry_monitoring\_sources\Unit1.pas=F:\_programming\tiles_dry_monitoring\_sources\Classes\CExportToCSV.pas</Transaction>
     <Transaction>2017.03.18 14:28:29.677.pas,F:\_programming\tiles_dry_monitoring\_sources\Unit1.pas=F:\_programming\tiles_dry_monitoring\_sources\Classes\CExportToCSV.pas</Transaction>
+    <Transaction>2017.03.18 16:52:18.435.pas,F:\_programming\tiles_dry_monitoring\_sources\Unit1.pas=F:\_programming\tiles_dry_monitoring\_sources\Forms\FUserDigitalKeyboard.pas</Transaction>
+    <Transaction>2017.03.18 16:52:18.435.dfm,F:\_programming\tiles_dry_monitoring\_sources\Unit1.dfm=F:\_programming\tiles_dry_monitoring\_sources\Forms\FUserDigitalKeyboard.dfm</Transaction>
+    <Transaction>2017.03.18 18:46:26.528.pas,F:\_programming\tiles_dry_monitoring\_sources\Unit1.pas=F:\_programming\tiles_dry_monitoring\_sources\Forms\FTerminalForm.pas</Transaction>
+    <Transaction>2017.03.18 18:50:44.049.pas,F:\_programming\tiles_dry_monitoring\_sources\Forms\FTerminalForm.pas=</Transaction>
+    <Transaction>2017.03.18 18:53:04.719.pas,F:\_programming\tiles_dry_monitoring\_sources\Unit1.pas=F:\_programming\tiles_dry_monitoring\_sources\Forms\FTerminalForm.pas</Transaction>
+    <Transaction>2017.03.18 18:53:04.719.dfm,F:\_programming\tiles_dry_monitoring\_sources\Unit1.dfm=F:\_programming\tiles_dry_monitoring\_sources\Forms\FTerminalForm.dfm</Transaction>
   </Transactions>
 </BorlandProject>

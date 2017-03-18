@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls;
+  Dialogs, StdCtrls, ExtCtrls, FTerminalForm;
 
 type
   TypePasswordMode = (pmNone,
@@ -12,7 +12,7 @@ type
                       pmWrong);
 
 type
-  TFormInputPassword = class(TForm)
+  TFormInputPassword = class(TFormTerminal)
     LabeledEditPassword: TLabeledEdit;
     ButtonOk: TButton;
     ButtonCancel: TButton;
@@ -66,7 +66,7 @@ var
 begin
   PasswordMode := pmWrong;
 
-  Pass := LabeledEditPassword.Text;  
+  Pass := LabeledEditPassword.Text;
 
   if Pass = ''
     then
@@ -93,6 +93,8 @@ end;
 
 procedure TFormInputPassword.FormCreate(Sender: TObject);
 begin
+  inherited;
+
   PasswordMode := pmNone;
 end;
 

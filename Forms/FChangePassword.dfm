@@ -38,6 +38,7 @@ object FormChangePassword: TFormChangePassword
     Top = 10
     Width = 209
     Height = 21
+    Hint = 'Input current password'
     EditLabel.Width = 117
     EditLabel.Height = 13
     EditLabel.Caption = 'Input current password:'
@@ -51,6 +52,7 @@ object FormChangePassword: TFormChangePassword
     Top = 38
     Width = 209
     Height = 21
+    Hint = 'Input new password'
     EditLabel.Width = 102
     EditLabel.Height = 13
     EditLabel.Caption = 'Input new password:'
@@ -64,6 +66,7 @@ object FormChangePassword: TFormChangePassword
     Top = 66
     Width = 209
     Height = 21
+    Hint = 'Confirm new password'
     EditLabel.Width = 113
     EditLabel.Height = 13
     EditLabel.Caption = 'Confirm new password:'

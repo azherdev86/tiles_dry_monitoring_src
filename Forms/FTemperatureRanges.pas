@@ -4,10 +4,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons, ExtCtrls;
+  Dialogs, StdCtrls, Buttons, ExtCtrls, FTerminalForm;
 
 type
-  TFormTemperatureRanges = class(TForm)
+  TFormTemperatureRanges = class(TFormTerminal)
     ButtonApply: TButton;
     ButtonCancel: TButton;
     LabeledEditSection1MinYValue: TLabeledEdit;
@@ -89,6 +89,8 @@ end;
 
 procedure TFormTemperatureRanges.FormCreate(Sender: TObject);
 begin
+  inherited;
+
   LoadSettings;
   LoadStartRanges;
 

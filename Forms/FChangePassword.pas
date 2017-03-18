@@ -4,10 +4,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, ActnList;
+  Dialogs, StdCtrls, ExtCtrls, ActnList, FTerminalForm;
 
 type
-  TFormChangePassword = class(TForm)
+  TFormChangePassword = class(TFormTerminal)
     ButtonCancel: TButton;
     ButtonOk: TButton;
     LabeledEditCurrentPassword: TLabeledEdit;
