@@ -7,6 +7,9 @@ function DateToFirebirdString(const Date: TDateTime): string;
 function DateTimeToFirebirdString(const Date: TDateTime): string;
 function DateTimeToDHMSString(DateTime : TDateTime) : string;
 function DoAction(AProbability : Byte) : boolean;
+
+function DecodeYear(ADateTime : TDateTime) : Word;
+function DecodeMonth(ADateTime : TDateTime) : Word;
 function DecodeHour(ADateTime : TDateTime) : Word;
 function DecodeMinute(ADateTime : TDateTime) : Word;
 function DecodeSecond(ADateTime : TDateTime) : Word;
@@ -117,6 +120,29 @@ begin
   if not (AProbability < RandValue)
     then Result := True;
 end;
+
+function DecodeYear(ADateTime : TDateTime) : Word;
+var
+  AYear,
+  AMonth,
+  ADay : word;
+begin
+  DecodeDate(ADateTime, AYear, AMonth, ADay);
+
+  Result := AYear;
+end;
+
+function DecodeMonth(ADateTime : TDateTime) : Word;
+var
+  AYear,
+  AMonth,
+  ADay : word;
+begin
+  DecodeDate(ADateTime, AYear, AMonth, ADay);
+
+  Result := AMonth;
+end;
+
 
 function DecodeHour(ADateTime : TDateTime) : Word;
 var

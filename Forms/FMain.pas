@@ -114,7 +114,10 @@ type
 
     //флаги
     FNeedDeleteOutdatedTempValues : boolean; //Нужно удалять устаревшие значения (да/нет)
-    FOutdateTempValuesDeleted : boolean;     //Устаревшие значения удалены (да/нет)
+    FOutdatedTempValuesDeleted : boolean;     //Устаревшие значения удалены (да/нет)
+
+    FNeedBackupOutdatedTempValues : boolean; //Нужно сохранять устаревшие значения (да/нет)
+    FOutdatedTempValuesBackuped : boolean;     //Устаревшие значения сохранены (да/нет)
 
     procedure UpdateGraph();
     procedure UpdateStatusBar;
@@ -130,6 +133,7 @@ type
     function ProcessIncomingMessageErrors(IncomingMessage : TMIncomingComportMessage) : boolean;
 
     function DeleteOutdatedTempValues() : boolean;
+    function BackupOutdatedTempValues() : boolean;
 
   public
     { Public declarations }
@@ -162,7 +166,7 @@ implementation
 uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventLogs,
      FGraphHistory, CBoxes, CBasicComPortMessage, DateUtils, CTableRecords, ZDataset,
      CTempValuesBuffer, CController, FInputPassword, FChangePassword, FExportToCSV,
-     CEventLog, LUtils, FDebugPanel, CQueryConstructor, CConditions;
+     CEventLog, LUtils, FDebugPanel, CQueryConstructor, CConditions, CExportToCSV;
 
 
 procedure TFormMain.FormCreate(Sender: TObject);
@@ -191,6 +195,10 @@ begin
   OutgoingErrorTimeOutCount     := 0;
 
   FNeedDeleteOutdatedTempValues := False;
+  FOutdatedTempValuesDeleted    := False;
+
+  FNeedBackupOutdatedTempValues := False;
+  FOutdatedTempValuesBackuped   := False;
 
   LoadSettings;
 
@@ -331,17 +339,33 @@ end;
 
 procedure TFormMain.TimerSchedulerTimer(Sender: TObject);
 begin
-  if (DecodeHour(Now) = 0) and (not FOutdateTempValuesDeleted) //если настало нужное время и операция еще не выполнена
+  ///////////////// Удаление старых даных ////////////////////////
+  ////////////////// Каждый день в 00:00 /////////////////////////
+  if (DecodeHour(Now) = 0) and (not FOutdatedTempValuesDeleted) //если настало нужное время и операция еще не выполнена
     then FNeedDeleteOutdatedTempValues := True; //то выставляем флаг
 
-  if FNeedDeleteOutdatedTempValues and (not FOutdateTempValuesDeleted)
-    then FOutdateTempValuesDeleted := DeleteOutdatedTempValues();
+  if FNeedDeleteOutdatedTempValues and (not FOutdatedTempValuesDeleted)
+    then FOutdatedTempValuesDeleted := DeleteOutdatedTempValues();
 
-  if FOutdateTempValuesDeleted
+  if FOutdatedTempValuesDeleted
     then FNeedDeleteOutdatedTempValues := False;
 
   if (DecodeHour(Now) > 0)
-    then FOutdateTempValuesDeleted := False;
+    then FOutdatedTempValuesDeleted := False;
+
+  ///////////////// Сохранение старых данных ////////////////////////
+  ////////////////// Каждый день в 01:00 /////////////////////////
+  if (DecodeHour(Now) = 1) and (not FOutdatedTempValuesBackuped) //если настало нужное время и операция еще не выполнена
+    then FNeedBackupOutdatedTempValues := True; //то выставляем флаг
+
+  if FNeedBackupOutdatedTempValues and (not FOutdatedTempValuesBackuped)
+    then FOutdatedTempValuesBackuped := BackupOutdatedTempValues;
+
+  if FOutdatedTempValuesBackuped
+    then FNeedBackupOutdatedTempValues := False;
+
+  if (DecodeHour(Now) > 1)
+    then FOutdatedTempValuesBackuped := False;
 end;
 
 procedure TFormMain.TrackBarAllConveyorsChange(Sender: TObject);
@@ -1048,14 +1072,12 @@ var
 
   before : TDateTime;
 begin
-  Result := False;
-
   //Удаляем значения температуры, старшие 15 дней, каждый день после 0:00 часов ночи.
   TableRecord := TMTableRecord.Create('TempValues');
   try
     QueryConstructor := TableRecord.QueryConstructor;
 
-    if not ASsigned(QueryConstructor)
+    if not Assigned(QueryConstructor)
       then Exit;
 
     QueryConstructor.AddCondition('TempValues', 'TempTime', ctLessEqual, Now - CRecentDayCount);
@@ -1067,7 +1089,7 @@ begin
     ms_between := MilliSecondsBetween(before, Now);
 
     ApplicationEventLog.WriteLog(elDeleteOutdated, 'Deleted ' + IntToStr(rows_affected) +
-                                                   ' record of temp values in ' +
+                                                   ' records of outdated temp values in ' +
                                                    IntToStr(ms_between) + ' ms');
   finally
     TableRecord.Free;
@@ -1075,5 +1097,36 @@ begin
 
   Result := True;
 end;
+
+function TFormMain.BackupOutdatedTempValues() : boolean;
+const
+  CRecentDayCount = 1;
+var
+  ExportToCSV : TMExportToCSV;
+
+  ms_between,
+  rows_affected : integer;
+
+  before : TDateTime;
+begin
+  //Удаляем значения температуры, старше 15 дней, каждый день после 0:00 часов ночи.
+  ExportToCSV := TMExportToCSV.Create;
+  try
+    before := Now;
+
+    rows_affected := ExportToCSV.SaveToCSVFile(Now - CRecentDayCount, Now);
+
+    ms_between := MilliSecondsBetween(before, Now);
+
+    ApplicationEventLog.WriteLog(elBackupOutdated, 'Saved ' + IntToStr(rows_affected) +
+                                                   ' records of outdated temp values in ' +
+                                                   IntToStr(ms_between) + ' ms');
+  finally
+    ExportToCSV.Free;
+  end;
+
+  Result := True;
+end;
+
 
 end.
