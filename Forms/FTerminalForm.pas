@@ -13,6 +13,7 @@ type
     { Private declarations }
     procedure SetDigitalKeyboardForInputs;
     procedure OnInputClick(Sender : TObject);
+    function PrepareText(AText : string) : string;
   public
     { Public declarations }
   end;
@@ -52,10 +53,16 @@ begin
 end;
 
 procedure TFormTerminal.OnInputClick(Sender : TObject);
+var
+  text : string;
 begin
   Application.CreateForm(TFormUserDigitalKeyboard, FormUserDigitalKeyboard);
   try
-    FormUserDigitalKeyboard.EditResult.Text := (Sender as TLabeledEdit).Text;
+    text := (Sender as TLabeledEdit).Text;
+    text := PrepareText(text);
+    
+    FormUserDigitalKeyboard.EditResult.Text := text;
+
     if (Sender as TLabeledEdit).Hint <> ''
       then FormUserDigitalKeyboard.Caption := (Sender as TLabeledEdit).Hint;
 
@@ -68,6 +75,27 @@ begin
   finally
     FormUserDigitalKeyboard.Free;
   end;
+end;
+
+function TFormTerminal.PrepareText(AText : string) : string;
+var
+  is_zero : boolean;
+begin
+  Result := AText;
+
+  is_zero := True;
+
+  if Length(AText) < 1 
+    then Exit;        
+
+  while is_zero do
+    begin
+      if (AText[1] = '0') and (Length(AText) > 1)
+        then AText := StringReplace(AText, '0', '', [])
+        else is_zero := False;      
+    end;  
+
+  Result := AText;
 end;
 
 

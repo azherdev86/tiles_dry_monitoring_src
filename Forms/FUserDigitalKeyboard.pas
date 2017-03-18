@@ -175,7 +175,7 @@ end;
 
 procedure TFormUserDigitalKeyboard.ButtonEnterClick(Sender: TObject);
 begin
-  ResultValue := StrToFloat(EditResult.Text, ApplicationFormatSettings);
+  ResultValue := StrToFloatDef(EditResult.Text, 0, ApplicationFormatSettings);
   ResultOperation := roEnter;
   Close;
 end;

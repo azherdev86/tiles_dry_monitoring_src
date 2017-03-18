@@ -30,7 +30,6 @@ type
     LabelAxisMinYValue: TLabel;
     LabelAxisMaxYValue: TLabel;
     Label25: TLabel;
-    BitBtnKeyBoard: TBitBtn;
     GroupBoxFloorAxisSettings: TGroupBox;
     LabeledEditAxisMinYValue: TLabeledEdit;
     LabeledEditAxisMaxYValue: TLabeledEdit;
@@ -65,15 +64,13 @@ type
     Label32: TLabel;
     Label33: TLabel;
     Label34: TLabel;
-    BitBtnChangePassword: TBitBtn;
     BitBtbExportToCSV: TBitBtn;
     ButtonDebug: TButton;
     TimerCreateCheckSignaModelMessages: TTimer;
     LabelConveyorAllWork: TLabel;
     LabelConveyorAllTest: TLabel;
     BitBtnSirenDisable: TBitBtn;
-    BitBtnClose: TBitBtn;
-    BitBtn1: TBitBtn;
+    BitBtnControlPanel: TBitBtn;
     TimerScheduler: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
@@ -81,7 +78,6 @@ type
     procedure PaintBoxMouseLeave(Sender: TObject);
     procedure PaintBoxMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
-    procedure BitBtnKeyBoardClick(Sender: TObject);
     procedure BitBtnTemperatureRangesClick(Sender: TObject);
     procedure BitBtnEventHistoryClick(Sender: TObject);
     procedure PaintBoxClick(Sender: TObject);
@@ -101,11 +97,10 @@ type
     procedure TrackBarConveyor2Change(Sender: TObject);
     procedure TrackBarConveyor1Change(Sender: TObject);
     procedure TrackBarAllConveyorsChange(Sender: TObject);
-    procedure BitBtnChangePasswordClick(Sender: TObject);
     procedure BitBtbExportToCSVClick(Sender: TObject);
     procedure ButtonDebugClick(Sender: TObject);
     procedure TimerCreateCheckSignaModelMessagesTimer(Sender: TObject);
-    procedure BitBtnCloseClick(Sender: TObject);
+    procedure BitBtnControlPanelClick(Sender: TObject);
     procedure BitBtnSirenDisableClick(Sender: TObject);
   private
     { Private declarations }
@@ -167,7 +162,7 @@ uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventLogs,
      FGraphHistory, CBoxes, CBasicComPortMessage, DateUtils, CTableRecords, ZDataset,
      CTempValuesBuffer, CController, FInputPassword, FChangePassword, FExportToCSV,
      CEventLog, LUtils, FDebugPanel, CQueryConstructor, CConditions, CExportToCSV,
-  FUserDigitalKeyboard;
+  FUserDigitalKeyboard, FControlPanel;
 
 
 procedure TFormMain.FormCreate(Sender: TObject);
@@ -610,11 +605,6 @@ begin
 end;
 
 
-procedure TFormMain.BitBtnKeyBoardClick(Sender: TObject);
-begin
-  ShellExecute(0,nil,'osk.exe',nil,nil,SW_SHOW);
-end;
-
 procedure TFormMain.BitBtnSirenDisableClick(Sender: TObject);
 begin
   ApplicationController.GenerateSetSignalModeMessage(smDisabled);
@@ -628,16 +618,22 @@ begin
   FormExportToCSV.Free;
 end;
 
-procedure TFormMain.BitBtnChangePasswordClick(Sender: TObject);
+procedure TFormMain.BitBtnControlPanelClick(Sender: TObject);
+var
+  ExitProgram : boolean;
 begin
-  Application.CreateForm(TFormChangePassword, FormChangePassword);
-  FormChangePassword.ShowModal;
-  FormChangePassword.Free;
-end;
+  Application.CreateForm(TFormControlPanel, FormControlPanel);
+  try
+    FormControlPanel.ShowModal;
 
-procedure TFormMain.BitBtnCloseClick(Sender: TObject);
-begin
-  Close;
+    ExitProgram := FormControlPanel.NeedClose;
+
+  finally
+    FormControlPanel.Free;
+  end;
+
+  if ExitProgram
+    then Close;
 end;
 
 procedure TFormMain.BitBtnEventHistoryClick(Sender: TObject);

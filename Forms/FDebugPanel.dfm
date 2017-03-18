@@ -162,6 +162,21 @@ object FormDebugPanel: TFormDebugPanel
     TabOrder = 8
     OnClick = ButtonGenerateBoxMessageClick
   end
+  object ButtonKeyboard: TButton
+    Left = 40
+    Top = 218
+    Width = 209
+    Height = 24
+    Caption = 'DISABLE SIGNAL'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 9
+    OnClick = ButtonKeyboardClick
+  end
   object Timer: TTimer
     OnTimer = TimerTimer
     Left = 16

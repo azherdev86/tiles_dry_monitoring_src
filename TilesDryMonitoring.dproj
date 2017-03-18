@@ -74,6 +74,9 @@
     <DCCReference Include="Forms\FChangePassword.pas">
       <Form>FormChangePassword</Form>
     </DCCReference>
+    <DCCReference Include="Forms\FControlPanel.pas">
+      <Form>FormControlPanel</Form>
+    </DCCReference>
     <DCCReference Include="Forms\FDebugPanel.pas">
       <Form>FormDebugPanel</Form>
     </DCCReference>

@@ -19,6 +19,7 @@ type
     Timer: TTimer;
     ButtonGenerateBoxMessage: TButton;
     Label1: TLabel;
+    ButtonKeyboard: TButton;
     procedure ButtonStartStopTimersClick(Sender: TObject);
     procedure ButtonEmulateDataInBaseClick(Sender: TObject);
     procedure ButtonResetBaseClick(Sender: TObject);
@@ -27,6 +28,7 @@ type
     procedure TimerTimer(Sender: TObject);
     procedure SendMessagesClick(Sender: TObject);
     procedure ButtonGenerateBoxMessageClick(Sender: TObject);
+    procedure ButtonKeyboardClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -39,7 +41,7 @@ var
 implementation
 
 uses FMain, CTableRecords, LApplicationGlobals, CController, LUtils,
-  FUserDigitalKeyboard;
+     ShellAPI; 
 
 {$R *.dfm}
 
@@ -192,6 +194,11 @@ end;
 procedure TFormDebugPanel.ButtonGenerateBoxMessageClick(Sender: TObject);
 begin
   FormMain.TimerCreateBoxMessagesTimer(FormMain);
+end;
+
+procedure TFormDebugPanel.ButtonKeyboardClick(Sender: TObject);
+begin
+  ShellExecute(0,nil,'osk.exe',nil,nil,SW_SHOW);
 end;
 
 procedure TFormDebugPanel.ButtonStartStopTimersClick(Sender: TObject);

@@ -5,11 +5,10 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, StdCtrls, ExtCtrls, TeEngine, Series, TeeProcs, Chart,
-  ZDataset, Gauges, FTerminalForm;
+  ZDataset, Gauges, FTerminalForm, Buttons;
 
 type
   TFormGraphHistory = class(TFormTerminal)
-    ButtonApply: TButton;
     DatePickerSince: TDateTimePicker;
     LabelSince: TLabel;
     DatePickerTo: TDateTimePicker;
@@ -31,14 +30,16 @@ type
     LabeledEditToHours: TLabeledEdit;
     Label2: TLabel;
     LabeledEditToMinutes: TLabeledEdit;
+    BitBtnCancel: TBitBtn;
+    BitBtnOk: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure ButtonApplyClick(Sender: TObject);
     procedure LabeledEditSinceHoursChange(Sender: TObject);
     procedure LabeledEditToHoursChange(Sender: TObject);
     procedure LabeledEditSinceMinutesChange(Sender: TObject);
     procedure LabeledEditToMinutesChange(Sender: TObject);
+    procedure BitBtnOkClick(Sender: TObject);
   private
     { Private declarations }
     FQuery : TZQuery;
@@ -123,7 +124,9 @@ begin
         if (value > 23)
           then value := 23;
 
-        (Sender as TLabeledEdit).Text := IntToStr(value);
+        if value < 10
+          then (Sender as TLabeledEdit).Text := '0' + IntToStr(value)
+          else (Sender as TLabeledEdit).Text := IntToStr(value);
       end
     else
       (Sender as TLabeledEdit).Text := '0';
@@ -142,7 +145,9 @@ begin
         if (value > 59)
           then value := 59;
 
-        (Sender as TLabeledEdit).Text := IntToStr(value);
+        if value < 10
+          then (Sender as TLabeledEdit).Text := '0' + IntToStr(value)
+          else (Sender as TLabeledEdit).Text := IntToStr(value);
       end
     else
       (Sender as TLabeledEdit).Text := '0';
@@ -161,7 +166,9 @@ begin
         if (value > 23)
           then value := 23;
 
-        (Sender as TLabeledEdit).Text := IntToStr(value);
+        if value < 10
+          then (Sender as TLabeledEdit).Text := '0' + IntToStr(value)
+          else (Sender as TLabeledEdit).Text := IntToStr(value);
       end
     else
       (Sender as TLabeledEdit).Text := '0';
@@ -180,7 +187,9 @@ begin
         if (value > 59)
           then value := 59;
 
-        (Sender as TLabeledEdit).Text := IntToStr(value);
+        if value < 10
+          then (Sender as TLabeledEdit).Text := '0' + IntToStr(value)
+          else (Sender as TLabeledEdit).Text := IntToStr(value);
       end
     else
       (Sender as TLabeledEdit).Text := '0';
@@ -323,7 +332,7 @@ begin
   Chart.LeftAxis.Maximum := ApplicationProgramSettings.GraphSettings.AxisMaxYValue;
 end;
 
-procedure TFormGraphHistory.ButtonApplyClick(Sender: TObject);
+procedure TFormGraphHistory.BitBtnOkClick(Sender: TObject);
 begin
   if CheckValues
     then DrawChart;

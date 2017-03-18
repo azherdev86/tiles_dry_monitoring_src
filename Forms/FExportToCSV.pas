@@ -4,13 +4,13 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, StdCtrls, Gauges, ZDataset, ExtCtrls, FTerminalForm;
+  Dialogs, ComCtrls, StdCtrls, Gauges, ZDataset, ExtCtrls, FTerminalForm,
+  Buttons;
 
 type
   TFormExportToCSV = class(TFormTerminal)
     LabelSince: TLabel;
     LabelTo: TLabel;
-    ButtonExport: TButton;
     DatePickerSince: TDateTimePicker;
     DatePickerTo: TDateTimePicker;
     Gauge: TGauge;
@@ -19,13 +19,16 @@ type
     LabeledEditSinceMinutes: TLabeledEdit;
     LabeledEditToHours: TLabeledEdit;
     LabeledEditToMinutes: TLabeledEdit;
-    procedure ButtonExportClick(Sender: TObject);
+    BitBtnOk: TBitBtn;
+    BitBtnCancel: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure LabeledEditSinceHoursChange(Sender: TObject);
     procedure LabeledEditToHoursChange(Sender: TObject);
     procedure LabeledEditSinceMinutesChange(Sender: TObject);
     procedure LabeledEditToMinutesChange(Sender: TObject);
+    procedure BitBtnOkClick(Sender: TObject);
+    procedure BitBtnCancelClick(Sender: TObject);
   private
     { Private declarations }
     FQuery : TZQuery;
@@ -79,7 +82,9 @@ begin
         if (value > 23)
           then value := 23;
 
-        (Sender as TLabeledEdit).Text := IntToStr(value);
+        if value < 10
+          then (Sender as TLabeledEdit).Text := '0' + IntToStr(value)
+          else (Sender as TLabeledEdit).Text := IntToStr(value);
       end
     else
       (Sender as TLabeledEdit).Text := '0';
@@ -98,7 +103,9 @@ begin
         if (value > 59)
           then value := 59;
 
-        (Sender as TLabeledEdit).Text := IntToStr(value);
+        if value < 10
+          then (Sender as TLabeledEdit).Text := '0' + IntToStr(value)
+          else (Sender as TLabeledEdit).Text := IntToStr(value);
       end
     else
       (Sender as TLabeledEdit).Text := '0';
@@ -117,7 +124,9 @@ begin
         if (value > 23)
           then value := 23;
 
-        (Sender as TLabeledEdit).Text := IntToStr(value);
+        if value < 10
+          then (Sender as TLabeledEdit).Text := '0' + IntToStr(value)
+          else (Sender as TLabeledEdit).Text := IntToStr(value);
       end
     else
       (Sender as TLabeledEdit).Text := '0';
@@ -136,7 +145,9 @@ begin
         if (value > 59)
           then value := 59;
 
-        (Sender as TLabeledEdit).Text := IntToStr(value);
+        if value < 10
+          then (Sender as TLabeledEdit).Text := '0' + IntToStr(value)
+          else (Sender as TLabeledEdit).Text := IntToStr(value);
       end
     else
       (Sender as TLabeledEdit).Text := '0';
@@ -305,7 +316,12 @@ begin
 end;
 
 
-procedure TFormExportToCSV.ButtonExportClick(Sender: TObject);
+procedure TFormExportToCSV.BitBtnCancelClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TFormExportToCSV.BitBtnOkClick(Sender: TObject);
 var
   SQLText : string;
   count : integer;

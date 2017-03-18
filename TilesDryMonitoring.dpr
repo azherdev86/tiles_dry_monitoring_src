@@ -44,7 +44,8 @@ uses
   CController in 'Classes\CController.pas',
   CExportToCSV in 'Classes\CExportToCSV.pas',
   FUserDigitalKeyboard in 'Forms\FUserDigitalKeyboard.pas' {FormUserDigitalKeyboard},
-  FTerminalForm in 'Forms\FTerminalForm.pas' {FormTerminal};
+  FTerminalForm in 'Forms\FTerminalForm.pas' {FormTerminal},
+  FControlPanel in 'Forms\FControlPanel.pas' {FormControlPanel};
 
 {$R *.res}
 
