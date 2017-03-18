@@ -6,6 +6,10 @@ function TimeToFirebirdString(const Date: TDateTime): string;
 function DateToFirebirdString(const Date: TDateTime): string;
 function DateTimeToFirebirdString(const Date: TDateTime): string;
 function DateTimeToDHMSString(DateTime : TDateTime) : string;
+function DoAction(AProbability : Byte) : boolean;
+function DecodeHour(ADateTime : TDateTime) : Word;
+function DecodeMinute(ADateTime : TDateTime) : Word;
+function DecodeSecond(ADateTime : TDateTime) : Word;
 
 
 implementation
@@ -101,6 +105,55 @@ begin
   Result := DateToFirebirdString(Date) + ' ' +
             TimeToFirebirdString(Date);
 end;
+
+function DoAction(AProbability : Byte) : boolean;
+var
+  RandValue : integer; //число от 1 до 100
+begin
+  Result := False;
+
+  RandValue := Random(100) + 1;
+
+  if not (AProbability < RandValue)
+    then Result := True;
+end;
+
+function DecodeHour(ADateTime : TDateTime) : Word;
+var
+  AHour,
+  AMinute,
+  ASecond,
+  AMilliSecond: Word;
+begin
+  DecodeTime(ADateTime, AHour, AMinute, ASecond, AMilliSecond);
+
+  Result := AHour;
+end;
+
+function DecodeMinute(ADateTime : TDateTime) : Word;
+var
+  AHour,
+  AMinute,
+  ASecond,
+  AMilliSecond: Word;
+begin
+  DecodeTime(ADateTime, AHour, AMinute, ASecond, AMilliSecond);
+
+  Result := AMinute;
+end;
+
+function DecodeSecond(ADateTime : TDateTime) : Word;
+var
+  AHour,
+  AMinute,
+  ASecond,
+  AMilliSecond: Word;
+begin
+  DecodeTime(ADateTime, AHour, AMinute, ASecond, AMilliSecond);
+
+  Result := ASecond;
+end;
+
 
 
 end.

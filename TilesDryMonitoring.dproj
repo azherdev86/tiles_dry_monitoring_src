@@ -46,6 +46,7 @@
     <DCCReference Include="Classes\CBoxes.pas" />
     <DCCReference Include="Classes\CController.pas" />
     <DCCReference Include="Classes\CEventLog.pas" />
+    <DCCReference Include="Classes\CExportToCSV.pas" />
     <DCCReference Include="Classes\CGraph.pas" />
     <DCCReference Include="Classes\CIncomingComPortMessage.pas" />
     <DCCReference Include="Classes\COutgoingComPortMessage.pas" />

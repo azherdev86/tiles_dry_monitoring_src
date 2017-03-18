@@ -74,6 +74,7 @@ type
     BitBtnSirenDisable: TBitBtn;
     BitBtnClose: TBitBtn;
     BitBtn1: TBitBtn;
+    TimerScheduler: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
     procedure PaintBoxMouseEnter(Sender: TObject);
@@ -88,6 +89,7 @@ type
     procedure TimerCreateBoxMessagesTimer(Sender: TObject);
     procedure TimerComPortSendMessagesTimer(Sender: TObject);
     procedure TimerRefreshViewTimer(Sender: TObject);
+    procedure TimerSchedulerTimer(Sender: TObject);
     procedure ButtonApplyFloorAxisSettingsClick(Sender: TObject);
     procedure LabeledEditAxisMinYValueKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -110,16 +112,24 @@ type
     FStartTime : double;
     FGraphMouseCoord : TPoint;
 
-    procedure DrawSeries();
-    function LoadSettings : boolean;
-    function SaveSettings : boolean;
+    //флаги
+    FNeedDeleteOutdatedTempValues : boolean; //Нужно удалять устаревшие значения (да/нет)
+    FOutdateTempValuesDeleted : boolean;     //Устаревшие значения удалены (да/нет)
+
+    procedure UpdateGraph();
     procedure UpdateStatusBar;
     procedure UpdateSignalMode;
+
+    function LoadSettings : boolean;
+    function SaveSettings : boolean;
+
     procedure ClearMessage(var SendingMessage : TMOutgoingComportMessage);
 
     function GraphMouseToGridCoord(AMouseCoord : TPoint; out AConveyorNumber, ASectionNumber : integer) : boolean;
     function ProcessIncomingMessage(IncomingMessage : TMIncomingComportMessage) : boolean;
     function ProcessIncomingMessageErrors(IncomingMessage : TMIncomingComportMessage) : boolean;
+
+    function DeleteOutdatedTempValues() : boolean;
 
   public
     { Public declarations }
@@ -130,7 +140,6 @@ type
     ProceedPackCount            : integer;
 
     ReSentMessagesCount         : integer;
-
 
     IncomingErrorCRCCount                : integer;
     IncomingErrorNoSendingMessageCount   : integer;
@@ -153,7 +162,7 @@ implementation
 uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventLogs,
      FGraphHistory, CBoxes, CBasicComPortMessage, DateUtils, CTableRecords, ZDataset,
      CTempValuesBuffer, CController, FInputPassword, FChangePassword, FExportToCSV,
-     CEventLog, LUtils, FDebugPanel;
+     CEventLog, LUtils, FDebugPanel, CQueryConstructor, CConditions;
 
 
 procedure TFormMain.FormCreate(Sender: TObject);
@@ -162,7 +171,7 @@ begin
 
   FormMain.WindowState := wsMaximized;
   FormMain.DoubleBuffered := TRUE;
-  DrawSeries;
+  UpdateGraph;
 
   FStartTime := Now;
 
@@ -180,6 +189,8 @@ begin
 
   OutgoingErrorWrongAcknowledge := 0;
   OutgoingErrorTimeOutCount     := 0;
+
+  FNeedDeleteOutdatedTempValues := False;
 
   LoadSettings;
 
@@ -303,7 +314,7 @@ procedure TFormMain.TimerCreateCheckSignaModelMessagesTimer(Sender: TObject);
 begin
   if ApplicationComPortOutgoingMessages.GetCount > MAX_MESSAGES_COUNT
     then Exit;
-  
+
   ApplicationController.GenerateCheckSignalModeMessage;
 end;
 
@@ -311,11 +322,26 @@ procedure TFormMain.TimerRefreshViewTimer(Sender: TObject);
 begin
   ApplicationController.CheckTemperatureRanges;
 
-  BitBtnSirenDisable.Enabled := (ApplicationController.SignalMode = smEnabled);
-
-  DrawSeries;
+  UpdateGraph;
 
   UpdateStatusBar;
+
+  BitBtnSirenDisable.Enabled := (ApplicationController.SignalMode = smEnabled);
+end;
+
+procedure TFormMain.TimerSchedulerTimer(Sender: TObject);
+begin
+  if (DecodeHour(Now) = 0) and (not FOutdateTempValuesDeleted) //если настало нужное время и операция еще не выполнена
+    then FNeedDeleteOutdatedTempValues := True; //то выставляем флаг
+
+  if FNeedDeleteOutdatedTempValues and (not FOutdateTempValuesDeleted)
+    then FOutdateTempValuesDeleted := DeleteOutdatedTempValues();
+
+  if FOutdateTempValuesDeleted
+    then FNeedDeleteOutdatedTempValues := False;
+
+  if (DecodeHour(Now) > 0)
+    then FOutdateTempValuesDeleted := False;
 end;
 
 procedure TFormMain.TrackBarAllConveyorsChange(Sender: TObject);
@@ -699,7 +725,7 @@ begin
     then IncomingMessage.Clear; //Есди сообщение получено или во время получения возникли ошибки
 end;
 
-procedure TFormMain.DrawSeries();
+procedure TFormMain.UpdateGraph();
 var
   Series : TMSeries;
 
@@ -1008,6 +1034,46 @@ begin
   ApplicationComPortOutgoingMessages.DeleteItem(message_uid);
   ApplicationComPortOutgoingMessages.SendingComPortMessage := nil;
   SendingMessage := nil;
+end;
+
+function TFormMain.DeleteOutdatedTempValues() : boolean;
+const
+  CRecentDayCount = 15;
+var
+  TableRecord : TMTableRecord;
+  QueryConstructor : TMQueryConstructor;
+
+  ms_between,
+  rows_affected : integer;
+
+  before : TDateTime;
+begin
+  Result := False;
+
+  //Удаляем значения температуры, старшие 15 дней, каждый день после 0:00 часов ночи.
+  TableRecord := TMTableRecord.Create('TempValues');
+  try
+    QueryConstructor := TableRecord.QueryConstructor;
+
+    if not ASsigned(QueryConstructor)
+      then Exit;
+
+    QueryConstructor.AddCondition('TempValues', 'TempTime', ctLessEqual, Now - CRecentDayCount);
+
+    before := Now;
+
+    rows_affected := TableRecord.DeleteRecordsRowsAffected;
+
+    ms_between := MilliSecondsBetween(before, Now);
+
+    ApplicationEventLog.WriteLog(elDeleteOutdated, 'Deleted ' + IntToStr(rows_affected) +
+                                                   ' record of temp values in ' +
+                                                   IntToStr(ms_between) + ' ms');
+  finally
+    TableRecord.Free;
+  end;
+
+  Result := True;
 end;
 
 end.

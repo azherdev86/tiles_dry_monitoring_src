@@ -5,18 +5,20 @@ interface
 uses CTemplateEntity;
 
 type TypeEventLogs = (elNone,
-                      elProgramStart, //включение программы
-                      elProgramStop,  //выключение программы
-                      elWorkModeOn,   //включение рабочего режима
-                      elWorkModeOff,  //выключение рабочего режима
-                      elTempRangeOut, //выход за границы температурного режима
-                      elTempRangeIn,  //возврат температурного режима в нормальный диапазон
-                      elSignalOn,     //включение сигнализации
-                      elSignalOff,    //отключение сигнализации
-                      elChangeRanges, //изменение границ температурного диапазона
-                      elChangePass,   //изменение пароля администратора
-                      elComPortError, //ошибка при работе с Com-портом
-                      elProgramExcep  //исключение в программе причины которого не до конца понятны
+                      elProgramStart,   //включение программы
+                      elProgramStop,    //выключение программы
+                      elWorkModeOn,     //включение рабочего режима
+                      elWorkModeOff,    //выключение рабочего режима
+                      elTempRangeOut,   //выход за границы температурного режима
+                      elTempRangeIn,    //возврат температурного режима в нормальный диапазон
+                      elSignalOn,       //включение сигнализации
+                      elSignalOff,      //отключение сигнализации
+                      elChangeRanges,   //изменение границ температурного диапазона
+                      elChangePass,     //изменение пароля администратора
+                      elComPortError,   //ошибка при работе с Com-портом
+                      elProgramExcep,   //исключение в программе причины которого не до конца понятны
+                      elDeleteOutdated, //удаление старых значений температуры
+                      elBackupOutdated  //бэкап в CSV-файл старых значений температуры
                       );
 
 type
@@ -60,7 +62,8 @@ const
   LogEventStrings: array[TypeEventLogs] of string =
  ('None', 'ProgramStart', 'ProgramStop', 'WorkModeOn', 'WorkModeOff',
   'TempRangeOut', 'TempRangeIn', 'SignalOn', 'SignalOff', 'ChangeRanges',
-  'ChangePass', 'ComPortError', 'ProgramExcep');
+  'ChangePass', 'ComPortError', 'ProgramExcep', 'DeleteOutdated',
+  'BackupOutdated');
 begin
   Result := LogEventStrings[ALogEvent];
 end;

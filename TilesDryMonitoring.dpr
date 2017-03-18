@@ -41,7 +41,8 @@ uses
   FDebugPanel in 'Forms\FDebugPanel.pas' {FormDebugPanel},
   LApplicationGlobals in 'Libraries\LApplicationGlobals.pas',
   CBasicComPortMessage in 'Classes\CBasicComPortMessage.pas',
-  CController in 'Classes\CController.pas';
+  CController in 'Classes\CController.pas',
+  CExportToCSV in 'Classes\CExportToCSV.pas';
 
 {$R *.res}
 

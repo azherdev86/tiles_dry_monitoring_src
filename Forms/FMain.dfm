@@ -3047,7 +3047,6 @@ object FormMain: TFormMain
         Text = 'Program version: 0.0.1'
         Width = 50
       end>
-    ExplicitTop = 738
   end
   object TrackBarConveyor1: TTrackBar
     Left = 13
@@ -3664,7 +3663,7 @@ object FormMain: TFormMain
     TriggersOnRxChar = True
     OnRxChar = ComPortRxChar
     Left = 3
-    Top = 122
+    Top = 152
   end
   object TimerComPortSendMessages: TTimer
     Enabled = False
@@ -3682,5 +3681,11 @@ object FormMain: TFormMain
     OnTimer = TimerCreateCheckSignaModelMessagesTimer
     Left = 3
     Top = 38
+  end
+  object TimerScheduler: TTimer
+    Interval = 20000
+    OnTimer = TimerSchedulerTimer
+    Left = 3
+    Top = 122
   end
 end

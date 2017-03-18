@@ -101,8 +101,6 @@ type
                           ConditionType : TMConditionType;
                           FieldValue : variant): TMCondition; overload;
 
-
-
     function GetConditionsCount : integer;
     function GetWhereClause(IncludeWhereInQuery : boolean = true) : string;
     function AddGroupCondition(OperationIn : TMOperationType;
@@ -266,6 +264,7 @@ begin
 
   Result := AddCondition(Field, ConditionType, FieldValue);
 end;
+
 
 function TMQueryConstructor.GetCondition(FieldTitle : string) : TMCondition;
 var

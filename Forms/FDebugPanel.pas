@@ -38,7 +38,7 @@ var
 
 implementation
 
-uses FMain, CTableRecords, LApplicationGlobals, CController;
+uses FMain, CTableRecords, LApplicationGlobals, CController, LUtils;
 
 {$R *.dfm}
 

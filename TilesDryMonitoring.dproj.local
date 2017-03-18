@@ -50,5 +50,6 @@
     <Transaction>2017.03.05 23:28:07.055.dfm,F:\_programming\tempsensors\_sources\Unit1.dfm=F:\_programming\tempsensors\_sources\Forms\FDebugPanel.dfm</Transaction>
     <Transaction>2017.03.12 14:53:37.423.dproj,F:\_programming\tempsensors\_sources\TempSensors.dproj=F:\_programming\tempsensors\_sources\TilesDryMonitoring.dproj</Transaction>
     <Transaction>2017.03.13 01:34:33.586.pas,F:\_programming\tiles_dry_monitoring\_sources\Classes\CTempValueBuffers.pas=</Transaction>
+    <Transaction>2017.03.18 11:37:02.886.pas,F:\_programming\tiles_dry_monitoring\_sources\Unit1.pas=F:\_programming\tiles_dry_monitoring\_sources\Classes\CExportToCSV.pas</Transaction>
   </Transactions>
 </BorlandProject>
