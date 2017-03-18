@@ -130,7 +130,7 @@ begin
               'FROM TempValues ' + sLineBreak +
               'LEFT JOIN SENSORS ON (TempValues.SensorId = Sensors.SensorId)' + sLineBreak +
               'WHERE (TempTime >= ''' + DateTimeToFirebirdString(ADateSince) + ''') AND ' + sLineBreak +
-              '(TempTime <= ''' + DateTimeToFirebirdString(ADateTo) + ''');';
+              '(TempTime < ''' + DateTimeToFirebirdString(ADateTo) + ''');';
 
   FQuery.SQL.Text := sql_text;
 

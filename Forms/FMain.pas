@@ -1112,14 +1112,19 @@ var
   ms_between,
   rows_affected : integer;
 
-  before : TDateTime;
+  before,
+  date_since,
+  date_to : TDateTime;
 begin
   //Удаляем значения температуры, старше 15 дней, каждый день после 0:00 часов ночи.
   ExportToCSV := TMExportToCSV.Create;
   try
     before := Now;
 
-    rows_affected := ExportToCSV.SaveToCSVFile(Now - CRecentDayCount - 1/24, Now - 1/24);
+    date_since := Trunc(Now - CRecentDayCount);
+    date_to    := Trunc(Now);
+
+    rows_affected := ExportToCSV.SaveToCSVFile(date_since, date_to);
 
     ms_between := MilliSecondsBetween(before, Now);
 
