@@ -37,23 +37,19 @@ type
     function GetTable(Index : integer) : TMTableStructure; overload;
 
   private
-
     FDBConn : TZConnection;
 
-    
     function CheckTableNamesMySQL(var OutMessage : string) : boolean;
     function CheckTableNamesFireBird(var OutMessage : string) : boolean;
-
   end;
 
 implementation
 
-uses DB, 
+uses DB,
      Dialogs,
-     SysUtils, 
+     SysUtils,
      Classes,
      CFields;
-
 
 function TMDatabaseStructure.LoadStructure() : boolean;
 var
@@ -75,6 +71,13 @@ begin
     AddField('TempTime',  ftDateTime);
 
     AddForeignKey('SensorId', ftInteger, 'Sensors');
+  end;
+
+  with AddTable('EventLogs', 'EventLogId') do
+  begin
+    AddField('EventLogType',    ftString);
+    AddField('EventLogDetails', ftString);
+    AddField('EventLogTime',    ftDateTime);
   end;
 
   if not CheckTableNames(OutMessage)

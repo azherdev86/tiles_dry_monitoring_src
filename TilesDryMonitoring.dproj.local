@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2017.02.14 16:08:21.024.pas,C:\Users\Alexey\Documents\RAD Studio\Projects\Unit1.pas=C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\Forms\FMain.pas</Transaction>
+    <Transaction>2017.02.14 16:08:21.046.dfm,C:\Users\Alexey\Documents\RAD Studio\Projects\Unit1.dfm=C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\Forms\FMain.dfm</Transaction>
+    <Transaction>2017.02.14 16:08:29.624.dproj,C:\Users\Alexey\Documents\RAD Studio\Projects\Project1.dproj=C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\TempSensors.dproj</Transaction>
+    <Transaction>2017.02.16 23:44:40.859.pas,C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\Unit1.pas=C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\LApplicationComPort.pas</Transaction>
+    <Transaction>2017.02.17 23:38:17.205.pas,C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\Unit1.pas=C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\CGraph.pas</Transaction>
+    <Transaction>2017.02.18 20:38:21.768.pas,C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\Unit1.pas=C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\Forms\FTemperatureRanges.pas</Transaction>
+    <Transaction>2017.02.18 20:38:21.768.dfm,C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\Unit1.dfm=C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\Forms\FTemperatureRanges.dfm</Transaction>
+    <Transaction>2017.02.18 21:19:50.716.pas,C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\Unit1.pas=C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\Forms\FEventHistory.pas</Transaction>
+    <Transaction>2017.02.18 21:19:50.716.dfm,C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\Unit1.dfm=C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\Forms\FEventHistory.dfm</Transaction>
+    <Transaction>2017.02.19 00:03:07.331.pas,C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\Unit1.pas=C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\Forms\FGraphHistory.pas</Transaction>
+    <Transaction>2017.02.19 00:03:07.331.dfm,C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\Unit1.dfm=C:\Users\Alexey\Desktop\TempSensorsD2007\_sources\Forms\FGraphHistory.dfm</Transaction>
+    <Transaction>2017.02.19 18:11:57.108.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\CBox.pas</Transaction>
+    <Transaction>2017.02.19 18:24:56.184.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\CComPortMessage.pas</Transaction>
+    <Transaction>2017.02.19 18:33:46.143.pas,F:\_programming\tempsensors\_sources\crc.pas=</Transaction>
+    <Transaction>2017.02.19 20:50:07.969.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\CTempValues.pas</Transaction>
+    <Transaction>2017.02.20 08:31:04.393.pas,F:\_programming\tempsensors\_sources\CBox.pas=F:\_programming\tempsensors\_sources\CBoxes.pas</Transaction>
+    <Transaction>2017.02.20 23:51:22.584.pas,F:\_programming\tempsensors\_sources\CComPortMessage.pas=F:\_programming\tempsensors\_sources\CComPortMessages.pas</Transaction>
+    <Transaction>2017.02.23 12:51:36.019.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\CBasicComPortMessage.pas</Transaction>
+    <Transaction>2017.02.23 13:07:35.352.pas,F:\_programming\tempsensors\_sources\CComPortMessages.pas=F:\_programming\tempsensors\_sources\COutgoingComPortMessage.pas</Transaction>
+    <Transaction>2017.02.23 13:08:13.255.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\CIncomingComPortMessage.pas</Transaction>
+    <Transaction>2017.02.24 21:11:18.512.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\CProgramSettings.pas</Transaction>
+    <Transaction>2017.02.24 21:38:23.754.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\CProgramGraphSettings.pas</Transaction>
+    <Transaction>2017.02.25 03:13:28.027.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\CTempValueBuffers.pas</Transaction>
+    <Transaction>2017.02.25 03:14:02.140.pas,F:\_programming\tempsensors\_sources\CTempValueBuffers.pas=F:\_programming\tempsensors\_sources\CTempValuesBuffer.pas</Transaction>
+    <Transaction>2017.02.26 17:18:25.706.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\CHighLighted.pas</Transaction>
+    <Transaction>2017.02.26 18:56:57.261.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\CController.pas</Transaction>
+    <Transaction>2017.02.26 20:35:32.518.pas,F:\_programming\tempsensors\_sources\LApplicationComPort.pas=</Transaction>
+    <Transaction>2017.02.26 21:06:49.896.pas,F:\_programming\tempsensors\_sources\CHighLighted.pas=F:\_programming\tempsensors\_sources\CRows.pas</Transaction>
+    <Transaction>2017.02.28 08:00:37.732.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\FInputPassword.pas</Transaction>
+    <Transaction>2017.02.28 08:00:37.732.dfm,F:\_programming\tempsensors\_sources\Unit1.dfm=F:\_programming\tempsensors\_sources\FInputPassword.dfm</Transaction>
+    <Transaction>2017.02.28 08:12:54.861.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\LHash.pas</Transaction>
+    <Transaction>2017.03.02 18:07:37.115.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\FChangePassword.pas</Transaction>
+    <Transaction>2017.03.02 18:07:37.115.dfm,F:\_programming\tempsensors\_sources\Unit1.dfm=F:\_programming\tempsensors\_sources\FChangePassword.dfm</Transaction>
+    <Transaction>2017.03.02 18:28:35.429.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\CProgramUserSettings.pas</Transaction>
+    <Transaction>2017.03.05 09:43:03.718.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\Forms\FExportToExcel.pas</Transaction>
+    <Transaction>2017.03.05 09:43:03.718.dfm,F:\_programming\tempsensors\_sources\Unit1.dfm=F:\_programming\tempsensors\_sources\Forms\FExportToExcel.dfm</Transaction>
+    <Transaction>2017.03.05 09:59:17.712.pas,F:\_programming\tempsensors\_sources\Forms\FExportToExcel.pas=F:\_programming\tempsensors\_sources\Forms\FExportToCSV.pas</Transaction>
+    <Transaction>2017.03.05 09:59:17.712.dfm,F:\_programming\tempsensors\_sources\Forms\FExportToExcel.dfm=F:\_programming\tempsensors\_sources\Forms\FExportToCSV.dfm</Transaction>
+    <Transaction>2017.03.05 10:40:37.987.pas,F:\_programming\tempsensors\_sources\Forms\FExportToCSV.pas=F:\_programming\tempsensors\_sources\LUtils.pas</Transaction>
+    <Transaction>2017.03.05 10:40:37.987.dfm,F:\_programming\tempsensors\_sources\Forms\FExportToCSV.dfm=F:\_programming\tempsensors\_sources\LUtils.dfm</Transaction>
+    <Transaction>2017.03.05 10:41:32.244.pas,F:\_programming\tempsensors\_sources\LUtils.pas=F:\_programming\tempsensors\_sources\Forms\FExportToCSV.pas</Transaction>
+    <Transaction>2017.03.05 10:41:32.244.dfm,F:\_programming\tempsensors\_sources\LUtils.dfm=F:\_programming\tempsensors\_sources\Forms\FExportToCSV.dfm</Transaction>
+    <Transaction>2017.03.05 10:41:57.408.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\LUtils.pas</Transaction>
+    <Transaction>2017.03.05 21:01:03.745.pas,F:\_programming\tempsensors\_sources\Forms\FEventHistory.pas=F:\_programming\tempsensors\_sources\Forms\FEventlogs.pas</Transaction>
+    <Transaction>2017.03.05 21:01:03.745.dfm,F:\_programming\tempsensors\_sources\Forms\FEventHistory.dfm=F:\_programming\tempsensors\_sources\Forms\FEventlogs.dfm</Transaction>
+    <Transaction>2017.03.05 23:28:07.055.pas,F:\_programming\tempsensors\_sources\Unit1.pas=F:\_programming\tempsensors\_sources\Forms\FDebugPanel.pas</Transaction>
+    <Transaction>2017.03.05 23:28:07.055.dfm,F:\_programming\tempsensors\_sources\Unit1.dfm=F:\_programming\tempsensors\_sources\Forms\FDebugPanel.dfm</Transaction>
+    <Transaction>2017.03.12 14:53:37.423.dproj,F:\_programming\tempsensors\_sources\TempSensors.dproj=F:\_programming\tempsensors\_sources\TilesDryMonitoring.dproj</Transaction>
+    <Transaction>2017.03.13 01:34:33.586.pas,F:\_programming\tiles_dry_monitoring\_sources\Classes\CTempValueBuffers.pas=</Transaction>
+    <Transaction>2017.03.18 11:37:02.886.pas,F:\_programming\tiles_dry_monitoring\_sources\Unit1.pas=F:\_programming\tiles_dry_monitoring\_sources\Classes\CExportToCSV.pas</Transaction>
+    <Transaction>2017.03.18 14:28:29.677.pas,F:\_programming\tiles_dry_monitoring\_sources\Unit1.pas=F:\_programming\tiles_dry_monitoring\_sources\Classes\CExportToCSV.pas</Transaction>
+    <Transaction>2017.03.18 16:52:18.435.pas,F:\_programming\tiles_dry_monitoring\_sources\Unit1.pas=F:\_programming\tiles_dry_monitoring\_sources\Forms\FUserDigitalKeyboard.pas</Transaction>
+    <Transaction>2017.03.18 16:52:18.435.dfm,F:\_programming\tiles_dry_monitoring\_sources\Unit1.dfm=F:\_programming\tiles_dry_monitoring\_sources\Forms\FUserDigitalKeyboard.dfm</Transaction>
+    <Transaction>2017.03.18 18:46:26.528.pas,F:\_programming\tiles_dry_monitoring\_sources\Unit1.pas=F:\_programming\tiles_dry_monitoring\_sources\Forms\FTerminalForm.pas</Transaction>
+    <Transaction>2017.03.18 18:50:44.049.pas,F:\_programming\tiles_dry_monitoring\_sources\Forms\FTerminalForm.pas=</Transaction>
+    <Transaction>2017.03.18 18:53:04.719.pas,F:\_programming\tiles_dry_monitoring\_sources\Unit1.pas=F:\_programming\tiles_dry_monitoring\_sources\Forms\FTerminalForm.pas</Transaction>
+    <Transaction>2017.03.18 18:53:04.719.dfm,F:\_programming\tiles_dry_monitoring\_sources\Unit1.dfm=F:\_programming\tiles_dry_monitoring\_sources\Forms\FTerminalForm.dfm</Transaction>
+    <Transaction>2017.03.18 23:30:45.114.pas,F:\_programming\tiles_dry_monitoring\_sources\Unit1.pas=F:\_programming\tiles_dry_monitoring\_sources\Forms\FControlPanel.pas</Transaction>
+    <Transaction>2017.03.18 23:30:45.114.dfm,F:\_programming\tiles_dry_monitoring\_sources\Unit1.dfm=F:\_programming\tiles_dry_monitoring\_sources\Forms\FControlPanel.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

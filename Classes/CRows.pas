@@ -1,11 +1,11 @@
-unit CHighLighted;
+unit CRows;
 
 interface
 
 uses Classes;
 
 type
-  TMHighLightedColumn = class
+  TMColumn = class
     private
       FColumnIndex : integer;
 
@@ -14,15 +14,15 @@ type
   end;
 
 type
-  TMHighLightedRow = class
+  TMRow = class
     constructor Create;
     destructor Destroy; override;
 
   public
-    function GetItem(ItemIndex : integer) : TMHighLightedColumn;  overload;
-    function GetItem(ItemTitle : string) : TMHighLightedColumn; overload;
+    function GetItem(ItemIndex : integer) : TMColumn;  overload;
+    function GetItem(ItemTitle : string) : TMColumn; overload;
 
-    function AddItem(Item : TMHighLightedColumn) : TMHighLightedColumn;
+    function AddItem(Item : TMColumn) : TMColumn;
 
     function DeleteItem(ItemIndex : integer) : boolean; overload;
     function DeleteItem(ItemTitle : string) : boolean; overload;
@@ -36,58 +36,49 @@ type
     FRowIndex : integer;
 
     procedure Reset;
-    function IsHighlighted : boolean;
 
   public
     property RowIndex : Integer read FRowIndex write FRowIndex;
-    property HighLighted : boolean read IsHighLighted;
   end;
 
 
 type
-  TMHighLightedRows = class
+  TMRows = class
     constructor Create;
     destructor Destroy; override;
 
   public
-    function GetItem(ItemIndex : integer) : TMHighLightedRow;  overload;
-    function GetItem(ItemTitle : string) : TMHighLightedRow; overload;
+    function GetItem(ItemIndex : integer) : TMRow;  overload;
+    function GetItem(ItemTitle : string) : TMRow; overload;
 
-    function AddItem(Item : TMHighLightedRow) : TMHighLightedRow;
+    function AddItem(Item : TMRow) : TMRow;
 
     function DeleteItem(ItemIndex : integer) : boolean; overload;
     function DeleteItem(ItemTitle : string) : boolean; overload;
 
     function GetCount : integer;
 
-    procedure Clear;
-
   private
     Items : TStringList;
 
     procedure Reset;
-    function IsHighLighted : boolean;
 
-  public
-    property HighLighted : boolean read IsHighlighted;
   end;
-
-
 
 
 implementation
 
 uses SysUtils;
 
-//////////////TMHighLightedRow//////////////////////////////////
-constructor TMHighLightedRow.Create;
+//////////////TMRow//////////////////////////////////
+constructor TMRow.Create;
 begin
   Items := TStringList.Create;
   Reset;
 end;
 
 
-destructor TMHighLightedRow.Destroy;
+destructor TMRow.Destroy;
 begin
   Reset;
   Items.Free;
@@ -95,17 +86,17 @@ begin
 end;
 
 
-function TMHighLightedRow.GetItem(ItemIndex : integer) : TMHighLightedColumn;
+function TMRow.GetItem(ItemIndex : integer) : TMColumn;
 begin
   Result := nil;
 
   if ItemIndex < 0
     then Exit;
 
-  Result := Items.Objects[ItemIndex] as TMHighLightedColumn;
+  Result := Items.Objects[ItemIndex] as TMColumn;
 end;
 
-function TMHighLightedRow.GetItem(ItemTitle : string) : TMHighLightedColumn;
+function TMRow.GetItem(ItemTitle : string) : TMColumn;
 var
   ItemIndex : integer;
 begin
@@ -118,7 +109,7 @@ begin
 end;
 
 
-function TMHighLightedRow.AddItem(Item : TMHighLightedColumn) : TMHighLightedColumn;
+function TMRow.AddItem(Item : TMColumn) : TMColumn;
 begin
   Result := nil;
 
@@ -130,9 +121,9 @@ begin
 end;
 
 
-function TMHighLightedRow.DeleteItem(ItemIndex : integer) : boolean;
+function TMRow.DeleteItem(ItemIndex : integer) : boolean;
 var
-  Item : TMHighLightedColumn;
+  Item : TMColumn;
 begin
   Result := FALSE;
   Item := GetItem(ItemIndex);
@@ -144,7 +135,7 @@ begin
     end;
 end;
 
-function TMHighLightedRow.DeleteItem(ItemTitle : string) : boolean;
+function TMRow.DeleteItem(ItemTitle : string) : boolean;
 var
   ItemIndex : integer;
 begin
@@ -154,49 +145,42 @@ begin
 end;
 
 
-procedure TMHighLightedRow.Reset;
+procedure TMRow.Reset;
 var
   i : integer;
-  Item : TMHighLightedColumn;
+  Item : TMColumn;
 begin
   for i := 0 to GetCount - 1 do
   begin
-    Item := Items.Objects[i] as TMHighLightedColumn;
+    Item := Items.Objects[i] as TMColumn;
     if Assigned(Item)
       then Item.Free;
   end;
 
-  FRowIndex := -1;
+  FRowIndex := 0;
 
   Items.Clear;
 end;
 
-function TMHighLightedRow.IsHighlighted : boolean;
-begin
-  Result := GetCount > 0;
-end;
-
-function TMHighLightedRow.GetCount : integer;
+function TMRow.GetCount : integer;
 begin
   Result := Items.Count;
 end;
 
-
-procedure TMHighLightedRow.Clear;
+procedure TMRow.Clear;
 begin
   Reset;
 end;
 
-
-//////////////TMHighLightedRows//////////////////////////////////
-constructor TMHighLightedRows.Create;
+//////////////TMRows//////////////////////////////////
+constructor TMRows.Create;
 begin
   Items := TStringList.Create;
   Reset;
 end;
 
 
-destructor TMHighLightedRows.Destroy;
+destructor TMRows.Destroy;
 begin
   Reset;
   Items.Free;
@@ -204,17 +188,17 @@ begin
 end;
 
 
-function TMHighLightedRows.GetItem(ItemIndex : integer) : TMHighLightedRow;
+function TMRows.GetItem(ItemIndex : integer) : TMRow;
 begin
   Result := nil;
 
   if ItemIndex < 0
     then Exit;
 
-  Result := Items.Objects[ItemIndex] as TMHighLightedRow;
+  Result := Items.Objects[ItemIndex] as TMRow;
 end;
 
-function TMHighLightedRows.GetItem(ItemTitle : string) : TMHighLightedRow;
+function TMRows.GetItem(ItemTitle : string) : TMRow;
 var
   ItemIndex : integer;
 begin
@@ -227,7 +211,7 @@ begin
 end;
 
 
-function TMHighLightedRows.AddItem(Item : TMHighLightedRow) : TMHighLightedRow;
+function TMRows.AddItem(Item : TMRow) : TMRow;
 begin
   Result := nil;
 
@@ -239,9 +223,9 @@ begin
 end;
 
 
-function TMHighLightedRows.DeleteItem(ItemIndex : integer) : boolean;
+function TMRows.DeleteItem(ItemIndex : integer) : boolean;
 var
-  Item : TMHighLightedRow;
+  Item : TMRow;
 begin
   Result := FALSE;
   Item := GetItem(ItemIndex);
@@ -253,7 +237,7 @@ begin
     end;
 end;
 
-function TMHighLightedRows.DeleteItem(ItemTitle : string) : boolean;
+function TMRows.DeleteItem(ItemTitle : string) : boolean;
 var
   ItemIndex : integer;
 begin
@@ -263,14 +247,14 @@ begin
 end;
 
 
-procedure TMHighLightedRows.Reset;
+procedure TMRows.Reset;
 var
   i : integer;
-  Item : TMHighLightedRow;
+  Item : TMRow;
 begin
   for i := 0 to GetCount - 1 do
   begin
-    Item := Items.Objects[i] as TMHighLightedRow;
+    Item := Items.Objects[i] as TMRow;
     if Assigned(Item)
       then Item.Free;
   end;
@@ -278,21 +262,9 @@ begin
   Items.Clear;
 end;
 
-function TMHighLightedRows.GetCount : integer;
+function TMRows.GetCount : integer;
 begin
   Result := Items.Count;
 end;
-
-
-procedure TMHighLightedRows.Clear;
-begin
-  Reset;
-end;
-
-function TMHighLightedRows.IsHighlighted : boolean;
-begin
-  Result := GetCount > 0;
-end;
-
 
 end.

@@ -5,12 +5,12 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, CPort, StdCtrls, TeEngine, Series, ExtCtrls, TeeProcs, Chart, Buttons,
-  ComCtrls;
+  ComCtrls, CIncomingComPortMessage, COutgoingComPortMessage, FTerminalForm;
 
 type
-  TFormMain = class(TForm)
+  TFormMain = class(TFormTerminal)
     PaintBox: TPaintBox;
-    TimerCreateComPortMessages: TTimer;
+    TimerCreateBoxMessages: TTimer;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -30,90 +30,125 @@ type
     LabelAxisMinYValue: TLabel;
     LabelAxisMaxYValue: TLabel;
     Label25: TLabel;
-    BitBtn1: TBitBtn;
     GroupBoxFloorAxisSettings: TGroupBox;
     LabeledEditAxisMinYValue: TLabeledEdit;
     LabeledEditAxisMaxYValue: TLabeledEdit;
-    BitBtn2: TBitBtn;
-    BitBtn3: TBitBtn;
+    BitBtnEventHistory: TBitBtn;
+    BitBtnTemperatureRanges: TBitBtn;
     ButtonApplyFloorAxisSettings: TButton;
-    Button2: TButton;
-    LabeledEdit3: TLabeledEdit;
-    Button3: TButton;
-    LabeledEdit4: TLabeledEdit;
-    Button4: TButton;
-    LabeledEdit5: TLabeledEdit;
-    Button5: TButton;
-    LabeledEdit6: TLabeledEdit;
-    Button6: TButton;
-    LabeledEdit7: TLabeledEdit;
     Label19: TLabel;
-    StatusBar1: TStatusBar;
+    StatusBar: TStatusBar;
     ComPort: TComPort;
-    MemoLogs: TMemo;
     TimerComPortSendMessages: TTimer;
-    Button7: TButton;
-    Button8: TButton;
-    TimerUpdateInfo: TTimer;
-    MemoInfo: TMemo;
+    TimerRefreshView: TTimer;
     ImageGraphLegend: TImage;
-    TrackBar1: TTrackBar;
-    Button1: TButton;
+    TrackBarConveyor1: TTrackBar;
+    LabelConveyor1Test: TLabel;
+    LabelConveyor1Work: TLabel;
+    TrackBarConveyor2: TTrackBar;
+    LabelConveyor2Test: TLabel;
+    LabelConveyor2Work: TLabel;
+    TrackBarConveyor3: TTrackBar;
+    LabelConveyor3Test: TLabel;
+    LabelConveyor3Work: TLabel;
+    TrackBarConveyor4: TTrackBar;
+    LabelConveyor4Test: TLabel;
+    LabelConveyor4Work: TLabel;
+    TrackBarConveyor5: TTrackBar;
+    LabelConveyor5Test: TLabel;
+    LabelConveyor5Work: TLabel;
+    TrackBarAllConveyors: TTrackBar;
+    Label29: TLabel;
+    Label30: TLabel;
+    Label31: TLabel;
+    Label32: TLabel;
+    Label33: TLabel;
+    Label34: TLabel;
+    BitBtbExportToCSV: TBitBtn;
+    ButtonDebug: TButton;
+    TimerCreateCheckSignaModelMessages: TTimer;
+    LabelConveyorAllWork: TLabel;
+    LabelConveyorAllTest: TLabel;
+    BitBtnSirenDisable: TBitBtn;
+    BitBtnControlPanel: TBitBtn;
+    TimerScheduler: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
     procedure PaintBoxMouseEnter(Sender: TObject);
     procedure PaintBoxMouseLeave(Sender: TObject);
     procedure PaintBoxMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
-    procedure BitBtn1Click(Sender: TObject);
-    procedure BitBtn3Click(Sender: TObject);
-    procedure BitBtn2Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
-    procedure Button5Click(Sender: TObject);
+    procedure BitBtnTemperatureRangesClick(Sender: TObject);
+    procedure BitBtnEventHistoryClick(Sender: TObject);
     procedure PaintBoxClick(Sender: TObject);
     procedure ComPortRxChar(Sender: TObject; Count: Integer);
-    procedure TimerCreateComPortMessagesTimer(Sender: TObject);
+    procedure TimerCreateBoxMessagesTimer(Sender: TObject);
     procedure TimerComPortSendMessagesTimer(Sender: TObject);
-    procedure TimerUpdateInfoTimer(Sender: TObject);
-    procedure ComPortException(Sender: TObject; TComException: TComExceptions;
-      ComportMessage: string; WinError: Int64; WinMessage: string);
-    procedure Button8Click(Sender: TObject);
+    procedure TimerRefreshViewTimer(Sender: TObject);
+    procedure TimerSchedulerTimer(Sender: TObject);
     procedure ButtonApplyFloorAxisSettingsClick(Sender: TObject);
     procedure LabeledEditAxisMinYValueKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure LabeledEditAxisMaxYValueKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure Button7Click(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure TrackBarConveyor5Change(Sender: TObject);
+    procedure TrackBarConveyor4Change(Sender: TObject);
+    procedure TrackBarConveyor3Change(Sender: TObject);
+    procedure TrackBarConveyor2Change(Sender: TObject);
+    procedure TrackBarConveyor1Change(Sender: TObject);
+    procedure TrackBarAllConveyorsChange(Sender: TObject);
+    procedure BitBtbExportToCSVClick(Sender: TObject);
+    procedure ButtonDebugClick(Sender: TObject);
+    procedure TimerCreateCheckSignaModelMessagesTimer(Sender: TObject);
+    procedure BitBtnControlPanelClick(Sender: TObject);
+    procedure BitBtnSirenDisableClick(Sender: TObject);
   private
     { Private declarations }
-    StartTime : double;
+    FStartTime : double;
     FGraphMouseCoord : TPoint;
 
-    SentMessagesCount           : integer;
-    ReSentMessagesCount         : integer;
-    RecievedMessagesCount       : integer;
-    RecievedPackCount           : integer;
-    ProceedPackCount            : integer;
-    ErrorCRCCount               : integer;
-    ErrorNoSendingMessageCount  : integer;
-    ErrorBufferOverFlowCout     : integer;
-    ErrorTimeOutEndPacketCount  : integer;
-    ErrorWrongCmdOrDeviceId     : integer;
-    ErrorTimeOutSendPacketCount : integer;
+    //флаги
+    FNeedDeleteOutdatedTempValues : boolean; //Нужно удалять устаревшие значения (да/нет)
+    FOutdatedTempValuesDeleted : boolean;     //Устаревшие значения удалены (да/нет)
 
-    procedure WriteLog(AMessage : string);
+    FNeedBackupOutdatedTempValues : boolean; //Нужно сохранять устаревшие значения (да/нет)
+    FOutdatedTempValuesBackuped : boolean;     //Устаревшие значения сохранены (да/нет)
 
-    procedure DrawSeries();
+    procedure UpdateGraph();
+    procedure UpdateStatusBar;
+    procedure UpdateSignalMode;
+
     function LoadSettings : boolean;
     function SaveSettings : boolean;
 
+    procedure ClearMessage(var SendingMessage : TMOutgoingComportMessage);
+
     function GraphMouseToGridCoord(AMouseCoord : TPoint; out AConveyorNumber, ASectionNumber : integer) : boolean;
+    function ProcessIncomingMessage(IncomingMessage : TMIncomingComportMessage) : boolean;
+    function ProcessIncomingMessageErrors(IncomingMessage : TMIncomingComportMessage) : boolean;
+
+    function DeleteOutdatedTempValues() : boolean;
+    function BackupOutdatedTempValues() : boolean;
 
   public
     { Public declarations }
+    SentMessagesCount           : integer;
+    RecievedMessagesCount       : integer;
+
+    RecievedPackCount           : integer;
+    ProceedPackCount            : integer;
+
+    ReSentMessagesCount         : integer;
+
+    IncomingErrorCRCCount                : integer;
+    IncomingErrorNoSendingMessageCount   : integer;
+    IncomingErrorSendingMessageCount     : integer;
+    IncomingErrorWrongDeviceIdCount      : integer;
+    IncomingErrorBufferOverFlowCout      : integer;
+    IncomingErrorTimeOutEndPacketCount   : integer;
+
+    OutgoingErrorWrongAcknowledge : integer;
+    OutgoingErrorTimeOutCount     : integer;
   end;
 
 var
@@ -123,45 +158,63 @@ implementation
 
 {$R *.dfm}
 
-uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventHistory,
-     FGraphHistory, CBoxes, CBasicComPortMessage, CIncomingComPortMessage,
-     COutgoingComPortMessage, DateUtils, CTableRecords, ZDataset, CTempValuesBuffer;
+uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventLogs,
+     FGraphHistory, CBoxes, CBasicComPortMessage, DateUtils, CTableRecords, ZDataset,
+     CTempValuesBuffer, CController, FInputPassword, FChangePassword, FExportToCSV,
+     CEventLog, LUtils, FDebugPanel, CQueryConstructor, CConditions, CExportToCSV,
+  FUserDigitalKeyboard, FControlPanel;
 
-
-procedure FreeAndNilMessage(out ComPortMessage : TMOutgoingComportMessage);
-begin
-  ApplicationComPortOutgoingMessages.DeleteItem(ComPortMessage.MessageUid);
-  ApplicationComPortOutgoingMessages.SendingComPortMessage := nil;
-  ComPortMessage := nil;
-end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
+  inherited;
+
   FGraphMouseCoord := Point(0, 0);
 
-  MemoLogs.Visible := False;
-  MemoInfo.Visible := False;
   FormMain.WindowState := wsMaximized;
   FormMain.DoubleBuffered := TRUE;
-  DrawSeries;
-  TimerCreateComPortMessages.Enabled := TRUE;
+  UpdateGraph;
 
-  StartTime := Now;
-//  ComPort.Connected := TRUE;
+  FStartTime := Now;
 
   SentMessagesCount           := 0;
   ReSentMessagesCount         := 0;
   RecievedMessagesCount       := 0;
   RecievedPackCount           := 0;
   ProceedPackCount            := 0;
-  ErrorCRCCount               := 0;
-  ErrorNoSendingMessageCount  := 0;
-  ErrorBufferOverFlowCout     := 0;
-  ErrorTimeOutEndPacketCount  := 0;
-  ErrorWrongCmdOrDeviceId     := 0;
-  ErrorTimeOutSendPacketCount := 0;
+  IncomingErrorCRCCount                := 0;
+  IncomingErrorNoSendingMessageCount   := 0;
+  IncomingErrorSendingMessageCount     := 0;
+  IncomingErrorBufferOverFlowCout      := 0;
+  IncomingErrorTimeOutEndPacketCount   := 0;
+  IncomingErrorWrongDeviceIdCount      := 0;
+
+  OutgoingErrorWrongAcknowledge := 0;
+  OutgoingErrorTimeOutCount     := 0;
+
+  FNeedDeleteOutdatedTempValues := False;
+  FOutdatedTempValuesDeleted    := False;
+
+  FNeedBackupOutdatedTempValues := False;
+  FOutdatedTempValuesBackuped   := False;
 
   LoadSettings;
+
+  UpdateStatusBar;
+
+  try
+    ComPort.Connected := TRUE;
+  except
+    ShowMessage('Couldn''t connect to COM port' + sLineBreak +
+                'Check device or program settings.');
+    ApplicationEventLog.WriteLog(elComPortError, 'Couldn''t connect to COM port during start application');
+    Application.Terminate;
+  end;
+
+  TimerCreateBoxMessagesTimer(Self);
+  TimerRefreshViewTimer(Self);
+
+  ButtonDebug.Visible := ApplicationProgramSettings.UserSettings.DebugMode;
 end;
 
 procedure TFormMain.LabeledEditAxisMaxYValueKeyDown(Sender: TObject;
@@ -179,12 +232,6 @@ begin
     VK_RETURN : ButtonApplyFloorAxisSettings.Click;
   end;
 end;
-
-procedure TFormMain.WriteLog(AMessage : string);
-begin
-  MemoLogs.Lines.Add('[' + DateTimeToStr(Now, ApplicationFormatSettings) + ']: ' + AMessage);
-end;
-
 
 procedure TFormMain.PaintBoxClick(Sender: TObject);
 var
@@ -235,7 +282,7 @@ begin
   ApplicationGraph.DrawGraph(PaintBox);
 end;
 
-procedure TFormMain.TimerCreateComPortMessagesTimer(Sender: TObject);
+procedure TFormMain.TimerCreateBoxMessagesTimer(Sender: TObject);
 var
   ComPortMessage : TMOutgoingComportMessage;
   Box : TMBox;
@@ -247,13 +294,10 @@ begin
   count := ApplicationBoxes.GetCount;
 
   if ApplicationComPortOutgoingMessages.GetCount >= ApplicationComPortOutgoingMessages.MaxMessagesCount
-    then Exit;
+    then Exit; //Если в очереди скопилось много неотправленных сообщений, то мы не создаем новые
 
 
-//  for j := 0 to 8 do
-//  begin
-
-  for i := 0 to count - 1 do
+  for i := 0 to {0} count - 1 do
   begin
     ComPortMessage := TMOutgoingComportMessage.Create;
 
@@ -265,303 +309,352 @@ begin
     if not Box.SaveToComPortMessage(ComPortMessage)
       then ComPortMessage.Free;
 
-
     if Assigned(ComPortMessage)
       then ApplicationComPortOutgoingMessages.AddItem(ComPortMessage);
   end;
+
+//  TimerCreateComPortMessages.Enabled := False;
 end;
 
-procedure TFormMain.TimerUpdateInfoTimer(Sender: TObject);
-var
-  QueueCount : integer;
+procedure TFormMain.TimerCreateCheckSignaModelMessagesTimer(Sender: TObject);
 begin
+  if ApplicationComPortOutgoingMessages.GetCount > MAX_MESSAGES_COUNT
+    then Exit;
 
-  QueueCount := ApplicationComPortOutgoingMessages.GetCount;
+  ApplicationController.GenerateCheckSignalModeMessage;
+end;
 
-  MemoInfo.Clear;
+procedure TFormMain.TimerRefreshViewTimer(Sender: TObject);
+begin
+  ApplicationController.CheckTemperatureRanges;
 
-  MemoInfo.Lines.Add('Сообщений в очереди:' + #9 + IntToStr(QueueCount));
-  MemoInfo.Lines.Add('');
-  MemoInfo.Lines.Add('Отправлено сообщений:' + #9 + IntToStr(SentMessagesCount));
-  MemoInfo.Lines.Add('Получено сообщений:' + #9 + IntToStr(RecievedMessagesCount));
-  MemoInfo.Lines.Add('');
-  MemoInfo.Lines.Add('Получено пачек:' + #9 + #9 + IntToStr(RecievedPackCount));
-  MemoInfo.Lines.Add('Обработано пачек:' + #9 + IntToStr(ProceedPackCount));
-  MemoInfo.Lines.Add('');
-  MemoInfo.Lines.Add('Повторных отправок:' + #9 + #9 + IntToStr(ReSentMessagesCount));
-  MemoInfo.Lines.Add('ErrorCRCCount:' + #9 + #9 + #9 + IntToStr(ErrorCRCCount));
-  MemoInfo.Lines.Add('ErrorNoSendingMessageCount:' + #9 + IntToStr(ErrorNoSendingMessageCount));
-  MemoInfo.Lines.Add('ErrorBufferOverFlowCout:' + #9 + #9 + IntToStr(ErrorBufferOverFlowCout));
-  MemoInfo.Lines.Add('ErrorTimeOutEndPacketCount:' + #9 + IntToStr(ErrorTimeOutEndPacketCount));
-  MemoInfo.Lines.Add('ErrorWrongCmdOrDeviceId:' + #9 + #9 + IntToStr(ErrorWrongCmdOrDeviceId));
-  MemoInfo.Lines.Add('');
-  MemoInfo.Lines.Add('ErrorTimeOutSendPacketCount:' + #9 + IntToStr(ErrorTimeOutSendPacketCount));
+  UpdateGraph;
 
-  DrawSeries;
+  UpdateStatusBar;
+
+  BitBtnSirenDisable.Enabled := (ApplicationController.SignalMode = smEnabled);
+end;
+
+procedure TFormMain.TimerSchedulerTimer(Sender: TObject);
+begin
+  ///////////////// Удаление старых даных ////////////////////////
+  ////////////////// Каждый день в 00:00 /////////////////////////
+  if (DecodeHour(Now) = 0) and (not FOutdatedTempValuesDeleted) //если настало нужное время и операция еще не выполнена
+    then FNeedDeleteOutdatedTempValues := True; //то выставляем флаг
+
+  if FNeedDeleteOutdatedTempValues and (not FOutdatedTempValuesDeleted)
+    then FOutdatedTempValuesDeleted := DeleteOutdatedTempValues();
+
+  if FOutdatedTempValuesDeleted
+    then FNeedDeleteOutdatedTempValues := False;
+
+  if (DecodeHour(Now) > 0)
+    then FOutdatedTempValuesDeleted := False;
+
+  ///////////////// Сохранение старых данных ////////////////////////
+  ////////////////// Каждый день в 01:00 /////////////////////////
+  if (DecodeHour(Now) = 1) and (not FOutdatedTempValuesBackuped) //если настало нужное время и операция еще не выполнена
+    then FNeedBackupOutdatedTempValues := True; //то выставляем флаг
+
+  if FNeedBackupOutdatedTempValues and (not FOutdatedTempValuesBackuped)
+    then FOutdatedTempValuesBackuped := BackupOutdatedTempValues;
+
+  if FOutdatedTempValuesBackuped
+    then FNeedBackupOutdatedTempValues := False;
+
+  if (DecodeHour(Now) > 1)
+    then FOutdatedTempValuesBackuped := False;
+end;
+
+procedure TFormMain.TrackBarAllConveyorsChange(Sender: TObject);
+var
+  position : integer;
+begin
+  position := 0;
+
+  case TrackBarAllConveyors.Position of
+    0 : position := 0;
+    1 : position := 1;
+  end;
+
+  TrackBarConveyor1.Position := position;
+  TrackBarConveyor2.Position := position;
+  TrackBarConveyor3.Position := position;
+  TrackBarConveyor4.Position := position;
+  TrackBarConveyor5.Position := position;
+end;
+
+procedure TFormMain.TrackBarConveyor1Change(Sender: TObject);
+var
+  Conveyor : TMConveyor;
+begin
+  Conveyor := ApplicationController.GetItem('1');
+
+  case TrackBarConveyor1.Position of
+    0 :
+      begin
+        if Conveyor.WorkMode = cwmOverlocking
+          then Exit;
+
+        Conveyor.WorkMode := cwmOverlocking;
+      end;
+    1 :
+      begin
+        if Conveyor.WorkMode = cwmWork
+          then Exit;
+
+        Conveyor.WorkMode := cwmWork;
+      end;
+  end;
+
+  case Conveyor.WorkMode of
+    cwmOverlocking : ApplicationEventLog.WriteLog(elWorkModeOff, 'floor 1');
+    cwmWork        : ApplicationEventLog.WriteLog(elWorkModeOn , 'floor 1');
+  end;
+end;
+
+procedure TFormMain.TrackBarConveyor2Change(Sender: TObject);
+var
+  Conveyor : TMConveyor;
+begin
+  Conveyor := ApplicationController.GetItem('2');
+
+  case TrackBarConveyor2.Position of
+    0 :
+      begin
+        if Conveyor.WorkMode = cwmOverlocking
+          then Exit;
+
+        Conveyor.WorkMode := cwmOverlocking;
+      end;
+    1 :
+      begin
+        if Conveyor.WorkMode = cwmWork
+          then Exit;
+
+        Conveyor.WorkMode := cwmWork;
+      end;
+  end;
+
+  case Conveyor.WorkMode of
+    cwmOverlocking : ApplicationEventLog.WriteLog(elWorkModeOff, 'floor 2');
+    cwmWork        : ApplicationEventLog.WriteLog(elWorkModeOn , 'floor 2');
+  end;
+end;
+
+procedure TFormMain.TrackBarConveyor3Change(Sender: TObject);
+var
+  Conveyor : TMConveyor;
+begin
+  Conveyor := ApplicationController.GetItem('3');
+
+  case TrackBarConveyor3.Position of
+    0 :
+      begin
+        if Conveyor.WorkMode = cwmOverlocking
+          then Exit;
+
+        Conveyor.WorkMode := cwmOverlocking;
+      end;
+    1 :
+      begin
+        if Conveyor.WorkMode = cwmWork
+          then Exit;
+
+        Conveyor.WorkMode := cwmWork;
+      end;
+  end;
+
+  case Conveyor.WorkMode of
+    cwmOverlocking : ApplicationEventLog.WriteLog(elWorkModeOff, 'floor 3');
+    cwmWork        : ApplicationEventLog.WriteLog(elWorkModeOn , 'floor 3');
+  end;
+end;
+
+procedure TFormMain.TrackBarConveyor4Change(Sender: TObject);
+var
+  Conveyor : TMConveyor;
+begin
+  Conveyor := ApplicationController.GetItem('4');
+
+  case TrackBarConveyor4.Position of
+    0 :
+      begin
+        if Conveyor.WorkMode = cwmOverlocking
+          then Exit;
+
+        Conveyor.WorkMode := cwmOverlocking;
+      end;
+    1 :
+      begin
+        if Conveyor.WorkMode = cwmWork
+          then Exit;
+
+        Conveyor.WorkMode := cwmWork;
+      end;
+  end;
+
+  case Conveyor.WorkMode of
+    cwmOverlocking : ApplicationEventLog.WriteLog(elWorkModeOff, 'floor 4');
+    cwmWork        : ApplicationEventLog.WriteLog(elWorkModeOn , 'floor 4');
+  end;
+end;
+
+procedure TFormMain.TrackBarConveyor5Change(Sender: TObject);
+var
+  Conveyor : TMConveyor;
+begin
+  Conveyor := ApplicationController.GetItem('5');
+
+  case TrackBarConveyor5.Position of
+    0 :
+      begin
+        if Conveyor.WorkMode = cwmOverlocking
+          then Exit;
+
+        Conveyor.WorkMode := cwmOverlocking;
+      end;
+    1 :
+      begin
+        if Conveyor.WorkMode = cwmWork
+          then Exit;
+
+        Conveyor.WorkMode := cwmWork;
+      end;
+  end;
+
+  case Conveyor.WorkMode of
+    cwmOverlocking : ApplicationEventLog.WriteLog(elWorkModeOff, 'floor 5');
+    cwmWork        : ApplicationEventLog.WriteLog(elWorkModeOn , 'floor 5');
+  end;
 end;
 
 procedure TFormMain.TimerComPortSendMessagesTimer(Sender: TObject);
 var
-  OutgoingMessage : TMOutgoingComportMessage;
+  SendingMessage : TMOutgoingComportMessage;
   MessageBytes : TDynamicByteArray;
-
-  SentTime : TDateTime;
-  ms : integer;
-
-  Box : TMBox;
-
-  DeviceId : integer;
 begin
-  //!!!!!!!!!!!!!ОСТАВЛЯЮ НА ПОТОМ, Т.К. МОЖНО ЗАКОПАТЬСЯ!!!!!!!!!!!!!!!!!
-  //Нужно расписать сюда повторную отправку сообщений в случае
-  //Если при получении были ошибки. Сейчас эти ошибки фиксируются
-  //Но повторная отправка не происходит
+  SendingMessage := ApplicationComPortOutgoingMessages.SendingComPortMessage;
 
-  if ApplicationComPortOutgoingMessages.GetCount = 0
+  if (ApplicationComPortOutgoingMessages.GetCount = 0) and
+     (not Assigned(SendingMessage))
     then Exit; //Если нечего отсылать - выходим
 
-  OutgoingMessage := ApplicationComPortOutgoingMessages.SendingComPortMessage;
-
-  if Assigned(OutgoingMessage) and (not ApplicationComPortOutgoingMessages.LastMessageError)
-  //Если сообщение уже в отправке, а ошибок не зафиксировано, то проверям ТаймАут
+  if Assigned(SendingMessage) //Если есть отправленное сообщение
     then
       begin
-        try
-          SentTime := OutgoingMessage.SentTime;
-        except
-          SentTime := 0;
-          //одновременный доступ к объекту ComPortMessage из отправки сообщений
-          //и из получения сообщений
-        end;
-          ms := MilliSecondsBetween(SentTime, Now);
+        if SendingMessage.State = omsDelievered
+          then
+            if not SendingMessage.IsError
+              then ClearMessage(SendingMessage); //SendingMessage := nil
 
-          if ms < TIMEOUT_SEND_MESSAGE
-            then Exit //Если Таймаут еще не прошел, то выходим
-            else
-              begin //Если ТаймАут прошел, то помечаем сообщение соответствующим образом
-                OutgoingMessage.Error := omeTimeout;
-
-                FreeAndNilMessage(OutgoingMessage);
-              end;
-      end;
-
-  if ApplicationComPortOutgoingMessages.LastMessageError
-  //Если при обработке предыдущих сообщений возникли ошибки, то
-  //нужно эту отправку повторить (в дальнейшем нужен счетчик)
-    then
-      begin
-        DeviceId := ApplicationComPortOutgoingMessages.LastSendingDeviceId;
-        if (DeviceId > $00) and (DeviceId <= $14)
+        if Assigned(SendingMessage)
           then
             begin
-              OutgoingMessage := TMOutgoingComportMessage.Create;
+              if not SendingMessage.IsError //Если нет ошибок, проверяем
+                then
+                  if not SendingMessage.IsTimeOutError //Проверка таймаута
+                    then Exit;
 
-              Box := ApplicationBoxes.GetItem(IntToStr(DeviceId));
+              if SendingMessage.IsError
+                then
+                  begin
+                    case SendingMessage.Error of
+                      omeWrongAcknowledge : INC(OutgoingErrorWrongAcknowledge);
+                      omeTimeout          : INC(OutgoingErrorTimeOutCount);
+                    end;
+                  end;
 
-              if not Assigned(Box)
-                then Exit;
-
-              if not Box.SaveToComPortMessage(OutgoingMessage)
-                then OutgoingMessage.Free;
-
-              if Assigned(OutgoingMessage)
-                then ApplicationComPortOutgoingMessages.AddItem(OutgoingMessage);
+              if SendingMessage.SentTimeCounter < MESSAGE_RESEND_COUNT
+                then //Если есть зафиксированные ошибки, сообщение отправляется повторно
+                  begin
+                    SendingMessage.ResentPrepare;
+                    Inc(ReSentMessagesCount);
+                  end
+                else
+                  begin
+                    ClearMessage(SendingMessage);
+                    Exit;
+                  end;
             end;
       end;
 
-  if not Assigned(OutgoingMessage) //Если сообщение не создано ранее, т.е. не идет повторная отправка
+  if not Assigned(SendingMessage) //Если сообщение не создано ранее, т.е. не идет повторная отправка
   //то мы берем сообщение из очереди в соответствии со временем создания и приоритетом
-    then OutgoingMessage := ApplicationComPortOutgoingMessages.GetMessageToSend;
+    then SendingMessage := ApplicationComPortOutgoingMessages.GetMessageToSend;
 
-  if not Assigned(OutgoingMessage)
+  if not Assigned(SendingMessage)
     then Exit;
 
-  OutgoingMessage.GenerateMessage(MessageBytes);
+  SendingMessage.GenerateMessage(MessageBytes);
 
-  if ComPort.Write(MessageBytes[0], Length(MessageBytes)) > 0
-    then
-      begin
-        OutgoingMessage.State           := omsWaitResponse;
-        OutgoingMessage.SentTime        := Now;
-//        OutgoingMessage.SentTimeCounter := OutgoingMessage.SentTimeCounter + 1;
-
-        ApplicationComPortOutgoingMessages.SendingComPortMessage := OutgoingMessage;
-
-        WriteLog('Сообщение отправлено:' + OutgoingMessage.MessageUid + '. Коробка ' + IntToStr(OutgoingMessage.DebugDeviceId));
-
-        Inc(SentMessagesCount);
-
-        if OutgoingMessage.SentTimeCounter > 1
-          then Inc(ReSentMessagesCount);
-      end;
-end;
-
-
-procedure TFormMain.BitBtn1Click(Sender: TObject);
-begin
-  ShellExecute(0,nil,'osk.exe',nil,nil,SW_SHOW);
-end;
-
-procedure TFormMain.BitBtn2Click(Sender: TObject);
-begin
-  Application.CreateForm(TFormEventHistory, FormEventHistory);
-  FormEventHistory.ShowModal;
-  FormEventHistory.Free;
-end;
-
-procedure TFormMain.BitBtn3Click(Sender: TObject);
-var
-  pass : string;
-begin
-  if InputQuery('Password required', 'Input admin password to proceed', pass)
-    then
-      begin
-        if pass <> 'admin'
-          then
-            begin
-              ShowMessageUser('Wrong password');
-              BitBtn3.Click;
-            end
-          else
-            begin
-              Application.CreateForm(TFormTemperatureRanges, FormTemperatureRanges);
-              FormTemperatureRanges.ShowModal;
-              FormTemperatureRanges.Free;
-            end;
-      end
-
-
-//  Input
-end;
-
-procedure TFormMain.Button1Click(Sender: TObject);
-var
-  TableRecord : TMTableRecord;
-  i, j : integer;
-  CurrentDateTime : TDateTime;
-begin
-  TableRecord := TMTableRecord.Create('TempValues');
   try
-    CurrentDateTime := Now;
-
-    for i := 1 to 200 do
-      begin
-        for j := 10*24*60 downto 0 do
+    if ComPort.Write(MessageBytes[0], Length(MessageBytes)) > 0
+      then
         begin
-          TableRecord.FieldByName['TempValue'].Value := 140 + Random(25);
-          TableRecord.FieldByName['TempTime'].Value  := CurrentDateTime - j*(1/(24*60));
-          TableRecord.FieldByName['SensorId'].Value  := i;
+          SendingMessage.State           := omsWaitResponse;
+          SendingMessage.SentTime        := Now;
 
-          TableRecord.AddRecord;
+          ApplicationComPortOutgoingMessages.SendingComPortMessage := SendingMessage;
+
+          Inc(SentMessagesCount);
         end;
-        Caption := IntToStr(i);
-        Application.ProcessMessages;
-      end;
-  finally
-    TableRecord.Free;
+  except
+    ApplicationEventLog.WriteLog(elComPortError, 'Can''t send message to the device');
   end;
 end;
 
-procedure TFormMain.Button2Click(Sender: TObject);
-begin
-  Button2.Tag := Button2.Tag + 1;
 
-  if (Button2.Tag mod 2) = 0
-    then LabeledEdit3.Text := 'overlocking'
-    else LabeledEdit3.Text := 'operation';
+procedure TFormMain.BitBtnSirenDisableClick(Sender: TObject);
+begin
+  ApplicationController.GenerateSetSignalModeMessage(smDisabled);
+  ApplicationEventLog.WriteLog(elSignalOff, 'by user');
 end;
 
-procedure TFormMain.Button3Click(Sender: TObject);
+procedure TFormMain.BitBtbExportToCSVClick(Sender: TObject);
 begin
-  Button3.Tag := Button3.Tag + 1;
-
-  if (Button3.Tag mod 2) = 0
-    then LabeledEdit4.Text := 'overlocking'
-    else LabeledEdit4.Text := 'operation';
+  Application.CreateForm(TFormExportToCSV, FormExportToCSV);
+  FormExportToCSV.ShowModal;
+  FormExportToCSV.Free;
 end;
 
-procedure TFormMain.Button4Click(Sender: TObject);
-begin
-  Button4.Tag := Button4.Tag + 1;
-
-  if (Button4.Tag mod 2) = 0
-    then LabeledEdit5.Text := 'overlocking'
-    else LabeledEdit5.Text := 'operation';
-
-end;
-
-procedure TFormMain.Button5Click(Sender: TObject);
-begin
-  Button5.Tag := Button5.Tag + 1;
-
-  if (Button5.Tag mod 2) = 0
-    then LabeledEdit6.Text := 'overlocking'
-    else LabeledEdit6.Text := 'operation';
-end;
-
-procedure TFormMain.Button7Click(Sender: TObject);
+procedure TFormMain.BitBtnControlPanelClick(Sender: TObject);
 var
-  TableRecord : TMTableRecord;
-  i, j, k,
-  BoxNumber,
-  ConveyorNumber,
-  SectionNumber : integer;
-  SensorPosition,
-  SensorSide : string;
+  ExitProgram : boolean;
 begin
-  TableRecord := TMTableRecord.Create('TempValues');
+  Application.CreateForm(TFormControlPanel, FormControlPanel);
   try
-    TableRecord.DeleteRecordsAll;
+    FormControlPanel.ShowModal;
+
+    ExitProgram := FormControlPanel.NeedClose;
+
   finally
-    TableRecord.Free;
+    FormControlPanel.Free;
   end;
 
-
-  TableRecord := TMTableRecord.Create('Sensors');
-  try
-    TableRecord.DeleteRecordsAll;
-  finally
-    TableRecord.Free;
-  end;
-
-  TableRecord := TMTableRecord.Create('Sensors');
-  try
-    for i := 0 to 19 do //Коробки
-      begin
-        for j := 0 to 4 do //Этажи
-          begin
-            BoxNumber      := i + 1;
-            ConveyorNumber := j + 1;
-            SectionNumber  := ((BoxNumber - 1) div 2) + 1;
-
-            if (BoxNumber mod 2) = 1
-              then SensorSide := 'Left'
-              else SensorSide := 'Right';
-
-            for k := 0 to 1 do
-              begin
-                if k = 0
-                  then SensorPosition := SensorSide + 'Bottom'
-                  else SensorPosition := SensorSide + 'Top';
-
-                TableRecord.FieldByName['BoxNumber'].Value      := BoxNumber;
-                TableRecord.FieldByName['ConveyorNumber'].Value := ConveyorNumber;
-                TableRecord.FieldByName['SectionNumber'].Value  := SectionNumber;
-                TableRecord.FieldByName['SensorPosition'].Value := SensorPosition;
-
-                TableRecord.AddRecord;
-              end;
-          end;
-      end;
-  finally
-    TableRecord.Free;
-  end;
+  if ExitProgram
+    then Close;
 end;
 
-procedure TFormMain.Button8Click(Sender: TObject);
+procedure TFormMain.BitBtnEventHistoryClick(Sender: TObject);
 begin
-  TimerComPortSendMessages.Enabled := not TimerComPortSendMessages.Enabled;
-  TimerCreateComPortMessages.Enabled := not TimerCreateComPortMessages.Enabled;
+  Application.CreateForm(TFormEventLogs, FormEventLogs);
+  FormEventLogs.ShowModal;
+  FormEventLogs.Free;
+end;
+
+procedure TFormMain.BitBtnTemperatureRangesClick(Sender: TObject);
+begin
+  case InputPassword of
+    pmWrong : ShowMessage('Wrong password');
+
+    pmCorrect :
+      begin
+        Application.CreateForm(TFormTemperatureRanges, FormTemperatureRanges);
+        FormTemperatureRanges.ShowModal;
+        FormTemperatureRanges.Free;
+      end;
+  end;
 end;
 
 procedure TFormMain.ButtonApplyFloorAxisSettingsClick(Sender: TObject);
@@ -569,8 +662,26 @@ var
   MinYValue,
   MaxYValue : single;
 begin
-  MinYValue := StrToFloat(LabeledEditAxisMinYValue.Text, ApplicationFormatSettings);
-  MaxYValue := StrToFloat(LabeledEditAxisMaxYValue.Text, ApplicationFormatSettings);
+  if not TryStrToFloat(LabeledEditAxisMinYValue.Text, MinYValue, ApplicationFormatSettings)
+    then
+      begin
+        ShowMessage('Incorrect input data');
+        LabeledEditAxisMinYValue.SetFocus;
+        LabeledEditAxisMinYValue.SelectAll;
+
+        Exit;
+      end;
+
+  if not TryStrToFloat(LabeledEditAxisMaxYValue.Text, MaxYValue, ApplicationFormatSettings)
+    then
+      begin
+        ShowMessage('Incorrect input data');
+        LabeledEditAxisMaxYValue.SetFocus;
+        LabeledEditAxisMaxYValue.SelectAll;
+
+        Exit;
+      end;
+
 
   if MinYValue >= MaxYValue
     then
@@ -592,108 +703,52 @@ begin
   PaintBox.Repaint;
 end;
 
-procedure TFormMain.ComPortException(Sender: TObject;
-  TComException: TComExceptions; ComportMessage: string; WinError: Int64;
-  WinMessage: string);
+procedure TFormMain.ButtonDebugClick(Sender: TObject);
 begin
-//  Inc(Excep);
+  Application.CreateForm(TFormDebugPanel, FormDebugPanel);
+  FormDebugPanel.ShowModal;
+  FormDebugPanel.Free;
 end;
 
 procedure TFormMain.ComPortRxChar(Sender: TObject; Count: Integer);
 var
-  DeviceId : Byte;
-
   Buffer : TDynamicByteArray;
 
-  Box : TMBox;
-  SendingComPortMessage : TMOutgoingComportMessage;
+  IncomingMessage : TMIncomingComportMessage;
+  SendingMessage : TMOutgoingComportMessage;
 begin
   Inc(RecievedPackCount);
+
   SetLength(Buffer, Count);
   ComPort.Read(Buffer[0], Count);
 
-  if ApplicationComPortIncomingMessage.LoadFromBuffer(Buffer)
+  IncomingMessage := ApplicationComPortIncomingMessage; //Передаем значение по ссылке. Промежуточный объект используется для сокращения названия переменной
+
+  if IncomingMessage.LoadFromBuffer(Buffer)
     then Inc(ProceedPackCount);
 
-  SendingComPortMessage := ApplicationComPortOutgoingMessages.SendingComPortMessage;
+  SendingMessage := ApplicationComPortOutgoingMessages.SendingComPortMessage;
 
-  ApplicationComPortIncomingMessage.DebugDeviceId := SendingComPortMessage.DebugDeviceId;
+  if not Assigned(SendingMessage)
+    then IncomingMessage.Error := imeNoSendingMessage;
 
-  if not Assigned(SendingComPortMessage)
-    then ApplicationComPortIncomingMessage.Error := imeNoSendingMessage;
+  //Если сообщение полностью получено и во время получения не возникло ошибок
+  if (IncomingMessage.State = imsRecieved)
+    then ProcessIncomingMessage(IncomingMessage);
 
-  if (ApplicationComPortIncomingMessage.State = imsRecieved) and
-     (not ApplicationComPortIncomingMessage.IsError)
+  if IncomingMessage.IsError
     then
       begin
-        ApplicationComPortOutgoingMessages.LastMessageError := False;
-
-        Inc(RecievedMessagesCount);
-
-//        DeviceId := ApplicationComPortIncomingMessage.DeviceId;
-        DeviceId := ApplicationComPortIncomingMessage.DebugDeviceId;
-
-        Box := ApplicationBoxes.GetItem(IntToStr(DeviceId));
-
-        if not Assigned(Box)
-          then Exit;
-
-        if not Box.LoadFromComPortMessage(ApplicationComPortIncomingMessage)
-          then Exit;
-
-        if (SendingComPortMessage.DebugDeviceId = ApplicationComPortIncomingMessage.DebugDeviceId) and
-           (ApplicationComPortIncomingMessage.CommandId = $03) and
-           (SendingComPortMessage.CommandId = $03)
-          then
-            begin
-              SendingComPortMessage.State := omsDelievered;
-              SendingComPortMessage.DelieveredTime := Now;
-
-              WriteLog('Данные сохранены. Сообщение доставлено: ' + SendingComPortMessage.MessageUid + '. Байт получено: ' + IntToStr(ApplicationComPortIncomingMessage.IncomingByteIndex));
-            end
-          else ApplicationComPortIncomingMessage.Error := imeWrongCmdOrDeviceId;
-
+        ProcessIncomingMessageErrors(IncomingMessage);//Если полученное сообщение содержит информацию об ошибках
+        if Assigned(SendingMessage)
+          then SendingMessage.Error := omeWrongAcknowledge;
       end;
 
-    if ApplicationComPortIncomingMessage.IsError
-    then
-      begin
-        ApplicationComPortOutgoingMessages.LastMessageError := TRUE;
-
-        case ApplicationComPortIncomingMessage.Error of
-          imeCRC :
-            INC(ErrorCRCCount);
-
-          imeNoSendingMessage :
-            Inc(ErrorNoSendingMessageCount);
-
-          imeBufferOverflow :
-            Inc(ErrorBufferOverFlowCout);
-
-          imeTimeoutEndPacket:
-            Inc(ErrorTimeOutEndPacketCount);
-
-          imeWrongCmdOrDeviceId:
-            Inc(ErrorWrongCmdOrDeviceId);
-        end;
-      end;
-
-
-  if (ApplicationComPortIncomingMessage.State = imsRecieved) or
-      ApplicationComPortIncomingMessage.IsError
-    then
-      begin
-        if Assigned(SendingComPortMessage)
-          then ApplicationComPortOutgoingMessages.DeleteItem(SendingComPortMessage.MessageUid);
-
-        ApplicationComPortOutgoingMessages.SendingComPortMessage := nil;
-        SendingComPortMessage := nil;
-
-        ApplicationComPortIncomingMessage.Clear;
-      end;
+  if (IncomingMessage.State = imsRecieved) or IncomingMessage.IsError
+    then IncomingMessage.Clear; //Есди сообщение получено или во время получения возникли ошибки
 end;
 
-procedure TFormMain.DrawSeries();
+procedure TFormMain.UpdateGraph();
 var
   Series : TMSeries;
 
@@ -719,30 +774,36 @@ begin
               begin
                 Series.Color := clRed;
                 Pair         := 'Top';
+//                Pair := 'LeftTop';
               end;
 
             1 :
               begin
                 Series.Color := clGreen;
                 Pair         := 'Bottom';
+//                Pair := 'LeftBottom';
+
               end;
 
             2 :
               begin
                 Series.Color := clBlue;
+//                Pair := 'RightTop';
                 Pair         := 'Left';
               end;
 
             3 :
               begin
                 Series.Color := clAqua;
+//                Pair := 'RightBottom';
+//
                 Pair         := 'Right';
               end;
           end;
 
           for k := 0 to 9 do //Секции
             begin
-              ConveyorNumber := i + 1;
+              ConveyorNumber := 5 - i;
               SectionNumber  := k + 1;
 
               if i <> 5
@@ -761,7 +822,14 @@ end;
 function TFormMain.LoadSettings : boolean;
 var
   MinYValueText,
-  MaxYValueText : string;
+  MaxYValueText,
+  Port,
+  BaudRate,
+  DataBits,
+  Parity,
+  FlowControl : string;
+
+  Conveyor : TMConveyor;
 begin
   MinYValueText := FloatToStr(ApplicationProgramSettings.GraphSettings.AxisMinYValue, ApplicationFormatSettings);
   MaxYValueText := FloatToStr(ApplicationProgramSettings.GraphSettings.AxisMaxYValue, ApplicationFormatSettings);
@@ -771,6 +839,62 @@ begin
 
   LabelAxisMinYValue.Caption := MinYValueText;
   LabelAxisMaxYValue.Caption := MaxYValueText;
+
+  Conveyor     := ApplicationController.GetItem('1');
+  case Conveyor.WorkMode of
+    cwmOverlocking: TrackBarConveyor1.Position := 0;
+    cwmWork:        TrackBarConveyor1.Position := 1;
+  end;
+
+  Conveyor     := ApplicationController.GetItem('2');
+  case Conveyor.WorkMode of
+    cwmOverlocking: TrackBarConveyor2.Position := 0;
+    cwmWork:        TrackBarConveyor2.Position := 1;
+  end;
+
+  Conveyor     := ApplicationController.GetItem('3');
+  case Conveyor.WorkMode of
+    cwmOverlocking: TrackBarConveyor3.Position := 0;
+    cwmWork:        TrackBarConveyor3.Position := 1;
+  end;
+
+  Conveyor     := ApplicationController.GetItem('4');
+  case Conveyor.WorkMode of
+    cwmOverlocking: TrackBarConveyor4.Position := 0;
+    cwmWork:        TrackBarConveyor4.Position := 1;
+  end;
+
+  Conveyor     := ApplicationController.GetItem('5');
+  case Conveyor.WorkMode of
+    cwmOverlocking: TrackBarConveyor5.Position := 0;
+    cwmWork:        TrackBarConveyor5.Position := 1;
+  end;
+
+  //Загрузка настроек COM-порта
+
+  Port := ApplicationProgramSettings.UserSettings.Port;
+  ComPort.Port := Port;
+
+  BaudRate := ApplicationProgramSettings.UserSettings.BaudRate;
+  ComPort.BaudRate := StrToBaudRate(BaudRate);
+
+  DataBits := ApplicationProgramSettings.UserSettings.DataBits;
+  ComPort.DataBits := StrToDataBits(DataBits);
+
+  Parity := ApplicationProgramSettings.UserSettings.Parity;
+  ComPort.Parity.Bits := StrToParity(Parity);
+
+  FlowControl := ApplicationProgramSettings.UserSettings.FlowControl;
+  ComPort.FlowControl.FlowControl:= StrToFlowControl(FlowControl);
+
+  TimerCreateBoxMessages.Interval             := ApplicationProgramSettings.UserSettings.CreateBoxMessageInterval;
+  TimerComPortSendMessages.Interval           := ApplicationProgramSettings.UserSettings.ComPortSendMessagesInterval;
+  TimerCreateCheckSignaModelMessages.Interval := ApplicationProgramSettings.UserSettings.CreateCheckSignalModeMessagesInterval;
+  TimerRefreshView.Interval                   := ApplicationProgramSettings.UserSettings.RefreshViewInterval;
+
+  TimerCreateBoxMessages.Enabled             := ApplicationProgramSettings.UserSettings.EnableCreateBoxMessages;
+  TimerComPortSendMessages.Enabled           := ApplicationProgramSettings.UserSettings.EnableComPortSendMessages;
+  TimerCreateCheckSignaModelMessages.Enabled := ApplicationProgramSettings.UserSettings.EnableCreateCheckSignalModeMessagesInterval;
 
   Result := TRUE;
 end;
@@ -787,6 +911,22 @@ begin
   ApplicationProgramSettings.GraphSettings.AxisMaxYValue := MaxYValue;
 
   Result := ApplicationProgramSettings.SaveToInifile;
+end;
+
+procedure TFormMain.UpdateStatusBar;
+begin
+  StatusBar.Panels[0].Text := 'Current time: '    + DateTimeToStr(Now, ApplicationFormatSettings);
+  StatusBar.Panels[1].Text := 'Program uptime: '  + DateTimeToDHMSString(Now - FStartTime);
+  StatusBar.Panels[2].Text := 'Program version: ' + ApplicationAttributes.GetApplicationVersionFull; 
+end;
+
+procedure TFormMain.UpdateSignalMode;
+begin
+  case ApplicationController.SignalMode of
+    smNone     : BitBtnSirenDisable.Enabled := False;
+    smEnabled  : BitBtnSirenDisable.Enabled := True;
+    smDisabled : BitBtnSirenDisable.Enabled := False;
+  end;
 end;
 
 function TFormMain.GraphMouseToGridCoord(AMouseCoord : TPoint; out AConveyorNumber, ASectionNumber : integer) : boolean;
@@ -806,7 +946,193 @@ begin
   if (AConveyorNumber > 5) or (AConveyorNumber < 1)
     then Exit;
 
-  Result := TRUE;    
+  Result := TRUE;
 end;
+
+function TFormMain.ProcessIncomingMessage(IncomingMessage : TMIncomingComportMessage) : boolean;
+var
+  Box : TMBox;
+  DeviceId : Byte;
+  SendingMessage : TMOutgoingComportMessage;
+begin
+  Result := False;
+
+  if IncomingMessage.IsError
+    then Exit;
+
+  SendingMessage := ApplicationComPortOutgoingMessages.SendingComPortMessage;
+
+  if not Assigned(SendingMessage)
+    then Exit;
+
+  SendingMessage.IsTimeOutError; //Проверка таймаута
+
+  if SendingMessage.IsError
+    then
+      begin
+        IncomingMessage.Error := imeSendingMessage;
+
+        Exit;
+      end;
+
+  case IncomingMessage.CommandId of
+    $03, $04 : //Получение информации с датчиков и статус сигнализации
+      begin
+        case IncomingMessage.CommandId of
+          $03 : //Статус сигнализации
+            begin
+              ApplicationController.CheckSignalModeLoadFromComPortMessage(IncomingMessage);
+              UpdateSignalMode;
+            end;
+
+          $04 : //Данные с датчиков
+            begin
+              DeviceId := IncomingMessage.DeviceId;
+
+              Box := ApplicationBoxes.GetItem(IntToStr(DeviceId));
+
+              if not Assigned(Box)
+                then Exit;
+
+              if not Box.LoadFromComPortMessage(IncomingMessage)
+                then Exit;
+            end;
+        end;
+
+        if (SendingMessage.DeviceId = IncomingMessage.DeviceId)
+          then
+            begin
+              SendingMessage.State := omsDelievered;
+              SendingMessage.DelieveredTime := Now;
+            end
+          else IncomingMessage.Error := imeWrongDeviceId;
+      end;
+
+    $06 : //Эхо-ответ от сигналки. Используется для подтверждения того, что статус поменялся
+      begin
+        ApplicationController.SetSignalModeLoadFromComPortMessage(IncomingMessage);
+        UpdateSignalMode;
+
+        SendingMessage.State := omsDelievered;
+        SendingMessage.DelieveredTime := Now;
+      end;
+  end;
+
+  Inc(RecievedMessagesCount);
+
+  Result := True;
+end;
+
+function TFormMain.ProcessIncomingMessageErrors(IncomingMessage : TMIncomingComportMessage) : boolean;
+begin
+  case IncomingMessage.Error of
+    imeCRC :
+      INC(IncomingErrorCRCCount);
+
+    imeNoSendingMessage :
+      Inc(IncomingErrorNoSendingMessageCount);
+
+    imeSendingMessage : //ошибка в отправляемом сообщении на момент получения
+      Inc(IncomingErrorSendingMessageCount);
+
+    imeBufferOverflow :
+      Inc(IncomingErrorBufferOverFlowCout);
+
+    imeTimeoutEndPacket:
+      Inc(IncomingErrorTimeOutEndPacketCount);
+
+    imeWrongDeviceId:
+      Inc(IncomingErrorWrongDeviceIdCount);
+  end;
+
+  Result := True;
+end;
+
+procedure TFormMain.ClearMessage(var SendingMessage : TMOutgoingComportMessage);
+var
+  message_uid : string;
+begin
+  //Очистка сообщения
+  message_uid := SendingMessage.MessageUid;
+  ApplicationComPortOutgoingMessages.DeleteItem(message_uid);
+  ApplicationComPortOutgoingMessages.SendingComPortMessage := nil;
+  SendingMessage := nil;
+end;
+
+function TFormMain.DeleteOutdatedTempValues() : boolean;
+const
+  CRecentDayCount = 15;
+var
+  TableRecord : TMTableRecord;
+  QueryConstructor : TMQueryConstructor;
+
+  ms_between,
+  rows_affected : integer;
+
+  before : TDateTime;
+begin
+  Result := False;
+
+  //Удаляем значения температуры, старшие 15 дней, каждый день после 0:00 часов ночи.
+  TableRecord := TMTableRecord.Create('TempValues');
+  try
+    QueryConstructor := TableRecord.QueryConstructor;
+
+    if not Assigned(QueryConstructor)
+      then Exit;
+
+    QueryConstructor.AddCondition('TempValues', 'TempTime', ctLessEqual, Now - CRecentDayCount);
+
+    before := Now;
+
+    rows_affected := TableRecord.DeleteRecordsRowsAffected;
+
+    ms_between := MilliSecondsBetween(before, Now);
+
+    ApplicationEventLog.WriteLog(elDeleteOutdated, 'Deleted ' + IntToStr(rows_affected) +
+                                                   ' records of outdated temp values in ' +
+                                                   IntToStr(ms_between) + ' ms');
+  finally
+    TableRecord.Free;
+  end;
+
+  Result := True;
+end;
+
+function TFormMain.BackupOutdatedTempValues() : boolean;
+const
+  CRecentDayCount = 1;
+var
+  ExportToCSV : TMExportToCSV;
+
+  ms_between,
+  rows_affected : integer;
+
+  before,
+  date_since,
+  date_to : TDateTime;
+begin
+  //Удаляем значения температуры, старше 15 дней, каждый день после 0:00 часов ночи.
+  ExportToCSV := TMExportToCSV.Create;
+  try
+    before := Now;
+
+    date_since := Trunc(Now - CRecentDayCount);
+    date_to    := Trunc(Now);
+
+    rows_affected := ExportToCSV.SaveToCSVFile(date_since, date_to);
+
+    ms_between := MilliSecondsBetween(before, Now);
+
+    ApplicationEventLog.WriteLog(elBackupOutdated, 'Saved ' + IntToStr(rows_affected) +
+                                                   ' records of outdated temp values in ' +
+                                                   IntToStr(ms_between) + ' ms');
+  finally
+    ExportToCSV.Free;
+  end;
+
+  Result := True;
+end;
+
 
 end.

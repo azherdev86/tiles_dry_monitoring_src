@@ -2,9 +2,10 @@ unit LApplicationGlobals;
 
 interface
 
-uses CDataBaseStructure, ZConnection, ZDataset, SysUtils,
+uses CDataBaseStructure, ZConnection, ZDataset, SysUtils, CController,
      Controls, StdCtrls, CGraph, CBoxes, CIncomingComPortMessage,
-     COutgoingComPortMessage, CProgramSettings, CTempValuesBuffer;
+     COutgoingComPortMessage, CProgramSettings, CTempValuesBuffer,
+     CEventLog, LApplicationAttributes;
 
 procedure CreateGlobals;
 procedure UpdateGlobals;
@@ -22,6 +23,9 @@ var
   ApplicationComPortIncomingMessage  : TMIncomingComportMessage;
   ApplicationProgramSettings         : TMProgramSettings;
   ApplicationTempBufferValues        : TMTempBufferValuesList; //Последние 200 значений
+  ApplicationController              : TMController;
+  ApplicationEventLog                : TMEventLog;
+  ApplicationAttributes              : TAApplicationAttributes;
 
   GLOBAL_DATABASE_TYPE : TMDatabaseType = dtFireBird;
 
@@ -35,12 +39,12 @@ const
 
 
 //Для подключения к FireBird серверу
-  FireBird_DBAliasName    = 'maintest5a.fdb';
+  FireBird_DBAliasName    = 'TILES_DRY_MONITORING';
   FireBird_ZeosProtocol   = 'firebird-2.5';
   FireBird_HostName       = '';
   FireBird_Catalog        = '';
   FireBird_LibFileName    = 'fbembed.dll';
-  FireBird_DBFilePath     = 'database\TempSensors.FDB';
+  FireBird_DBFilePath     = 'database\TILES_DRY_MONITORING.FDB';
   FireBird_DBUserName     = 'SYSDBA';
   FireBird_DBPassWord     = 'MASTERKEY';
   FireBird_ClientCodePage = 'WIN1251';
@@ -61,6 +65,8 @@ begin
   ApplicationComPortOutgoingMessages        := TMOutgoingComportMessagesList.Create;
   ApplicationComPortIncomingMessage         := TMIncomingComportMessage.Create;
   ApplicationProgramSettings                := TMProgramSettings.Create;
+  ApplicationController                     := TMController.Create;
+  ApplicationAttributes                     := TAApplicationAttributes.Create;
 end;
 
 procedure UpdateGlobals;
@@ -83,12 +89,18 @@ begin
   if not ApplicationDataBaseStructure.LoadStructure
     then Exit;
 
+  ApplicationEventLog := TMEventLog.Create;
+  ApplicationEventLog.WriteLog(elProgramStart);
+
   ApplicationBoxes.Init;
+  ApplicationController.Init;
 end;
 
 
 procedure DestroyGlobals;
 begin
+  ApplicationEventLog.WriteLog(elProgramStop);
+  ApplicationEventLog.Free;
   ApplicationBoxes.Free;
   ApplicationComPortOutgoingMessages.Free;
   ApplicationComPortIncomingMessage.Free;
@@ -96,6 +108,8 @@ begin
   ApplicationDataBaseStructure.Free;
   ApplicationDBConnection.Free;
   ApplicationGraph.Free;
+  ApplicationController.Free;
+  ApplicationAttributes.Free;
 
   ApplicationProgramSettings.SaveToInifile;
   ApplicationProgramSettings.Free;

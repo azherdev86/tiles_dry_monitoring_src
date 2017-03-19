@@ -29,8 +29,10 @@ type
 
     FDataBytes : TDynamicByteArray;
 
-    FDeviceId  : Byte;
-    FCommandId : Byte;
+    FDeviceId       : Byte;
+    FCommandId      : Byte;
+    FMSBRegisterAddr : Byte;
+    FLSBRegisterAddr : Byte;
 
     FCRCHi     : Byte;
     FCRCLo     : Byte;
@@ -41,7 +43,7 @@ type
     procedure Reset(); virtual;
 
   public
-    DebugDeviceId : Byte; //Ќа период отладки, чтобы можно эмулировать работу 20 коробок на 1-ом устройстве
+//    DebugDeviceId : Byte; //Ќа период отладки, чтобы можно эмулировать работу 20 коробок на 1-ом устройстве
 
     procedure GenerateMessage(var AMessageBytes : TDynamicByteArray); virtual; abstract;
     procedure LoadDataBytes(ADataBytes : TDynamicByteArray);
@@ -52,13 +54,13 @@ type
     procedure Clear();
 
   public
-    property Priority     : TypeMessagePriority  read FPriority     write FPriority;
-    property DeviceId     : Byte                 read FDeviceId     write FDeviceId;
-    property CommandId    : Byte                 read FCommandId    write FCommandId;
-
-    property MessageUid   : string               read FMessageUid;
+    property Priority        : TypeMessagePriority  read FPriority        write FPriority;
+    property DeviceId        : Byte                 read FDeviceId        write FDeviceId;
+    property CommandId       : Byte                 read FCommandId       write FCommandId;
+    property MSBRegisterAddr : Byte                 read FMSBRegisterAddr write FMSBRegisterAddr;
+    property LSBRegisterAddr : Byte                 read FLSBRegisterAddr write FLSBRegisterAddr;
+    property MessageUid      : string               read FMessageUid;
   end;
-
 
 procedure getCRC16(p : pointer; len : word; var Hi : byte; var Lo : byte);
 
@@ -146,12 +148,15 @@ begin
 
   FPriority     := mpNone;
 
-  FDeviceId  := $00;
-  FCommandId := $00;
+  FDeviceId        := $00;
+  FCommandId       := $00;
+  FMSBRegisterAddr := $00;
+  FLSBRegisterAddr := $00;
+
   FCRCHi     := $00;
   FCRCLo     := $00;
 
-  DebugDeviceId := $00;
+//  DebugDeviceId := $00;
 end;
 
 

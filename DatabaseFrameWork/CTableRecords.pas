@@ -72,9 +72,12 @@ type
     procedure DeleteRecord; overload; //удаление текущей записи
     procedure DeleteRecord(RecordID : integer); overload; //удаление записи с заданным ID
     procedure DeleteRecordsAll; //удаление всех записей в таблице
+    procedure DeleteRecords; overload;
     procedure DeleteRecords(FieldName : string; FieldValue : variant); overload;
     procedure DeleteRecords(FieldName1 : string; FieldValue1 : variant;
                             FieldName2 : string; FieldValue2 : variant); overload;
+
+    function DeleteRecordsRowsAffected : integer;
 
     //******************************************************************
     //***********АГРЕГАТНЫЕ ФУНКЦИИ*************************************
@@ -90,7 +93,6 @@ type
 
     //Используется в качестве базовой для других функций UpdateRecords и UpdateRecordsAll
     function UpdateRecords(UpdatingFields : TMRecordFields) : integer; overload;
-    procedure DeleteRecords; overload;
     procedure AddRecordMySQL; //без возврата ID
     function AddRecordFireBird : integer; //с возвратом ID
 
@@ -1091,8 +1093,16 @@ begin
 
   FQuery.SQL.Text := SQLQuery;
   FQuery.ExecSQL;
+
   //очищаем условия конструктора
   FQueryConstructor.ClearConditions;
+end;
+
+function TMTableRecord.DeleteRecordsRowsAffected : integer;
+begin
+  DeleteRecords;
+
+  Result := FQuery.RowsAffected;
 end;
 
 procedure TMTableRecord.DeleteRecordsAll;

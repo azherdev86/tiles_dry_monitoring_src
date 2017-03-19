@@ -16,7 +16,8 @@ type
   TypeIncomingMessageError = (imeNone,
                               imeCRC,
                               imeNoSendingMessage,
-                              imeWrongCmdOrDeviceId,
+                              imeSendingMessage, //ошибка в отправляемом сообщении
+                              imeWrongDeviceId,
                               imeBufferOverflow,
                               imeTimeoutEndPacket);
 
@@ -56,7 +57,7 @@ type
 
 implementation
 
-uses SysUtils, DateUtils;
+uses SysUtils, DateUtils, Dialogs, LApplicationGlobals, CEventLog;
 
 function TMIncomingComportMessage.IsError() : boolean;
 begin
@@ -113,26 +114,66 @@ begin
       case FIncomingByteIndex of
         0 : FDeviceId      := ABuffer[i];
         1 : FCommandId     := ABuffer[i];
-        2 :
-          begin
-            FMessageLength := ABuffer[i];
-            SetLength(FDataBytes, FMessageLength);
-          end
         else
           begin
-            data_index := FIncomingByteIndex - 3;
-
-            if data_index < FMessageLength
-              then FDataBytes[data_index] := ABuffer[i];
-
-            if (data_index) = FMessageLength
-              then FCRCHi := ABuffer[i];
-
-            if (data_index) = FMessageLength + 1
-              then
+            if (FCommandId = $04) or (FCommandId = $03)
+              then // $03 $04
                 begin
-                  FCRCLo := ABuffer[i];
-                  FState := imsRecieved;
+                  if FIncomingByteIndex = 2
+                    then
+                      begin
+                        FMessageLength := ABuffer[i];
+                        SetLength(FDataBytes, FMessageLength);
+                      end
+                    else
+                      begin
+                        data_index := FIncomingByteIndex - 3;
+
+                        if data_index < FMessageLength
+                          then FDataBytes[data_index] := ABuffer[i];
+
+                        if (data_index) = FMessageLength
+                          then FCRCHi := ABuffer[i];
+
+                        if (data_index) = FMessageLength + 1
+                          then
+                            begin
+                              FCRCLo := ABuffer[i];
+                              FState := imsRecieved;
+                            end;
+                      end;
+                end
+              else  //$06 - echo ответ
+                begin
+                  if FIncomingByteIndex = 2
+                    then FMSBRegisterAddr := ABuffer[i];
+
+                  if FIncomingByteIndex = 3
+                    then
+                      begin
+                        FLSBRegisterAddr := ABuffer[i];
+                        FMessageLength := 2;
+                        SetLength(FDataBytes, FMessageLength);
+                      end;
+
+                  if FIncomingByteIndex > 3
+                    then
+                      begin
+                        data_index := FIncomingByteIndex - 4;
+
+                        if data_index < FMessageLength
+                          then FDataBytes[data_index] := ABuffer[i];
+
+                        if (data_index) = FMessageLength
+                          then FCRCHi := ABuffer[i];
+
+                        if (data_index) = FMessageLength + 1
+                          then
+                            begin
+                              FCRCLo := ABuffer[i];
+                              FState := imsRecieved;
+                            end;
+                      end;
                 end;
           end;
       end;
@@ -164,19 +205,48 @@ var
   len,
   i : integer;
 begin
-  len := Length(FDataBytes) + 5;
+  case FCommandId of
+    $03, $04 :
+      begin
+        len := Length(FDataBytes) + 5;
 
-  SetLength(AMessageBytes, len);
+        SetLength(AMessageBytes, len);
 
-  AMessageBytes[0] := FDeviceId;
-  AMessageBytes[1] := FCommandId;
-  AMessageBytes[2] := FMessageLength;
+        AMessageBytes[0] := FDeviceId;
+        AMessageBytes[1] := FCommandId;
+        AMessageBytes[2] := FMessageLength;
 
-  for i := 3 to len - 1 do
-    AMessageBytes[i] := FDataBytes[i-3];
+        try
+          for i := 3 to len - 1 do
+            AMessageBytes[i] := FDataBytes[i-3];
+        except
+          ApplicationEventLog.WriteLog(elProgramExcep,
+                                       'TMIncomingComPortMessage.GenerateMessage. ' +
+                                       'Len = ' + IntToStr(len) + '; FDataBytes = ' +
+                                        IntToStr(Length(FDataBytes)))
+        end;
 
-  AMessageBytes[len - 2] := FCRCHi;
-  AMessageBytes[len - 1] := FCRCLo;
+        AMessageBytes[len - 2] := FCRCHi;
+        AMessageBytes[len - 1] := FCRCLo;
+      end;
+    $06      :
+      begin
+        len := Length(FDataBytes) + 6;
+
+        SetLength(AMessageBytes, len);
+
+        AMessageBytes[0] := FDeviceId;
+        AMessageBytes[1] := FCommandId;
+        AMessageBytes[2] := FMSBRegisterAddr;
+        AMessageBytes[3] := FLSBRegisterAddr;
+        AMessageBytes[4] := FDataBytes[0];
+        AMessageBytes[5] := FDataBytes[1];
+        AMessageBytes[6] := FCRCHi;
+        AMessageBytes[7] := FCRCLo;
+      end;
+  end;
+
+
 end;
 
 
@@ -206,15 +276,20 @@ var
 
   MessageBytes : TDynamicByteArray;
 begin
+  Result := False;
+
   GenerateMessage(MessageBytes);
 
   len := Length(MessageBytes);
 
-  SetLength(MessageBytes, len - 2);
+  if (len - 2) > 0
+    then
+      begin
+        SetLength(MessageBytes, len - 2);
 
-  getCRC16(@MessageBytes[0], len - 2, Hi, Lo);
-
-  Result := (Hi = FCRCHi) and (Lo = FCRCLo);
+        getCRC16(@MessageBytes[0], len - 2, Hi, Lo);
+        Result := (Hi = FCRCHi) and (Lo = FCRCLo);
+      end;
 end;
 
 end.

@@ -1,9 +1,10 @@
 object FormGraphHistory: TFormGraphHistory
   Left = 0
   Top = 0
-  BorderStyle = bsToolWindow
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
   Caption = 'Temperature history for selected section'
-  ClientHeight = 447
+  ClientHeight = 484
   ClientWidth = 735
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,34 +19,34 @@ object FormGraphHistory: TFormGraphHistory
   PixelsPerInch = 96
   TextHeight = 13
   object LabelSince: TLabel
-    Left = 141
-    Top = 17
-    Width = 33
-    Height = 14
+    Left = 39
+    Top = 14
+    Width = 40
+    Height = 16
     Caption = 'Since:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
     ParentFont = False
   end
   object LabelTo: TLabel
-    Left = 361
-    Top = 17
-    Width = 16
-    Height = 14
+    Left = 60
+    Top = 47
+    Width = 19
+    Height = 16
     Caption = 'To:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
     ParentFont = False
   end
   object LabelConveyor: TLabel
     Left = 312
-    Top = 372
+    Top = 403
     Width = 36
     Height = 14
     Caption = 'Floor: 0'
@@ -58,7 +59,7 @@ object FormGraphHistory: TFormGraphHistory
   end
   object LabelSection: TLabel
     Left = 398
-    Top = 372
+    Top = 403
     Width = 48
     Height = 14
     Caption = 'Section: 0'
@@ -71,7 +72,7 @@ object FormGraphHistory: TFormGraphHistory
   end
   object ImageGraphLegend: TImage
     Left = 160
-    Top = 389
+    Top = 423
     Width = 461
     Height = 37
     AutoSize = True
@@ -1680,100 +1681,104 @@ object FormGraphHistory: TFormGraphHistory
       C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3
       C3C3C3C3C3C3C3C3C300}
   end
-  object ButtonApply: TButton
-    Left = 556
-    Top = 11
-    Width = 81
-    Height = 25
-    Caption = 'Apply'
-    TabOrder = 0
-    OnClick = ButtonApplyClick
+  object Label1: TLabel
+    Left = 222
+    Top = 14
+    Width = 6
+    Height = 19
+    Caption = ':'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Label2: TLabel
+    Left = 224
+    Top = 47
+    Width = 6
+    Height = 19
+    Caption = ':'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    ParentFont = False
   end
   object DatePickerSince: TDateTimePicker
-    Left = 181
-    Top = 13
-    Width = 73
-    Height = 22
+    Left = 82
+    Top = 10
+    Width = 102
+    Height = 26
     Date = 42785.011825775470000000
     Time = 42785.011825775470000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -16
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 0
+  end
+  object DatePickerTo: TDateTimePicker
+    Left = 83
+    Top = 43
+    Width = 102
+    Height = 26
+    Date = 42785.011825775470000000
+    Time = 42785.011825775470000000
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
     TabOrder = 1
   end
-  object TimePickerSince: TDateTimePicker
-    Left = 269
-    Top = 13
-    Width = 52
-    Height = 22
-    Date = 42785.011805555560000000
-    Format = 'HH:mm'
-    Time = 42785.011805555560000000
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Arial'
-    Font.Style = []
-    Kind = dtkTime
-    ParentFont = False
-    TabOrder = 2
-  end
-  object DatePickerTo: TDateTimePicker
-    Left = 381
-    Top = 13
-    Width = 73
-    Height = 22
-    Date = 42785.011825775470000000
-    Time = 42785.011825775470000000
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Arial'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 3
-  end
-  object TimePickerTo: TDateTimePicker
-    Left = 469
-    Top = 13
-    Width = 52
-    Height = 22
-    Date = 42785.011805555560000000
-    Format = 'HH:mm'
-    Time = 42785.011805555560000000
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Arial'
-    Font.Style = []
-    Kind = dtkTime
-    ParentFont = False
-    TabOrder = 4
-  end
   object Chart: TChart
     Left = 24
-    Top = 42
+    Top = 73
     Width = 689
     Height = 322
     Legend.Visible = False
     Title.Text.Strings = (
       'TChart')
     Title.Visible = False
+    DepthAxis.Automatic = False
+    DepthAxis.AutomaticMaximum = False
+    DepthAxis.AutomaticMinimum = False
+    DepthAxis.Maximum = 0.470000000000000000
+    DepthAxis.Minimum = -0.530000000000000000
+    DepthTopAxis.Automatic = False
+    DepthTopAxis.AutomaticMaximum = False
+    DepthTopAxis.AutomaticMinimum = False
+    DepthTopAxis.Maximum = 0.470000000000000000
+    DepthTopAxis.Minimum = -0.530000000000000000
     LeftAxis.Automatic = False
     LeftAxis.AutomaticMaximum = False
     LeftAxis.AutomaticMinimum = False
-    LeftAxis.Maximum = 185.000000000000000000
-    LeftAxis.Minimum = 90.000000000000000000
+    LeftAxis.Maximum = 182.150000000000000000
+    LeftAxis.Minimum = 87.150000000000010000
+    RightAxis.Automatic = False
+    RightAxis.AutomaticMaximum = False
+    RightAxis.AutomaticMinimum = False
     View3D = False
-    TabOrder = 5
+    TabOrder = 2
     PrintMargins = (
       15
       27
       15
       27)
+    object Gauge: TGauge
+      Left = 106
+      Top = 133
+      Width = 507
+      Height = 25
+      Progress = 0
+      Visible = False
+    end
     object sRangeMin: TLineSeries
       ColorEachLine = False
       Marks.Callout.Brush.Color = clBlack
@@ -1860,5 +1865,129 @@ object FormGraphHistory: TFormGraphHistory
       YValues.Name = 'Y'
       YValues.Order = loNone
     end
+  end
+  object LabeledEditSinceHours: TLabeledEdit
+    Left = 193
+    Top = 10
+    Width = 26
+    Height = 27
+    Hint = 'Input since hours'
+    EditLabel.Width = 108
+    EditLabel.Height = 13
+    EditLabel.Caption = 'LabeledEditSinceHours'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 3
+    Text = '01'
+    OnChange = LabeledEditSinceHoursChange
+  end
+  object LabeledEditSinceMinutes: TLabeledEdit
+    Left = 230
+    Top = 10
+    Width = 26
+    Height = 27
+    Hint = 'Input since minutes'
+    EditLabel.Width = 117
+    EditLabel.Height = 13
+    EditLabel.Caption = 'LabeledEditSinceMinutes'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 4
+    Text = '12'
+    OnChange = LabeledEditSinceMinutesChange
+  end
+  object LabeledEditToHours: TLabeledEdit
+    Left = 193
+    Top = 43
+    Width = 26
+    Height = 27
+    Hint = 'Input to hours'
+    EditLabel.Width = 95
+    EditLabel.Height = 13
+    EditLabel.Caption = 'LabeledEditToHours'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 5
+    Text = '02'
+    OnChange = LabeledEditToHoursChange
+  end
+  object LabeledEditToMinutes: TLabeledEdit
+    Left = 230
+    Top = 43
+    Width = 26
+    Height = 27
+    Hint = 'Input since minutes'
+    EditLabel.Width = 104
+    EditLabel.Height = 13
+    EditLabel.Caption = 'LabeledEditToMinutes'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 6
+    Text = '12'
+    OnChange = LabeledEditToMinutesChange
+  end
+  object BitBtnCancel: TBitBtn
+    Left = 546
+    Top = 16
+    Width = 167
+    Height = 48
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 7
+    Kind = bkCancel
+  end
+  object BitBtnOk: TBitBtn
+    Left = 277
+    Top = 16
+    Width = 167
+    Height = 48
+    Caption = 'OK'
+    Default = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 8
+    OnClick = BitBtnOkClick
+    Glyph.Data = {
+      DE010000424DDE01000000000000760000002800000024000000120000000100
+      0400000000006801000000000000000000001000000000000000000000000000
+      80000080000000808000800000008000800080800000C0C0C000808080000000
+      FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00333333333333
+      3333333333333333333333330000333333333333333333333333F33333333333
+      00003333344333333333333333388F3333333333000033334224333333333333
+      338338F3333333330000333422224333333333333833338F3333333300003342
+      222224333333333383333338F3333333000034222A22224333333338F338F333
+      8F33333300003222A3A2224333333338F3838F338F33333300003A2A333A2224
+      33333338F83338F338F33333000033A33333A222433333338333338F338F3333
+      0000333333333A222433333333333338F338F33300003333333333A222433333
+      333333338F338F33000033333333333A222433333333333338F338F300003333
+      33333333A222433333333333338F338F00003333333333333A22433333333333
+      3338F38F000033333333333333A223333333333333338F830000333333333333
+      333A333333333333333338330000333333333333333333333333333333333333
+      0000}
+    NumGlyphs = 2
   end
 end

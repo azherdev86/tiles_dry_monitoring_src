@@ -4,6 +4,10 @@ interface
 
 uses Classes;
 
+const
+  TEMP_VALUE_ACTUAL_TIME = 1.5*(1/24/60) ;//(1,5 минуты) Время, которое значение температуры считается актуальным
+//  TEMP_VALUE_ACTUAL_TIME = 10*(1/24/60/60) ;//(10 секунд)
+
 type
   TMTempBufferValue = class
     constructor Create();
@@ -20,12 +24,14 @@ type
     FSensorPosition : string;
 
     procedure Reset();
+
+    function GetTempValue() : single;
   public
     property SensorId       : integer   read FSensorId       write FSensorId;
     property ConveyorNumber : integer   read FConveyorNumber write FConveyorNumber;
     property SectionNumber  : integer   read FSectionNumber  write FSectionNumber;
     property BoxNumber      : integer   read FBoxNumber      write FBoxNumber;
-    property TempValue      : single    read FTempValue      write FTempValue;
+    property TempValue      : single    read GetTempValue    write FTempValue;
     property TempTime    : TDateTime    read FTempTime       write FTempTime;
 
     property SensorPosition : string read FSensorPosition write FSensorPosition;
@@ -37,6 +43,8 @@ type
     destructor Destroy; override;
 
   public
+    function LoadFromDatabase() : boolean;
+
     function GetItem(ItemIndex : integer) : TMTempBufferValue;  overload;
     function GetItem(ItemTitle : string) : TMTempBufferValue; overload;
     function GetItem(ASectionNumber  : integer;
@@ -45,6 +53,8 @@ type
 
     function GetAverage(ASectionNumber : integer; APair : string) : single; overload;
     function GetAverage(ASectionNumber : integer; AConveyorNumber : integer; APair : string) : single; overload;
+
+    function CheckAverage(ASectionNumber : integer; AConveyorNumber : integer) : boolean;
 
     function AddItem(Item : TMTempBufferValue) : TMTempBufferValue;
     function DeleteItem(ItemIndex : integer) : boolean; overload;
@@ -62,7 +72,7 @@ type
 
 implementation
 
-uses SysUtils;
+uses SysUtils, CProgramSettings;
 
 
 //////////////////////////CTempBufferValue/////////////////////////
@@ -90,6 +100,15 @@ begin
   FSensorPosition := '';
 end;
 
+function TMTempBufferValue.GetTempValue() : single;
+begin
+  //Хитрая штука
+
+  if Now <= (FTempTime + TEMP_VALUE_ACTUAL_TIME)
+    then Result := FTempValue
+    else Result := 0;
+end;
+
 
 //////////////TMTempBufferValuesList//////////////////////////////////
 constructor TMTempBufferValuesList.Create;
@@ -104,6 +123,12 @@ begin
   Reset;
   Items.Free;
   inherited Destroy;
+end;
+
+function TMTempBufferValuesList.LoadFromDatabase() : boolean;
+begin
+  Result := True;
+  //Пока заготовка
 end;
 
 
@@ -195,11 +220,11 @@ var
 
   sum : single;
 begin
-  Result := 0;
+  sum := 0;
 
-  sum := 0; count := 0;
+  count := GetCount;
 
-  for i := 0 to GetCount - 1 do
+  for i := 0 to count - 1 do
     begin
       Item := GetItem(i);
 
@@ -209,15 +234,45 @@ begin
       if (Item.FSectionNumber = ASectionNumber) and
          (Item.FConveyorNumber = AConveyorNumber) and
          (Pos(APair, Item.FSensorPosition)<>0)
-        then
-          begin
-            sum := sum + Item.TempValue;
-            count := count + 1;
-          end;
+        then sum := sum + Item.TempValue;
     end;
 
-    if count <> 0
-      then Result := sum/count;
+  Result := sum/2;
+end;
+
+function TMTempBufferValuesList.CheckAverage(ASectionNumber : integer; AConveyorNumber : integer) : boolean;
+var
+  range_min, range_max : single;
+
+  top_pair_value, bottom_pair_value,
+  left_pair_value, right_pair_value : single;
+begin
+  Result := False;
+
+  range_min := GetSectionYMinValue(ASectionNumber);
+  range_max := GetSectionYMaxValue(ASectionNumber);
+
+  top_pair_value := GetAverage(ASectionNumber, AConveyorNumber, 'Top');
+
+  if (top_pair_value > range_max) or (top_pair_value < range_min)
+    then Exit;
+
+  bottom_pair_value := GetAverage(ASectionNumber, AConveyorNumber, 'Bottom');
+
+  if (bottom_pair_value > range_max) or (bottom_pair_value < range_min)
+    then Exit;
+
+  left_pair_value := GetAverage(ASectionNumber, AConveyorNumber, 'Left');
+
+  if (left_pair_value > range_max) or (left_pair_value < range_min)
+    then Exit;
+
+  right_pair_value := GetAverage(ASectionNumber, AConveyorNumber, 'Right');
+
+  if (right_pair_value > range_max) or (right_pair_value < range_min)
+    then Exit;
+
+  Result := True;
 end;
 
 

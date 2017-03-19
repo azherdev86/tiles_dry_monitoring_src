@@ -5,7 +5,8 @@ interface
 uses Classes, CBasicComPortMessage;
 
 const
-  TIMEOUT_SEND_MESSAGE = 200;
+  TIMEOUT_SEND_MESSAGE = 500;
+  MESSAGE_RESEND_COUNT = 3;
 
 type
   TypeOutgoingMessageState = (omsNone,
@@ -13,6 +14,7 @@ type
                               omsDelievered); //Сообщение доставлено
 
   TypeOutgoingMessageError = (omeNone,
+                              omeWrongAcknowledge, //возникли проблемы при приеме сообщения, которое получено в ответ на отправленное
                               omeTimeout);
 
 type
@@ -34,6 +36,10 @@ type
 
   public
     procedure GenerateMessage(var AMessageBytes : TDynamicByteArray); override;
+    procedure ResentPrepare(); //подготовка к повторной отправке
+
+    function IsTimeOutError() : boolean;
+    function IsError() : boolean;
 
   public
     property State : TypeOutgoingMessageState read FState write FState;
@@ -73,9 +79,6 @@ type
 
     FMaxMessagesCount : integer;
 
-    FLastMessageError : boolean;
-    FLastSendingDeviceId : Byte;
-
     function GetHighPriorityMessage()   : TMOutgoingComportMessage;
     function GetNormalPriorityMessage() : TMOutgoingComportMessage;
 
@@ -87,14 +90,11 @@ type
   public
     property MaxMessagesCount : integer read FMaxMessagesCount;
     property SendingComPortMessage : TMOutgoingComportMessage read FSendingComPortMessage write SetSendingComPortMessage;
-    property LastMessageError : boolean read FLastMessageError write FLastMessageError;
-    property LastSendingDeviceId : Byte read FLastSendingDeviceId write FLastSendingDeviceId;
-
   end;
 
 implementation
 
-uses SysUtils;
+uses SysUtils, DateUtils;
 
 
 procedure TMOutgoingComportMessage.Reset;
@@ -116,15 +116,17 @@ var
   len,
   i : integer;
 begin
-  len := Length(FDataBytes) + 2;
+  len := Length(FDataBytes) + 4;
 
   SetLength(AMessageBytes, len);
 
   AMessageBytes[0] := FDeviceId;
   AMessageBytes[1] := FCommandId;
+  AMessageBytes[2] := FMSBRegisterAddr;
+  AMessageBytes[3] := FLSBRegisterAddr;
 
-  for i := 2 to len - 1 do
-    AMessageBytes[i] := FDataBytes[i-2];
+  for i := 4 to len - 1 do
+    AMessageBytes[i] := FDataBytes[i-4];
 
   getCRC16(AMessageBytes, len, FCRCHi, FCRCLo);
 
@@ -136,6 +138,37 @@ begin
   AMessageBytes[len - 1] := FCRCLo;
 end;
 
+function TMOutgoingComportMessage.IsError() : boolean;
+begin
+  Result := not (FError = omeNone);
+end;
+
+function TMOutgoingComportMessage.IsTimeOutError() : boolean;
+var
+  difference : integer;
+begin
+  Result := False;
+
+  if not (FError = omeNone)
+    then Exit;
+
+  if FSentTime = 0
+    then Exit;
+
+  difference := abs(MilliSecondsBetween(SentTime, Now));
+
+  if difference >= TIMEOUT_SEND_MESSAGE
+    then FError := omeTimeout;
+
+  Result := (FError = omeTimeout);
+end;
+
+procedure TMOutgoingComportMessage.ResentPrepare;
+begin
+  Inc(FSentTimeCounter);
+  FError := omeNone;
+  FState := omsNone;
+end;
 
 ////////////////////////////TMOutgoingComPortMessagesList/////////////////////////////
 
@@ -197,8 +230,6 @@ begin
     else
       begin
         FSendingComPortMessage := AComPortMessage;
-        FLastSendingDeviceId   := AComPortMessage.DeviceId;
-        FLastMessageError      := False;
       end;     
 end;
 
@@ -329,10 +360,6 @@ begin
   end;
 
   Items.Clear;
-
-  FLastMessageError    := False;
-  FLastSendingDeviceId := $00;
-
 
   FMaxMessagesCount := MAX_MESSAGES_COUNT;
 end;

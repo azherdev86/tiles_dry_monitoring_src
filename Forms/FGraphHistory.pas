@@ -5,16 +5,13 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, StdCtrls, ExtCtrls, TeEngine, Series, TeeProcs, Chart,
-  ZDataset;
+  ZDataset, Gauges, FTerminalForm, Buttons;
 
 type
-  TFormGraphHistory = class(TForm)
-    ButtonApply: TButton;
+  TFormGraphHistory = class(TFormTerminal)
     DatePickerSince: TDateTimePicker;
-    TimePickerSince: TDateTimePicker;
     LabelSince: TLabel;
     DatePickerTo: TDateTimePicker;
-    TimePickerTo: TDateTimePicker;
     LabelTo: TLabel;
     Chart: TChart;
     sRangeMin: TLineSeries;
@@ -26,10 +23,23 @@ type
     LabelConveyor: TLabel;
     LabelSection: TLabel;
     ImageGraphLegend: TImage;
+    Gauge: TGauge;
+    LabeledEditSinceHours: TLabeledEdit;
+    Label1: TLabel;
+    LabeledEditSinceMinutes: TLabeledEdit;
+    LabeledEditToHours: TLabeledEdit;
+    Label2: TLabel;
+    LabeledEditToMinutes: TLabeledEdit;
+    BitBtnCancel: TBitBtn;
+    BitBtnOk: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure ButtonApplyClick(Sender: TObject);
+    procedure LabeledEditSinceHoursChange(Sender: TObject);
+    procedure LabeledEditToHoursChange(Sender: TObject);
+    procedure LabeledEditSinceMinutesChange(Sender: TObject);
+    procedure LabeledEditToMinutesChange(Sender: TObject);
+    procedure BitBtnOkClick(Sender: TObject);
   private
     { Private declarations }
     FQuery : TZQuery;
@@ -47,8 +57,8 @@ type
 
     procedure DrawChart();
 
-    function GetSectionYMinValue() : single;
-    function GetSectionYMaxValue() : single;
+    function CheckValues() : boolean;
+
 
   public
     { Public declarations }
@@ -63,75 +73,14 @@ implementation
 
 {$R *.dfm}
 
-uses DateUtils, LApplicationGlobals;
-
-function TimeToFirebirdString(const Date: TDateTime): string;
-var
-  Hour,
-  Minute,
-  Second,
-  MSeconds : word;
-  HourStr,
-  MinuteStr,
-  SecondStr : string;
-  Delimiter : string;
-begin
-  Delimiter := ':';
-
-  DecodeTime(Date, Hour, Minute, Second, MSeconds);
-
-  if Hour < 10
-    then HourStr := '0' + IntToStr(Hour)
-    else HourStr := IntToStr(Hour);
-
-  if Minute < 10
-    then MinuteStr := '0' + IntToStr(Minute)
-    else MinuteStr := IntToStr(Minute);
-
-  if Second < 10
-    then SecondStr := '0' + IntToStr(Second)
-    else SecondStr := IntToStr(Second);
-
-  Result := HourStr + Delimiter + MinuteStr + Delimiter + SecondStr;
-end;
-
-
-function DateToFirebirdString(const Date: TDateTime): string;
-var
-  Year,
-  Day,
-  Month : word;
-  YearStr,
-  DayStr,
-  MonthStr : string;
-  Delimiter : string;
-begin
-  Delimiter := '.';
-
-  DecodeDate(Date, Year, Month, Day);
-
-  YearStr := IntToStr(Year);
-  if Month < 10
-    then MonthStr := '0' + IntToStr(Month)
-    else MonthStr := IntToStr(Month);
-
-  if Day < 10
-    then DayStr := '0' + IntToStr(Day)
-    else DayStr := IntToStr(Day);
-
-  Result := YearStr + Delimiter + MonthStr + Delimiter + DayStr;
-end;
-
-
-function DateTimeToFirebirdString(const Date: TDateTime): string;
-begin
-  Result := DateToFirebirdString(Date) + ' ' +
-            TimeToFirebirdString(Date);
-end;
+uses DateUtils, LApplicationGlobals, CProgramSettings, LUtils,
+  FUserDigitalKeyboard;
 
 
 procedure TFormGraphHistory.FormCreate(Sender: TObject);
 begin
+  inherited;
+
   Position := poDesktopCenter;
 
   FDateTimeTo    := Now;
@@ -141,6 +90,11 @@ begin
 
   FQuery := TZQuery.Create(ApplicationDBConnection);
   FQuery.Connection := ApplicationDBConnection;
+
+  LabeledEditSinceHours.EditLabel.Caption   := '';
+  LabeledEditSinceMinutes.EditLabel.Caption := '';
+  LabeledEditToHours.EditLabel.Caption      := '';
+  LabeledEditToMinutes.EditLabel.Caption    := '';
 end;
 
 procedure TFormGraphHistory.FormDestroy(Sender: TObject);
@@ -157,6 +111,90 @@ begin
   DrawChart;
 end;
 
+procedure TFormGraphHistory.LabeledEditSinceHoursChange(Sender: TObject);
+var
+  value : integer;
+begin
+  if TryStrToInt((Sender as TLabeledEdit).Text, value)
+    then
+      begin
+        if (value < 0)
+          then value := 0;
+
+        if (value > 23)
+          then value := 23;
+
+        if value < 10
+          then (Sender as TLabeledEdit).Text := '0' + IntToStr(value)
+          else (Sender as TLabeledEdit).Text := IntToStr(value);
+      end
+    else
+      (Sender as TLabeledEdit).Text := '0';
+end;
+
+procedure TFormGraphHistory.LabeledEditSinceMinutesChange(Sender: TObject);
+var
+  value : integer;
+begin
+  if TryStrToInt((Sender as TLabeledEdit).Text, value)
+    then
+      begin
+        if (value < 0)
+          then value := 0;
+
+        if (value > 59)
+          then value := 59;
+
+        if value < 10
+          then (Sender as TLabeledEdit).Text := '0' + IntToStr(value)
+          else (Sender as TLabeledEdit).Text := IntToStr(value);
+      end
+    else
+      (Sender as TLabeledEdit).Text := '0';
+end;
+
+procedure TFormGraphHistory.LabeledEditToHoursChange(Sender: TObject);
+var
+  value : integer;
+begin
+  if TryStrToInt((Sender as TLabeledEdit).Text, value)
+    then
+      begin
+        if (value < 0)
+          then value := 0;
+
+        if (value > 23)
+          then value := 23;
+
+        if value < 10
+          then (Sender as TLabeledEdit).Text := '0' + IntToStr(value)
+          else (Sender as TLabeledEdit).Text := IntToStr(value);
+      end
+    else
+      (Sender as TLabeledEdit).Text := '0';
+end;
+
+procedure TFormGraphHistory.LabeledEditToMinutesChange(Sender: TObject);
+var
+  value : integer;
+begin
+  if TryStrToInt((Sender as TLabeledEdit).Text, value)
+    then
+      begin
+        if (value < 0)
+          then value := 0;
+
+        if (value > 59)
+          then value := 59;
+
+        if value < 10
+          then (Sender as TLabeledEdit).Text := '0' + IntToStr(value)
+          else (Sender as TLabeledEdit).Text := IntToStr(value);
+      end
+    else
+      (Sender as TLabeledEdit).Text := '0';
+end;
+
 procedure TFormGraphHistory.DrawSeries(Series : TLineSeries);
 const
   CMaxSeriesPointsCount = 30;
@@ -164,12 +202,16 @@ var
   SQLQueryText,
   SensorPosition : string;
 
-  TempTime  : TDateTime;
-  TempValue : single;
+  TempTime,
+  AvgTempTime : TDateTime;
+
+  TempValue,
+  AvgTempValue : single;
 
   CurrentRecordIndex,
   RecordCount,
-  ShowRatio : integer;
+  AvgRatio,
+  AvgCount : integer;
 begin
   SensorPosition := '';
 
@@ -206,22 +248,40 @@ begin
 
   RecordCount := FQuery.RecordCount;
 
-  ShowRatio := 1;
+  //На графиках много значений не поместится.
+  //Выводим только CMaxSeriesPointsCount с осреднением.
+  AvgRatio := 1;
 
   if RecordCount > CMaxSeriesPointsCount
-    then ShowRatio := Round(RecordCount/CMaxSeriesPointsCount);
+    then AvgRatio := Round(RecordCount/CMaxSeriesPointsCount);
 
   CurrentRecordIndex := 1;
 
+  AvgTempTime  := 0;
+  AvgTempValue := 0;
+  AvgCount     := 0;
+
   while not FQuery.Eof do
     begin
-      if (CurrentRecordIndex mod ShowRatio) = 0
+      TempTime  := FQuery.FieldByName('TempTime').AsDateTime;
+      TempValue := FQuery.FieldByName('TempValue').AsFloat;
+
+      AvgTempTime  := AvgTempTime + TempTime;
+      AvgTempValue := AvgTempValue + TempValue;
+      Inc(AvgCount);
+
+      if ((CurrentRecordIndex mod AvgRatio) = 0) or
+         (CurrentRecordIndex = RecordCount)
         then
           begin
-            TempTime  := FQuery.FieldByName('TempTime').AsDateTime;
-            TempValue := FQuery.FieldByName('TempValue').AsFloat;
+            AvgTempTime  := AvgTempTime/AvgCount;
+            AvgTempValue := AvgTempValue/AvgCount;
 
-            Series.AddXY(TempTime, TempValue);
+            Series.AddXY(AvgTempTime, AvgTempValue);
+
+            AvgTempTime  := 0;
+            AvgTempValue := 0;
+            AvgCount     := 0;
           end;
 
       Inc(CurrentRecordIndex);
@@ -234,12 +294,12 @@ procedure TFormGraphHistory.DrawTempRanges;
 var
   TempValue : Single;
 begin
-  TempValue := GetSectionYMinValue;
+  TempValue := GetSectionYMinValue(SectionNumber);
 
   sRangeMin.AddXY(FDateTimeSince, TempValue);
   sRangeMin.AddXY(FDateTimeTo,    TempValue);
 
-  TempValue := GetSectionYMaxValue;
+  TempValue := GetSectionYMaxValue(SectionNumber);
 
   sRangeMax.AddXY(FDateTimeSince, TempValue);
   sRangeMax.AddXY(FDateTimeTo,    TempValue);
@@ -272,34 +332,10 @@ begin
   Chart.LeftAxis.Maximum := ApplicationProgramSettings.GraphSettings.AxisMaxYValue;
 end;
 
-procedure TFormGraphHistory.ButtonApplyClick(Sender: TObject);
-var
-  tmpDateTimeSince,
-  tmpDateTimeTo : TDateTime;
+procedure TFormGraphHistory.BitBtnOkClick(Sender: TObject);
 begin
-  tmpDateTimeSince := Trunc(DatePickerSince.Date) + TimeOf(TimePickerSince.Time);
-  tmpDateTimeTo    := Trunc(DatePickerTo.Date)    + TimeOf(TimePickerTo.Time);
-
-  if tmpDateTimeTo > Now
-    then
-      begin
-        ShowMessage('Time end range couldn''t be more than present moment');
-        SetTimeRanges;  //сброс значений
-        Exit;
-      end;
-
-  if tmpDateTimeTo <= tmpDateTimeSince
-    then
-      begin
-        ShowMessage('Time start range should be less than time end range');
-        SetTimeRanges;  //сброс значений
-        Exit;
-      end;
-
-  FDateTimeSince := tmpDateTimeSince;
-  FDateTimeTo    := tmpDateTimeTo;
-
-  DrawChart;
+  if CheckValues
+    then DrawChart;
 end;
 
 procedure TFormGraphHistory.ClearSeries();
@@ -350,18 +386,25 @@ procedure TFormGraphHistory.DrawChart();
 begin
   ClearSeries;
 
-  SetSeriesSettings;
+  Gauge.Visible := True;
+  Gauge.MaxValue := 7;      Gauge.Progress := 0;
 
-  UpdateTimeRanges;
+  SetSeriesSettings;        Gauge.Progress := 1;
 
-  DrawSeries(sLeftTop);
-  DrawSeries(sLeftBottom);
-  DrawSeries(sRightTop);
-  DrawSeries(sRightBottom);
+  UpdateTimeRanges;         Gauge.Progress := 2;
+
+  DrawSeries(sLeftTop);     Gauge.Progress := 3;
+  DrawSeries(sLeftBottom);  Gauge.Progress := 4;
+  DrawSeries(sRightTop);    Gauge.Progress := 5;
+  DrawSeries(sRightBottom); Gauge.Progress := 6;
 
   DrawTempRanges;
 
-  SetTimeRanges;
+  SetTimeRanges;            Gauge.Progress := 7;
+
+  Sleep(250);
+
+  Gauge.Visible := False;
 end;
 
 procedure TFormGraphHistory.SetTimeRanges();
@@ -370,71 +413,78 @@ begin
     then
       begin
         DatePickerTo.DateTime := FDateTimeTo;
-        TimePickerTo.DateTime := FDateTimeTo;
+
+        LabeledEditToHours.Text   := IntToStr(DecodeHour(FDateTimeTo));
+        LabeledEditToMinutes.Text := IntToStr(DecodeMinute(FDateTimeTo));
       end
     else
       begin
         DatePickerTo.DateTime := Now;
-        TimePickerTo.DateTime := Now;
-      end;
 
+        LabeledEditToHours.Text   := IntToStr(DecodeHour(Now));
+        LabeledEditToMinutes.Text := IntToStr(DecodeMinute(Now));
+      end;
 
   if not (FDateTimeSince = 0)
     then
       begin
         DatePickerSince.DateTime := FDateTimeSince;
-        TimePickerSince.DateTime := FDateTimeSince;
+
+        LabeledEditSinceHours.Text   := IntToStr(DecodeHour(FDateTimeSince));
+        LabeledEditSinceMinutes.Text := IntToStr(DecodeMinute(FDateTimeSince));
       end
     else
       begin
         DatePickerSince.DateTime := Now - 1/24;
-        TimePickerSince.DateTime := Now - 1/24;
+
+        LabeledEditSinceHours.Text   := IntToStr(DecodeHour(Now - 1/24));
+        LabeledEditSinceMinutes.Text := IntToStr(DecodeMinute(Now - 1/24));
       end;
 end;
 
-
-function TFormGraphHistory.GetSectionYMinValue() : single;
+function TFormGraphHistory.CheckValues() : boolean;
 var
-  Value : single;
+  tmpDateTimeSince,
+  tmpDateTimeTo : TDateTime;
+
+  iHours,
+  iMinutes : integer;
 begin
-  Value := 0;
+  Result := False;
 
-  case SectionNumber of
-    1:  Value := ApplicationProgramSettings.GraphSettings.Section1RangeMinYValue;
-    2:  Value := ApplicationProgramSettings.GraphSettings.Section2RangeMinYValue;
-    3:  Value := ApplicationProgramSettings.GraphSettings.Section3RangeMinYValue;
-    4:  Value := ApplicationProgramSettings.GraphSettings.Section4RangeMinYValue;
-    5:  Value := ApplicationProgramSettings.GraphSettings.Section5RangeMinYValue;
-    6:  Value := ApplicationProgramSettings.GraphSettings.Section6RangeMinYValue;
-    7:  Value := ApplicationProgramSettings.GraphSettings.Section7RangeMinYValue;
-    8:  Value := ApplicationProgramSettings.GraphSettings.Section8RangeMinYValue;
-    9:  Value := ApplicationProgramSettings.GraphSettings.Section9RangeMinYValue;
-    10: Value := ApplicationProgramSettings.GraphSettings.Section10RangeMinYValue;
-  end;
+  iHours   := StrToInt(LabeledEditSinceHours.Text);
+  iMinutes := StrToInt(LabeledEditSinceMinutes.Text);
 
-  Result := Value;
+  tmpDateTimeSince := Trunc(DatePickerSince.Date) + iHours/24 + iMinutes/24/60;
+
+  iHours   := StrToInt(LabeledEditToHours.Text);
+  iMinutes := StrToInt(LabeledEditToMinutes.Text);
+
+  tmpDateTimeTo    := Trunc(DatePickerTo.Date)    + iHours/24 + iMinutes/24/60;
+
+  if tmpDateTimeTo > Now
+    then
+      begin
+        ShowMessage('Time end range couldn''t be more than present moment');
+        SetTimeRanges;  //сброс значений
+        Exit;
+      end;
+
+  if tmpDateTimeTo <= tmpDateTimeSince
+    then
+      begin
+        ShowMessage('Time start range should be less than time end range');
+        SetTimeRanges;  //сброс значений
+        Exit;
+      end;
+
+  FDateTimeSince := tmpDateTimeSince;
+  FDateTimeTo    := tmpDateTimeTo;
+
+  Result := True;
 end;
 
-function TFormGraphHistory.GetSectionYMaxValue() : single;
-var
-  Value : single;
-begin
-  Value := 0;
 
-  case SectionNumber of
-    1:  Value := ApplicationProgramSettings.GraphSettings.Section1RangeMaxYValue;
-    2:  Value := ApplicationProgramSettings.GraphSettings.Section2RangeMaxYValue;
-    3:  Value := ApplicationProgramSettings.GraphSettings.Section3RangeMaxYValue;
-    4:  Value := ApplicationProgramSettings.GraphSettings.Section4RangeMaxYValue;
-    5:  Value := ApplicationProgramSettings.GraphSettings.Section5RangeMaxYValue;
-    6:  Value := ApplicationProgramSettings.GraphSettings.Section6RangeMaxYValue;
-    7:  Value := ApplicationProgramSettings.GraphSettings.Section7RangeMaxYValue;
-    8:  Value := ApplicationProgramSettings.GraphSettings.Section8RangeMaxYValue;
-    9:  Value := ApplicationProgramSettings.GraphSettings.Section9RangeMaxYValue;
-    10: Value := ApplicationProgramSettings.GraphSettings.Section10RangeMaxYValue;
-  end;
 
-  Result := Value;
-end;
 
 end.

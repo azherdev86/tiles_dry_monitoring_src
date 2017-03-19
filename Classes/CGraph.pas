@@ -2,13 +2,13 @@ unit CGraph;
 
 interface
 
-uses Graphics, Classes, ExtCtrls, Types, CHighLighted;
+uses Graphics, Classes, ExtCtrls, Types, CRows;
 
 const
   GRID_ROW_COUNT = 6;
   GRID_COL_COUNT = 10;
 
-  GRID_COL_WIDTH  = 80;
+  GRID_COL_WIDTH  = 86;
   GRID_ROW_HEIGHT = 80;
 
   GRID_WIDTH = 1;
@@ -108,7 +108,7 @@ type
 
     FNeedDrawSelectedCell : boolean;
 
-    FHighLightedRows : TMHighLightedRows;
+    FHighLightedRows : TMRows;
 
     procedure Reset();
 
@@ -145,7 +145,9 @@ type
     function GetGridCoord(AMouseCoord : TPoint) : TPoint;
 
     procedure HighLightCell(ACell : TPoint);   //Подсветить ячейку
-    procedure DeHighLightCell(ACell : TPoint); //Убрать подсветку
+    procedure DeHighLightCell(ACell : TPoint); //Убрать подсветку ячейки
+    procedure DeHighLightRow(ARowIndex : integer); //Убрать подсветку строки
+
 
   public
     property Width : integer read GetBitMapWidth;
@@ -309,13 +311,11 @@ end;
 
 
 constructor TMGraph.Create();
-var
-  Po : TPoint;
 begin
   FBitMap          := Graphics.TBitmap.Create;
   FSeriesList      := TMSeriesList.Create;
   FRangeList       := TMSeriesList.Create;
-  FHighLightedRows := TMHighLightedRows.Create;
+  FHighLightedRows := TMRows.Create;
 
   FGridRowCount  := GRID_ROW_COUNT;
   FGridColCount  := GRID_COL_COUNT;
@@ -328,22 +328,6 @@ begin
 
   FAxis.MinY := AXIS_MIN_Y;
   FAxis.MaxY := AXIS_MAX_Y;
-
-  Po := Point(1, 0);
-  HighLightCell(Po);
-
-  Po := Point(1, 0);
-  HighLightCell(Po);
-
-  Po := Point(3, 2);
-  HighLightCell(Po);
-
-  Po := Point(7, 2);
-  HighLightCell(Po);
-
-  Po := Point(9, 4);
-  HighLightCell(Po);
-
 end;
 
 
@@ -389,8 +373,8 @@ var
 
   Rect : TRect;
 
-  Row : TMHighLightedRow;
-  Col : TMHighLightedColumn;
+  Row : TMRow;
+  Col : TMColumn;
 begin
   if not IsHighLighted
     then Exit;
@@ -438,9 +422,6 @@ begin
           FBitMap.Canvas.Rectangle(Rect);
         end;
     end;
-
-//  FBitMap.Canvas.Brush.Color := RGB(251, 229, 213); //Светло-розовый
-//  FBitMap.Canvas.Brush.Color := RGB(247, 203, 172); //Темно-розовый
 end;
 
 
@@ -631,6 +612,8 @@ begin
 
   Ratio := CalculateRatio;
 
+  FBitMap.Canvas.Font.Size := 6;
+
   for i := 0 to ser_count - 1 do
     begin
       tmpSeries := GetSeries(i);
@@ -657,13 +640,28 @@ begin
             else Continue;
 
           case color of
-            clRed   : x_int := FGridColWidth*j + 1*(FGridColWidth div 5);
-            clGreen : x_int := FGridColWidth*j + 2*(FGridColWidth div 5);
-            clBlue  : x_int := FGridColWidth*j + 3*(FGridColWidth div 5);
-            clAqua  : x_int := FGridColWidth*j + 4*(FGridColWidth div 5);
+            clRed   :
+              begin
+                x_int := FGridColWidth*j + 1*(FGridColWidth div 5);
+              end;
+            clGreen :
+              begin
+                x_int := FGridColWidth*j + 2*(FGridColWidth div 5);
+              end;
+            clBlue  :
+              begin
+                x_int := FGridColWidth*j + 3*(FGridColWidth div 5);
+              end;
+            clAqua  :
+              begin
+                x_int := FGridColWidth*j + 4*(FGridColWidth div 5);
+              end;
           end;
 
           DrawPoint(radius, x_int, y_int, color);
+
+          FBitMap.Canvas.Brush.Color := clWhite;
+          FBitMap.Canvas.TextOut(x_int - 6, y_int - 12, FloatToStrF(tmpSeries.FloatPoints[j].Value, ffFixed, 4, 0, ApplicationFormatSettings));
         end;
 
     end;
@@ -935,8 +933,8 @@ procedure TMGraph.HighLightCell(ACell : TPoint);
 var
   row_index, col_index : integer;
 
-  Row : TMHighLightedRow;
-  Column : TMHighLightedColumn;
+  Row : TMRow;
+  Column : TMColumn;
 begin
   col_index := ACell.X;
   row_index := ACell.Y;
@@ -952,7 +950,7 @@ begin
   if not Assigned(Row)
     then
       begin
-        Row := TMHighLightedRow.Create;
+        Row := TMRow.Create;
         Row.RowIndex := row_index;
 
         Row := FHighLightedRows.AddItem(Row);
@@ -966,7 +964,7 @@ begin
   if Assigned(Column)
     then Row.DeleteItem(IntToStr(Column.ColumnIndex));
 
-  Column := TMHighLightedColumn.Create;
+  Column := TMColumn.Create;
   Column.ColumnIndex := col_index;
 
   Row.AddItem(Column);
@@ -977,8 +975,8 @@ procedure TMGraph.DeHighLightCell(ACell : TPoint);
 var
   row_index, col_index : integer;
 
-  Row : TMHighLightedRow;
-  Column : TMHighLightedColumn;
+  Row : TMRow;
+  Column : TMColumn;
 begin
   col_index := ACell.X;
   row_index := ACell.Y;
@@ -1005,6 +1003,23 @@ begin
   if Row.GetCount = 0
     then FHighLightedRows.DeleteItem(IntToStr(Row.RowIndex));
 end;
+
+
+procedure TMGraph.DeHighLightRow(ARowIndex : integer);
+var
+  Row : TMRow;
+begin
+  if (ARowIndex < 0) or (ARowIndex > (FGridRowCount - 1))
+    then Exit;
+
+  Row := FHighLightedRows.GetItem(IntToStr(ARowIndex));
+
+  if not Assigned(Row)
+    then Exit;
+
+  FHighLightedRows.DeleteItem(IntToStr(Row.RowIndex));
+end;
+
 
 function TMGraph.GetBitMapWidth() : integer;
 begin
@@ -1035,9 +1050,9 @@ begin
   DrawSelectedCell; //перерисовка выделенной области
   DrawGrid;            //координатная сетка
   DrawAverage;         //отрисовка линий со средними значениями
-  DrawSeries;          //отрисовка серий
   DrawRanges;          //отрисовка границ
   DrawLegend;          //отрисовка легенды
+  DrawSeries;          //отрисовка серий
 
   PaintBox.Canvas.Draw(0, 0, FBitMap); //отрисовка BitMap на внешней Canvas
 end;
