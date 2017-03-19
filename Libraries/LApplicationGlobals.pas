@@ -5,7 +5,7 @@ interface
 uses CDataBaseStructure, ZConnection, ZDataset, SysUtils, CController,
      Controls, StdCtrls, CGraph, CBoxes, CIncomingComPortMessage,
      COutgoingComPortMessage, CProgramSettings, CTempValuesBuffer,
-     CEventLog;
+     CEventLog, LApplicationAttributes;
 
 procedure CreateGlobals;
 procedure UpdateGlobals;
@@ -25,6 +25,7 @@ var
   ApplicationTempBufferValues        : TMTempBufferValuesList; //Последние 200 значений
   ApplicationController              : TMController;
   ApplicationEventLog                : TMEventLog;
+  ApplicationAttributes              : TAApplicationAttributes;
 
   GLOBAL_DATABASE_TYPE : TMDatabaseType = dtFireBird;
 
@@ -65,6 +66,7 @@ begin
   ApplicationComPortIncomingMessage         := TMIncomingComportMessage.Create;
   ApplicationProgramSettings                := TMProgramSettings.Create;
   ApplicationController                     := TMController.Create;
+  ApplicationAttributes                     := TAApplicationAttributes.Create;
 end;
 
 procedure UpdateGlobals;
@@ -107,6 +109,7 @@ begin
   ApplicationDBConnection.Free;
   ApplicationGraph.Free;
   ApplicationController.Free;
+  ApplicationAttributes.Free;
 
   ApplicationProgramSettings.SaveToInifile;
   ApplicationProgramSettings.Free;

@@ -917,7 +917,7 @@ procedure TFormMain.UpdateStatusBar;
 begin
   StatusBar.Panels[0].Text := 'Current time: '    + DateTimeToStr(Now, ApplicationFormatSettings);
   StatusBar.Panels[1].Text := 'Program uptime: '  + DateTimeToDHMSString(Now - FStartTime);
-  StatusBar.Panels[2].Text := 'Program version: ' + '1.0.0';
+  StatusBar.Panels[2].Text := 'Program version: ' + ApplicationAttributes.GetApplicationVersionFull; 
 end;
 
 procedure TFormMain.UpdateSignalMode;
