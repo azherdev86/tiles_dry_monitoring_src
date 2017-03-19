@@ -54,7 +54,8 @@ end;
 
 procedure TFormControlPanel.BitBtnTurnOffComputerClick(Sender: TObject);
 begin
-  ShellExecute(handle, nil,'shutdown',' -s -t 00','', SW_SHOWNORMAL);
+  if MessageDlg('Continue and turn off the computer?', mtConfirmation, [mbYes, mbNo], 0) = mrYes
+    then ShellExecute(handle, nil,'shutdown',' -s -t 00','', SW_SHOWNORMAL);
 end;
 
 procedure TFormControlPanel.FormCreate(Sender: TObject);
