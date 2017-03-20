@@ -65,7 +65,7 @@ type
     procedure Clear;
 
   private
-    Items : TStringList;
+    FItems : TStringList;
 
     procedure Reset;
   end;
@@ -113,7 +113,8 @@ end;
 //////////////TMTempBufferValuesList//////////////////////////////////
 constructor TMTempBufferValuesList.Create;
 begin
-  Items := TStringList.Create;
+  FItems := TStringList.Create;
+  
   Reset;
 end;
 
@@ -121,14 +122,15 @@ end;
 destructor TMTempBufferValuesList.Destroy;
 begin
   Reset;
-  Items.Free;
-  inherited Destroy;
+  FItems.Free;
+
+  inherited;
 end;
 
 function TMTempBufferValuesList.LoadFromDatabase() : boolean;
 begin
   Result := True;
-  //Пока заготовка
+  //Пока заготовка, возможно и не потребуется.
 end;
 
 
@@ -139,7 +141,7 @@ begin
   if ItemIndex < 0
     then Exit;
 
-  Result := Items.Objects[ItemIndex] as TMTempBufferValue;
+  Result := FItems.Objects[ItemIndex] as TMTempBufferValue;
 end;
 
 function TMTempBufferValuesList.GetItem(ItemTitle : string) : TMTempBufferValue;
@@ -148,7 +150,7 @@ var
 begin
   Result := nil;
 
-  ItemIndex := Items.IndexOf(ItemTitle);
+  ItemIndex := FItems.IndexOf(ItemTitle);
 
   if ItemIndex >= 0
     then Result := GetItem(ItemIndex);
@@ -290,10 +292,9 @@ begin
   if Assigned(PreviosItem)
     then DeleteItem(IntToStr(PreviosItem.FSensorId));
 
-   if Items.AddObject(IntToStr(Item.SensorId), Item) >= 0
+  if FItems.AddObject(IntToStr(Item.SensorId), Item) >= 0
     then Result := Item;
 end;
-
 
 function TMTempBufferValuesList.DeleteItem(ItemIndex : integer) : boolean;
 var
@@ -303,7 +304,7 @@ begin
   Item := GetItem(ItemIndex);
   if Assigned(Item) then
     begin
-      Items.Delete(ItemIndex);
+      FItems.Delete(ItemIndex);
       Item.Free;
       Result := TRUE;
     end;
@@ -313,11 +314,10 @@ function TMTempBufferValuesList.DeleteItem(ItemTitle : string) : boolean;
 var
   ItemIndex : integer;
 begin
-  ItemIndex := Items.IndexOf(ItemTitle);
+  ItemIndex := FItems.IndexOf(ItemTitle);
 
   Result := DeleteItem(ItemIndex);
 end;
-
 
 procedure TMTempBufferValuesList.Reset;
 var
@@ -326,24 +326,22 @@ var
 begin
   for i := 0 to GetCount - 1 do
   begin
-    Item := Items.Objects[i] as TMTempBufferValue;
+    Item := FItems.Objects[i] as TMTempBufferValue;
     if Assigned(Item)
       then Item.Free;
   end;
 
-  Items.Clear;
+  FItems.Clear;
 end;
 
 function TMTempBufferValuesList.GetCount : integer;
 begin
-  Result := Items.Count;
+  Result := FItems.Count;
 end;
-
 
 procedure TMTempBufferValuesList.Clear;
 begin
   Reset;
 end;
-
 
 end.

@@ -46,7 +46,8 @@ uses
   FUserDigitalKeyboard in 'Forms\FUserDigitalKeyboard.pas' {FormUserDigitalKeyboard},
   FTerminalForm in 'Forms\FTerminalForm.pas' {FormTerminal},
   FControlPanel in 'Forms\FControlPanel.pas' {FormControlPanel},
-  LApplicationAttributes in 'Libraries\LApplicationAttributes.pas';
+  LApplicationAttributes in 'Libraries\LApplicationAttributes.pas',
+  CSensorValueCounters in 'Classes\CSensorValueCounters.pas';
 
 {$R *.res}
 

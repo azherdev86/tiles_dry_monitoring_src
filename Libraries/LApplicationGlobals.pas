@@ -42,8 +42,8 @@ const
   FireBird_DBAliasName    = 'TILES_DRY_MONITORING';
   FireBird_ZeosProtocol   = 'firebird-2.5';
   FireBird_HostName       = '';
-  FireBird_Catalog        = '';
-  FireBird_LibFileName    = 'fbembed.dll';
+  FireBird_Catalog        = 'database\';
+  FireBird_LibFileName    = 'database\fbembed.dll';
   FireBird_DBFilePath     = 'database\TILES_DRY_MONITORING.FDB';
   FireBird_DBUserName     = 'SYSDBA';
   FireBird_DBPassWord     = 'MASTERKEY';

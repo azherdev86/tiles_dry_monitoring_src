@@ -30,6 +30,8 @@ type
 
     DebugMode : boolean;
 
+    IntegrationTempValueCount : integer;
+
   public
     function SaveToIniFile(IniFile : TIniFile) : boolean;
     function LoadFromIniFile(IniFile : TIniFile)  : boolean;
@@ -98,6 +100,8 @@ begin
 
   IniFile.WriteBool('User', 'DebugMode', DebugMode);
 
+  IniFile.WriteInteger('User', 'IntegrationTempValueCount', IntegrationTempValueCount);
+
   Result := TRUE;
 end;
 
@@ -122,6 +126,8 @@ begin
   EnableCreateCheckSignalModeMessagesInterval := IniFile.ReadBool('User','EnableCreateCheckSignalModeMessagesInterval', True);
 
   DebugMode := IniFile.ReadBool('User','DebugMode', False);
+
+  IntegrationTempValueCount := IniFile.ReadInteger('User', 'IntegrationTempValueCount', 10);
 
   Result := TRUE;
 end;

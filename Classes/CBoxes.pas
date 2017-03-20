@@ -3,7 +3,8 @@ unit CBoxes;
 interface
 
 uses CTemplateEntity, COutgoingComPortMessage, CIncomingComPortMessage,
-     CBasicComPortMessage, CTableRecords, CTempValues,Classes;
+     CBasicComPortMessage, CTableRecords, CTempValues, Classes,
+     CSensorValueCounters;
 
 const
   BOXES_COUNT = 20;
@@ -18,11 +19,13 @@ type
 
     FRecordSensors : TMTableRecord;
     FTempValuesList : TMTempValuesList;
+    FSensorValueCounters : TMSensorValueCounters;
 
     procedure Reset();
 
     function GetSensorId(AValueIndex : integer) : integer;
     function SaveToTempBufferValues() : boolean;
+    function CalculateIntegrationValue(ASensorId : integer; AValue : Word) : single;
   public
     function SaveToComPortMessage(ComPortMessage : TMOutgoingComportMessage)   : boolean;
     function LoadFromComPortMessage(ComPortMessage : TMIncomingComportMessage) : boolean;
@@ -69,6 +72,8 @@ begin
 
   FTempValuesList := TMTempValuesList.Create;
 
+  FSensorValueCounters := TMSensorValueCounters.Create;
+
   Reset();
 
   FBoxNumber := ABoxNumber;
@@ -80,6 +85,7 @@ begin
 
   FRecordSensors.Free;
   FTempValuesList.Free;
+  FSensorValueCounters.Free;
 
   inherited;
 end;
@@ -187,7 +193,7 @@ begin
     TempValue := TMTempValue.Create;
 
     TempValue.SensorId  := GetSensorId(value_index);
-    TempValue.TempValue := TempToFloat(Value);
+    TempValue.TempValue := CalculateIntegrationValue(TempValue.SensorId, Value);
     TempValue.TempTime  := MessageTime;
 
     if (TempValue.RecordSensors.LoadRecord(TempValue.SensorId) = 0)
@@ -196,10 +202,6 @@ begin
           TempValue.Free;
           Continue;
         end;
-
-
-//    FormMain.Caption := FormMain.Caption + TempValue.RecordSensors.FieldByName['ConveyorNumber'].AsString;
-
 
     TempValue := FTempValuesList.AddItem(TempValue);
 
@@ -217,12 +219,37 @@ begin
     else Result := FALSE;
 end;
 
+function TMBox.CalculateIntegrationValue(ASensorId : integer; AValue : Word) : single;
+var
+  value : single;
+  SensorValueCounter : TMSensorValueCounter;
+begin
+  value := TempToFloat(AValue);
+
+  SensorValueCounter := FSensorValueCounters.GetItem(IntToStr(ASensorId));
+
+  if not Assigned(SensorValueCounter)
+    then
+      begin
+        SensorValueCounter := TMSensorValueCounter.Create;
+
+        SensorValueCounter.SensorId := ASensorId;
+
+        SensorValueCounter := FSensorValueCounters.AddItem(SensorValueCounter);
+      end;
+
+  SensorValueCounter.AddValue(value);
+
+  Result := SensorValueCounter.IntegrationValue;
+end;
+
+
 function TMBox.SaveToTempBufferValues() : boolean;
 var
   i, count : integer;
 
   TempBufferValue : TMTempBufferValue;
-  RecordTempValue : TMTempValue;
+  TempValue : TMTempValue;
   RecordSensors   : TMTableRecord;
 begin
   Result := TRUE;
@@ -231,21 +258,21 @@ begin
 
   for i := 0 to count - 1 do
     begin
-      RecordTempValue := FTempValuesList.GetItem(i);
+      TempValue := FTempValuesList.GetItem(i);
 
-      if not Assigned(RecordTempValue)
+      if not Assigned(TempValue)
         then Continue;
 
-      RecordSensors := RecordTempValue.RecordSensors;
+      RecordSensors := TempValue.RecordSensors;
 
       if not Assigned(RecordSensors)
         then Continue;
 
       TempBufferValue := TMTempBufferValue.Create;
 
-      TempBufferValue.SensorId   := RecordTempValue.SensorId;
-      TempBufferValue.TempValue  := RecordTempValue.TempValue;
-      TempBufferValue.TempTime   := RecordTempValue.TempTime;
+      TempBufferValue.SensorId   := TempValue.SensorId;
+      TempBufferValue.TempValue  := TempValue.TempValue;
+      TempBufferValue.TempTime   := TempValue.TempTime;
 
       TempBufferValue.ConveyorNumber := RecordSensors.FieldByName['ConveyorNumber'].AsInteger;
       TempBufferValue.SectionNumber  := RecordSensors.FieldByName['SectionNumber'].AsInteger;
@@ -257,31 +284,15 @@ begin
       if not Assigned(TempBufferValue)
         then TempBufferValue.Free;
     end;
-
-
-//    var
-//  Conveyor : TMConveyor;
-//begin
-//  Conveyor := ApplicationController.GetItem('1');
-//
-//  case Conveyor.WorkMode of
-//    cwmOverlocking: Conveyor.WorkMode := cwmWork;
-//    cwmWork:        Conveyor.WorkMode := cwmOverlocking;
-//  end;
-//
-//  LabeledEditConveyor1Mode.Text := Conveyor.WorkModeString;
-
-
 end;
-
 
 procedure TMBox.Reset();
 begin
   FBoxNumber := 0;
 
   FTempValuesList.Clear;
+  FSensorValueCounters.Clear;
 end;
-
 
 //////////////TMBoxesList//////////////////////////////////
 constructor TMBoxesList.Create;

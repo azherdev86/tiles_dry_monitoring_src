@@ -4,7 +4,7 @@ object FormControlPanel: TFormControlPanel
   BorderIcons = [biSystemMenu]
   Caption = 'Program control panel'
   ClientHeight = 201
-  ClientWidth = 373
+  ClientWidth = 366
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
