@@ -2,7 +2,7 @@ unit CTempValues;
 
 interface
 
-uses CTemplateEntity, Classes, CTableRecords;
+uses CTemplateEntity, Classes, CTableRecords, ZDataSet;
 
 type
   TMTempValue = class(TMTemplateEntity)
@@ -50,8 +50,11 @@ type
 
   private
     Items : TStringList;
+    FQuery : TZQuery;
 
     procedure Reset;
+
+    function NeedSaveToDataBase() : boolean;
   end;
 
   function TempToFloat(ATemp : Word) : single;
@@ -59,7 +62,7 @@ type
 
 implementation
 
-uses SysUtils;
+uses SysUtils, LApplicationGlobals;
 
 function TempToFloat(ATemp : Word) : single;
 begin
@@ -118,6 +121,9 @@ end;
 constructor TMTempValuesList.Create;
 begin
   Items := TStringList.Create;
+  FQuery := TZQuery.Create(ApplicationDBConnection);
+  FQuery.Connection := ApplicationDBConnection;
+
   Reset;
 end;
 
@@ -126,7 +132,11 @@ destructor TMTempValuesList.Destroy;
 begin
   Reset;
   Items.Free;
-  inherited Destroy;
+
+  FQuery.Active := False;
+  FQuery.Free;
+
+  inherited;
 end;
 
 
@@ -185,6 +195,52 @@ begin
   Items.Clear;
 end;
 
+function TMTempValuesList.NeedSaveToDataBase() : boolean;
+const
+  CMinute = 1/24/60;
+var
+  count,
+  sensor_id : integer;
+
+  sql_query : string;
+
+  Item : TMTempValue;
+
+  max_time : TDateTime;
+begin
+  Result := False;
+
+  count := GetCount;
+
+  if count = 0
+    then Exit;
+
+  Item := GetItem(0);
+
+  if not Assigned(Item)
+    then Exit;
+
+  sensor_id := Item.SensorId;
+
+  sql_query := 'SELECT MAX(TempTime) as "MaxTime" FROM TempValues WHERE SensorId = ' + IntToStr(sensor_id);
+
+  FQuery.Active := False;
+  FQuery.SQL.Text := sql_query;
+  FQuery.Active := True;
+
+  max_time := 0;
+
+  while not FQuery.Eof do
+    begin
+      max_time := FQuery.FieldByName('MaxTime').AsDateTime;
+
+      FQuery.Next;
+    end;
+
+  if Item.TempTime >= max_time + CMinute
+    then Result := True;
+end;
+
 function TMTempValuesList.GetCount : integer;
 begin
   Result := Items.Count;
@@ -204,6 +260,9 @@ var
   Item : TMTempValue;
 begin
   Result := 0;
+
+  if not NeedSaveToDataBase //Сохраняем значения в базу не чаще чем, в минуту
+    then Exit;  
 
   count := GetCount;
 

@@ -54,6 +54,7 @@
     <DCCReference Include="Classes\CProgramSettings.pas" />
     <DCCReference Include="Classes\CProgramUserSettings.pas" />
     <DCCReference Include="Classes\CRows.pas" />
+    <DCCReference Include="Classes\CSensorValueCounters.pas" />
     <DCCReference Include="Classes\CTempValues.pas" />
     <DCCReference Include="Classes\CTempValuesBuffer.pas" />
     <DCCReference Include="DatabaseFrameWork\CBrowseFieldHints.pas" />
