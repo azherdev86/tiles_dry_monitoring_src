@@ -592,7 +592,7 @@ begin
   if Length(DataBytes) = 0
     then Exit;
 
-  if DataBytes[0] = $00
+  if DataBytes[1] = $00
     then FSignalMode := smDisabled
     else FSignalMode := smEnabled;
 
