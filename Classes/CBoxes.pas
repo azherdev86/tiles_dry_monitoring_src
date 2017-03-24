@@ -62,7 +62,7 @@ type
 
 implementation
 
-uses SysUtils, LApplicationGlobals, CTempValuesBuffer, FMain;
+uses SysUtils, LApplicationGlobals, CTempValuesBuffer, CEventLog;
 
 //////////////////////////////TMBox/////////////////////////////////////////////
 
@@ -199,14 +199,10 @@ begin
     if (TempValue.RecordSensors.LoadRecord(TempValue.SensorId) = 0)
       then
         begin
-          TempValue.Free;
-          Continue;
-        end;
-
-    TempValue := FTempValuesList.AddItem(TempValue);
-
-    if not Assigned(TempValue)
-      then TempValue.Free;
+          ApplicationEventLog.WriteLog(elProgramExcep, 'No sensor for data message');
+          TempValue.Free
+        end
+      else FTempValuesList.AddItem(TempValue);
 
     i := i + 2;
     value_index := value_index + 1;
