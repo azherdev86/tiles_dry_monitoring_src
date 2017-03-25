@@ -80,6 +80,21 @@ begin
     AddField('EventLogTime',    ftDateTime);
   end;
 
+  with AddTable('Messages', 'MessageId') do
+  begin
+    AddField('MessageType',             ftString);
+    AddField('MessageRecievedTime',     ftDateTime);
+    AddField('MessageRecievedPartTime', ftDateTime);
+    AddField('MessageCreationTime',     ftDateTime);
+    AddField('MessageSentTime',         ftDateTime);
+    AddField('MessageDelieveredTime',   ftDateTime);
+    AddField('MessageState',            ftString);
+    AddField('MessageError',            ftString);
+    AddField('MessageBytes',            ftString);
+    AddField('MessageUid',              ftString);
+  end;
+
+
   if not CheckTableNames(OutMessage)
     then
       begin

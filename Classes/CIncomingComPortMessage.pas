@@ -39,6 +39,7 @@ type
     function CheckCRC() : boolean;
 
   public
+    procedure SaveToDataBase(); override;
     function LoadFromBuffer(ABuffer : TDynamicByteArray) : boolean;
     function IsError() : boolean;
 
@@ -54,10 +55,65 @@ type
     property RecievedTime : TDateTime read FRecievedTime write FRecievedTime;
   end;
 
+  function IncomingMessageStateToStr(AMessageState: TypeIncomingMessageState): string;
+  function StrToIncomingMessageState(AStr: string): TypeIncomingMessageState;
+
+  function IncomingMessageErrorToStr(AMessageError: TypeIncomingMessageError): string;
+  function StrToIncomingMessageError(AStr: string): TypeIncomingMessageError;
 
 implementation
 
 uses SysUtils, DateUtils, Dialogs, LApplicationGlobals, CEventLog;
+
+
+function IncomingMessageStateToStr(AMessageState: TypeIncomingMessageState): string;
+const
+  MessageStateStrings: array[TypeIncomingMessageState] of string =
+ ('None', 'WaitEndPacket', 'Recieved');
+begin
+  Result := MessageStateStrings[AMessageState];
+end;
+
+function StrToIncomingMessageState(AStr: string): TypeIncomingMessageState;
+var
+  I: TypeIncomingMessageState;
+begin
+  I := Low(TypeIncomingMessageState);
+  while (I <= High(TypeIncomingMessageState)) do
+    begin
+      if UpperCase(AStr) = UpperCase(IncomingMessageStateToStr(TypeIncomingMessageState(I)))
+        then Break;
+      I := Succ(I);
+    end;
+
+  Result := I;
+end;
+
+function IncomingMessageErrorToStr(AMessageError: TypeIncomingMessageError): string;
+const
+  MessageErrorStrings: array[TypeIncomingMessageError] of string =
+ ('None', 'CRC', 'NoSendingMessage', 'SendingMessage',
+  'WrongDeviceId', 'BufferOverflow', 'TimeoutEndPacket');
+begin
+  Result := MessageErrorStrings[AMessageError];
+end;
+
+function StrToIncomingMessageError(AStr: string): TypeIncomingMessageError;
+var
+  I: TypeIncomingMessageError;
+begin
+  I := Low(TypeIncomingMessageError);
+  while (I <= High(TypeIncomingMessageError)) do
+    begin
+      if UpperCase(AStr) = UpperCase(IncomingMessageErrorToStr(TypeIncomingMessageError(I)))
+        then Break;
+      I := Succ(I);
+    end;
+
+  Result := I;
+end;
+
+
 
 function TMIncomingComportMessage.IsError() : boolean;
 begin
@@ -200,6 +256,25 @@ begin
 end;
 
 
+procedure TMIncomingComportMessage.SaveToDataBase();
+begin
+  if not Assigned(FTableRecord)
+    then Exit;
+
+  FTableRecord.ClearRecordValues;
+
+  FTableRecord.FieldByName['MessageType'].Value             := 'in';
+  FTableRecord.FieldByName['MessageRecievedTime'].Value     := FRecievedTime;
+  FTableRecord.FieldByName['MessageRecievedPartTime'].Value := FRecievedPartTime;
+  FTableRecord.FieldByName['MessageState'].Value            := IncomingMessageStateToStr(FState);
+  FTableRecord.FieldByName['MessageError'].Value            := IncomingMessageErrorToStr(FError);
+  FTableRecord.FieldByName['MessageBytes'].Value            := GenerateMessageString;
+  FTableRecord.FieldByName['MessageUid'].Value              := FMessageUid;
+
+  FTableRecord.AddRecord;
+end;
+
+
 procedure TMIncomingComportMessage.GenerateMessage(var AMessageBytes : TDynamicByteArray);
 var
   len,
@@ -216,15 +291,15 @@ begin
         AMessageBytes[1] := FCommandId;
         AMessageBytes[2] := FMessageLength;
 
-        try
+//        try
           for i := 3 to len - 1 do
             AMessageBytes[i] := FDataBytes[i-3];
-        except
-          ApplicationEventLog.WriteLog(elProgramExcep,
-                                       'TMIncomingComPortMessage.GenerateMessage. ' +
-                                       'Len = ' + IntToStr(len) + '; FDataBytes = ' +
-                                        IntToStr(Length(FDataBytes)))
-        end;
+//        except
+//          ApplicationEventLog.WriteLog(elProgramExcep,
+//                                       'TMIncomingComPortMessage.GenerateMessage. ' +
+//                                       'Len = ' + IntToStr(len) + '; FDataBytes = ' +
+//                                        IntToStr(Length(FDataBytes)))
+//        end;
 
         AMessageBytes[len - 2] := FCRCHi;
         AMessageBytes[len - 1] := FCRCLo;

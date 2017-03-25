@@ -596,6 +596,7 @@ begin
           SendingMessage.SentTime        := Now;
 
           ApplicationComPortOutgoingMessages.SendingComPortMessage := SendingMessage;
+          SendingMessage.SaveToDataBase;
 
           Inc(SentMessagesCount);
         end;
@@ -745,7 +746,11 @@ begin
       end;
 
   if (IncomingMessage.State = imsRecieved) or IncomingMessage.IsError
-    then IncomingMessage.Clear; //Есди сообщение получено или во время получения возникли ошибки
+    then
+      begin
+        IncomingMessage.SaveToDataBase;
+        IncomingMessage.Clear; //Есди сообщение получено или во время получения возникли ошибки
+      end;
 end;
 
 procedure TFormMain.UpdateGraph();
@@ -1054,6 +1059,7 @@ var
 begin
   //Очистка сообщения
   message_uid := SendingMessage.MessageUid;
+  SendingMessage.SaveToDataBase;
   ApplicationComPortOutgoingMessages.DeleteItem(message_uid);
   ApplicationComPortOutgoingMessages.SendingComPortMessage := nil;
   SendingMessage := nil;
