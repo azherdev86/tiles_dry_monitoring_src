@@ -107,6 +107,7 @@
     </DCCReference>
     <DCCReference Include="Libraries\LApplicationAttributes.pas" />
     <DCCReference Include="Libraries\LApplicationGlobals.pas" />
+    <DCCReference Include="Libraries\LFileLogging.pas" />
     <DCCReference Include="Libraries\LHash.pas" />
     <DCCReference Include="Libraries\LUtils.pas" />
     <DCCReference Include="Libraries\uTDurationProcess.pas" />

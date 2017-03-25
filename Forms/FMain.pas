@@ -166,7 +166,7 @@ uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventLogs,
      FGraphHistory, CBoxes, CBasicComPortMessage, DateUtils, CTableRecords, ZDataset,
      CTempValuesBuffer, CController, FInputPassword, FChangePassword, FExportToCSV,
      CEventLog, LUtils, FDebugPanel, CQueryConstructor, CConditions, CExportToCSV,
-  FUserDigitalKeyboard, FControlPanel;
+     FUserDigitalKeyboard, FControlPanel, LFileLogging;
 
 
 procedure TFormMain.FormCreate(Sender: TObject);
@@ -230,6 +230,16 @@ begin
   case Key of
     VK_RETURN : ButtonApplyFloorAxisSettings.Click;
   end;
+end;
+
+function ArrToStr(Aarr : TDynamicByteArray) : string;
+var
+  i, count : integer;
+begin
+  count := Length(Aarr);
+
+  for i := 0 to count - 1 do
+    Result := Result + IntToHex(AArr[i], 2) + ' ';
 end;
 
 procedure TFormMain.LabeledEditAxisMinYValueKeyDown(Sender: TObject;
@@ -617,6 +627,8 @@ begin
     if ComPort.Write(MessageBytes[0], Length(MessageBytes)) > 0
       then
         begin
+          WriteLog(ArrToStr(MessageBytes), fltOutgoingMessages);
+          
           SendingMessage.State           := omsWaitResponse;
           SendingMessage.SentTime        := Now;
 
@@ -747,6 +759,8 @@ begin
 
   SetLength(Buffer, Count);
   ComPort.Read(Buffer[0], Count);
+
+  WriteLog(ArrToStr(Buffer), fltIncomingMessages);
 
   IncomingMessage := ApplicationComPortIncomingMessage; //Передаем значение по ссылке. Промежуточный объект используется для сокращения названия переменной
 
