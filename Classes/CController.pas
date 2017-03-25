@@ -296,10 +296,11 @@ end;
 
 procedure TMController.Reset;
 var
-  i : integer;
+  i, count : integer;
   Item : TMConveyor;
 begin
-  for i := 0 to GetCount - 1 do
+  count := GetCount;
+  for i := 0 to count - 1 do
   begin
     Item := Items.Objects[i] as TMConveyor;
     if Assigned(Item)
@@ -343,7 +344,8 @@ var
   conveyor_number,
   section_number,
   conveyor_count,
-  section_count : integer;
+  section_count,
+  length_defailure_array : integer;
 
   check_average : boolean;
 
@@ -431,7 +433,9 @@ begin
               end;
         end;
 
-        for j := 0 to Length(defailure_array) - 1 do
+        length_defailure_array := Length(defailure_array);
+
+        for j := 0 to length_defailure_array - 1 do
           begin //Снимаем ошибки в определенных в предыдущем цикле секциях
             section_number := defailure_array[j];
 

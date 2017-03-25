@@ -295,10 +295,12 @@ end;
 
 procedure TMQueryConstructor.Reset;
 var
-  i : integer;
+  i, count : integer;
   Condition : TMCondition;
 begin
-  for i := 0 to GetConditionsCount - 1 do
+  count := GetConditionsCount;
+
+  for i := 0 to count - 1 do
   begin
     Condition := Items.Objects[i] as TMCondition;
     if Assigned(Condition)

@@ -182,10 +182,12 @@ end;
 
 procedure TMTempValuesList.Reset;
 var
-  i : integer;
+  i, count : integer;
   Item : TMTempValue;
 begin
-  for i := 0 to GetCount - 1 do
+  count := GetCount;
+
+  for i := 0 to count - 1 do
   begin
     Item := Items.Objects[i] as TMTempValue;
     if Assigned(Item)

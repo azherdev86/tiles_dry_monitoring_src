@@ -2,7 +2,7 @@ unit CBasicComPortMessage;
 
 interface
 
-uses Classes;
+uses Classes, CTableRecords;
 
 const
   MAX_MESSAGES_COUNT = 100;
@@ -40,12 +40,15 @@ type
     FMessageUid : string;
 
   protected
+    FTableRecord : TMTableRecord;
+
     procedure Reset(); virtual;
 
   public
 //    DebugDeviceId : Byte; //Ќа период отладки, чтобы можно эмулировать работу 20 коробок на 1-ом устройстве
 
     procedure GenerateMessage(var AMessageBytes : TDynamicByteArray); virtual; abstract;
+    procedure SaveToDataBase(); virtual; abstract;
     procedure LoadDataBytes(ADataBytes : TDynamicByteArray);
     procedure SaveDataBytes(var ADataBytes : TDynamicByteArray);
 
@@ -130,6 +133,8 @@ end;
 ////////////////////////////////////TMBasicComPortMessage////////////////////////////
 constructor TMBasicComPortMessage.Create();
 begin
+  FTableRecord := TMTableRecord.Create('Messages');
+
   Reset;
 
   FMessageUid := GenerateUid;
@@ -139,6 +144,7 @@ end;
 destructor TMBasicComPortMessage.Destroy();
 begin
   Reset;
+  FTableRecord.Free;
   inherited;
 end;
 
@@ -156,7 +162,7 @@ begin
   FCRCHi     := $00;
   FCRCLo     := $00;
 
-//  DebugDeviceId := $00;
+  FTableRecord.ClearRecordValues;
 end;
 
 

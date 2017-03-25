@@ -116,10 +116,12 @@ end;
 
 procedure TMConditionGroup.Reset;
 var
-  i : integer;
+  i, count : integer;
   Condition : TMCondition;
 begin
-  for i := 0 to GetConditionsCount - 1 do
+  count := GetConditionsCount;
+
+  for i := 0 to count - 1 do
   begin
     Condition := Items.Objects[i] as TMCondition;
     if Assigned(Condition)
@@ -337,10 +339,12 @@ end;
 
 procedure TMConditionGroups.Reset;
 var
-  i : integer;
+  i, count : integer;
   ConditionGroup : TMConditionGroup;
 begin
-  for i := 0 to GetCount - 1 do
+  count := GetCount;
+
+  for i := 0 to count - 1 do
   begin
     ConditionGroup := Items.Objects[i] as TMConditionGroup;
     if Assigned(ConditionGroup)

@@ -279,7 +279,7 @@ procedure TFormExportToCSV.SaveDataSetToCSV(DataSet: TZQuery; FileName: String; 
 var
   List: TStringList;
   S: String;
-  I: Integer;
+  I, Count: Integer;
 begin
   List := TStringList.Create;
   try
@@ -295,7 +295,8 @@ begin
     while not DataSet.Eof do
     begin
       S := '';
-      for I := 0 to DataSet.FieldCount - 1 do
+      Count := DataSet.FieldCount;
+      for I := 0 to Count - 1 do
       begin
         if S > '' then
           S := S + ';';
