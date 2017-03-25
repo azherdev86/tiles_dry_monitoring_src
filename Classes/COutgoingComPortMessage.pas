@@ -28,13 +28,13 @@ type
     FSentTime       : TDateTime;
     FDelieveredTime : TDateTime;
 
-    FTimeOut         : integer; //Миллисекунды
     FSentTimeCounter : integer;
 
   protected
     procedure Reset(); override;
 
   public
+    procedure SaveToDataBase(); override;
     procedure GenerateMessage(var AMessageBytes : TDynamicByteArray); override;
     procedure ResentPrepare(); //подготовка к повторной отправке
 
@@ -50,7 +50,6 @@ type
     property DelieveredTime : TDateTime read FDelieveredTime write FDelieveredTime;
 
     property SentTimeCounter : integer read FSentTimeCounter write FSentTimeCounter;
-    property TimeOut         : integer read FTimeOut;
   end;
 
 
@@ -92,9 +91,64 @@ type
     property SendingComPortMessage : TMOutgoingComportMessage read FSendingComPortMessage write SetSendingComPortMessage;
   end;
 
+  function OutgoingMessageStateToStr(AMessageState: TypeOutgoingMessageState): string;
+  function StrToOutgoingMessageState(AStr: string): TypeOutgoingMessageState;
+
+  function OutgoingMessageErrorToStr(AMessageError: TypeOutgoingMessageError): string;
+  function StrToOutgoingMessageError(AStr: string): TypeOutgoingMessageError;
+
+
 implementation
 
 uses SysUtils, DateUtils;
+
+function OutgoingMessageStateToStr(AMessageState: TypeOutgoingMessageState): string;
+const
+  MessageStateStrings: array[TypeOutgoingMessageState] of string =
+ ('None', 'WaitResponse', 'Delievered');
+begin
+  Result := MessageStateStrings[AMessageState];
+end;
+
+function StrToOutgoingMessageState(AStr: string): TypeOutgoingMessageState;
+var
+  I: TypeOutgoingMessageState;
+begin
+  I := Low(TypeOutgoingMessageState);
+  while (I <= High(TypeOutgoingMessageState)) do
+    begin
+      if UpperCase(AStr) = UpperCase(OutgoingMessageStateToStr(TypeOutgoingMessageState(I)))
+        then Break;
+      I := Succ(I);
+    end;
+
+  Result := I;
+end;
+
+function OutgoingMessageErrorToStr(AMessageError: TypeOutgoingMessageError): string;
+const
+  MessageErrorStrings: array[TypeOutgoingMessageError] of string =
+ ('None', 'WrongAcknowledge', 'Timeout');
+begin
+  Result := MessageErrorStrings[AMessageError];
+end;
+
+function StrToOutgoingMessageError(AStr: string): TypeOutgoingMessageError;
+var
+  I: TypeOutgoingMessageError;
+begin
+  I := Low(TypeOutgoingMessageError);
+  while (I <= High(TypeOutgoingMessageError)) do
+    begin
+      if UpperCase(AStr) = UpperCase(OutgoingMessageErrorToStr(TypeOutgoingMessageError(I)))
+        then Break;
+      I := Succ(I);
+    end;
+
+  Result := I;
+end;
+
+
 
 
 procedure TMOutgoingComportMessage.Reset;
@@ -110,6 +164,26 @@ begin
 
   FSentTimeCounter := 0;
 end;
+
+procedure TMOutgoingComportMessage.SaveToDataBase();
+begin
+  if not Assigned(FTableRecord)
+    then Exit;
+
+  FTableRecord.ClearRecordValues;
+
+  FTableRecord.FieldByName['MessageType'].Value           := 'out';
+  FTableRecord.FieldByName['MessageCreationTime'].Value   := FCreationTime;
+  FTableRecord.FieldByName['MessageSentTime'].Value       := FSentTime;
+  FTableRecord.FieldByName['MessageDelieveredTime'].Value := FDelieveredTime;
+  FTableRecord.FieldByName['MessageState'].Value          := OutgoingMessageStateToStr(FState);
+  FTableRecord.FieldByName['MessageError'].Value          := OutgoingMessageErrorToStr(FError);
+  FTableRecord.FieldByName['MessageBytes'].Value          := GenerateMessageString;
+  FTableRecord.FieldByName['MessageUid'].Value            := FMessageUid;
+
+  FTableRecord.AddRecord;
+end;
+
 
 procedure TMOutgoingComportMessage.GenerateMessage(var AMessageBytes : TDynamicByteArray);
 var
@@ -137,6 +211,9 @@ begin
   AMessageBytes[len - 2] := FCRCHi;
   AMessageBytes[len - 1] := FCRCLo;
 end;
+
+
+
 
 function TMOutgoingComportMessage.IsError() : boolean;
 begin
@@ -349,10 +426,12 @@ end;
 
 procedure TMOutgoingComPortMessagesList.Reset;
 var
-  i : integer;
+  i, count : integer;
   Item : TMOutgoingComportMessage;
 begin
-  for i := 0 to GetCount - 1 do
+  count := GetCount;
+
+  for i := 0 to count - 1 do
   begin
     Item := Items.Objects[i] as TMOutgoingComportMessage;
     if Assigned(Item)

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, FTerminalForm;
+  Dialogs, StdCtrls, ExtCtrls, FTerminalForm, Buttons;
 
 type
   TypePasswordMode = (pmNone,
@@ -14,13 +14,13 @@ type
 type
   TFormInputPassword = class(TFormTerminal)
     LabeledEditPassword: TLabeledEdit;
-    ButtonOk: TButton;
-    ButtonCancel: TButton;
-    procedure ButtonOkClick(Sender: TObject);
+    BitBtnOk: TBitBtn;
+    BitBtnCancel: TBitBtn;
     procedure FormCreate(Sender: TObject);
-    procedure ButtonCancelClick(Sender: TObject);
     procedure LabeledEditPasswordKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure BitBtnOkClick(Sender: TObject);
+    procedure BitBtnCancelClick(Sender: TObject);
   private
     { Private declarations }
 
@@ -52,14 +52,14 @@ begin
   FormInputPassword.Free;
 end;
 
-procedure TFormInputPassword.ButtonCancelClick(Sender: TObject);
+procedure TFormInputPassword.BitBtnCancelClick(Sender: TObject);
 begin
   PasswordMode := pmNone;
 
   Close;
 end;
 
-procedure TFormInputPassword.ButtonOkClick(Sender: TObject);
+procedure TFormInputPassword.BitBtnOkClick(Sender: TObject);
 var
   Pass : string;
   Hash : string;
@@ -102,7 +102,7 @@ procedure TFormInputPassword.LabeledEditPasswordKeyDown(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
   case Key of
-    VK_RETURN: ButtonOk.Click;
+    VK_RETURN: BitBtnOk.Click;
     VK_ESCAPE:
       begin
         PasswordMode := pmNone;

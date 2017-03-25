@@ -32,6 +32,7 @@ type
     LabeledEditToMinutes: TLabeledEdit;
     BitBtnCancel: TBitBtn;
     BitBtnOk: TBitBtn;
+    sAverage: TLineSeries;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -48,6 +49,7 @@ type
 
     procedure ClearSeries();
     procedure DrawSeries(Series : TLineSeries);
+    procedure DrawAverage();
     procedure DrawTempRanges;
 
     procedure SetSeriesSettings();
@@ -58,6 +60,8 @@ type
     procedure DrawChart();
 
     function CheckValues() : boolean;
+
+    function GetMinSeriesPointCount() : integer;
 
 
   public
@@ -289,6 +293,44 @@ begin
     end;
 end;
 
+procedure TFormGraphHistory.DrawAverage();
+var
+  i, count : integer;
+
+  avgTime,
+  tLeftTop, 
+  tLeftBottom,
+  tRightTop,
+  tRightBottom : TDateTime;
+
+  avgValue,
+  vLeftTop,
+  vLeftBottom,
+  vRightTop,
+  vRightBottom : single;
+begin
+  count := GetMinSeriesPointCount;
+
+  for i := 0 to count - 1 do
+    begin
+      vLeftTop     := sLeftTop.YValues.Value[i];
+      vLeftBottom  := sLeftBottom.YValues.Value[i];
+      vRightTop    := sRightTop.YValues.Value[i];
+      vRightBottom := sRightBottom.YValues.Value[i];
+
+      avgValue := (vLeftTop + vLeftBottom + vRightTop + vRightBottom)/4;
+
+      tLeftTop     := sLeftTop.XValues.Value[i];
+      tLeftBottom  := sLeftBottom.XValues.Value[i];
+      tRightTop    := sRightTop.XValues.Value[i];
+      tRightBottom := sRightBottom.XValues.Value[i];
+
+      avgTime := (tLeftTop + tLeftBottom + tRightTop + tRightBottom)/4;
+
+      sAverage.AddXY(avgTime, avgValue);
+    end;
+end;
+
 
 procedure TFormGraphHistory.DrawTempRanges;
 var
@@ -348,6 +390,8 @@ begin
   sRightTop.Clear;
   sRightBottom.Clear;
 
+  sAverage.Clear;
+
   Application.ProcessMessages;
 end;
 
@@ -387,7 +431,7 @@ begin
   ClearSeries;
 
   Gauge.Visible := True;
-  Gauge.MaxValue := 7;      Gauge.Progress := 0;
+  Gauge.MaxValue := 8;      Gauge.Progress := 0;
 
   SetSeriesSettings;        Gauge.Progress := 1;
 
@@ -398,9 +442,11 @@ begin
   DrawSeries(sRightTop);    Gauge.Progress := 5;
   DrawSeries(sRightBottom); Gauge.Progress := 6;
 
+  DrawAverage;              Gauge.Progress := 7;
+
   DrawTempRanges;
 
-  SetTimeRanges;            Gauge.Progress := 7;
+  SetTimeRanges;            Gauge.Progress := 8;
 
   Sleep(250);
 
@@ -485,6 +531,23 @@ begin
 end;
 
 
+function TFormGraphHistory.GetMinSeriesPointCount() : integer;
+var
+  count : integer;
+begin
+  count := sLeftTop.XValues.Count;
+
+  if sLeftBottom.XValues.Count < count
+    then count := sLeftBottom.XValues.Count;
+
+  if sRightTop.XValues.Count < count
+    then count := sRightTop.XValues.Count;
+
+  if sRightBottom.XValues.Count < count
+    then count := sRightBottom.XValues.Count;
+
+  Result := count;
+end;
 
 
 end.

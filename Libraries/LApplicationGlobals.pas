@@ -55,10 +55,25 @@ uses Dialogs, Forms, Classes, Windows, StrUtils, Variants,
      FMain;
 
 procedure CreateGlobals;
+var
+  TextMessage : string;
 begin
   ApplicationDBConnection                   := TZConnection.Create(nil);
   ApplicationDataBaseStructure              := TMDatabaseStructure.Create(ApplicationDBConnection);
   ApplicationDataBaseStructure.DatabaseType := GLOBAL_DATABASE_TYPE;
+
+  TextMessage := 'Database connection Error';
+
+  if not ConnectToDataBase(TextMessage)
+    then
+      begin
+        ShowMessage(TextMessage);
+        Exit;
+      end;
+
+  if not ApplicationDataBaseStructure.LoadStructure
+    then Exit;
+
   ApplicationTempBufferValues               := TMTempBufferValuesList.Create;
   ApplicationGraph                          := TMGraph.Create;
   ApplicationBoxes                          := TMBoxesList.Create;
@@ -70,24 +85,11 @@ begin
 end;
 
 procedure UpdateGlobals;
-var
-  TextMessage : string;
 begin
   ApplicationProgramSettings.LoadFromInifile;
   ApplicationGraph.LoadSettings;
 
-  TextMessage := 'Database connection Error';
   UpdateFormatSettings();
-
-  if not ConnectToDataBase(TextMessage)
-    then
-      begin
-        ShowMessage(TextMessage);
-        Exit;
-      end;
-
-  if not ApplicationDataBaseStructure.LoadStructure
-    then Exit;
 
   ApplicationEventLog := TMEventLog.Create;
   ApplicationEventLog.WriteLog(elProgramStart);

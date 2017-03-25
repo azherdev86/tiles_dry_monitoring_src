@@ -1681,10 +1681,12 @@ end;
 
 procedure TMTableBrowses.Reset;
 var
-  i : integer;
+  i, count : integer;
   RecordField : TMTableBrowse;
 begin
-  for i := 0 to GetCount - 1 do
+  count := GetCount;
+  
+  for i := 0 to count - 1 do
   begin
     RecordField := Items.Objects[i] as TMTableBrowse;
     if Assigned(RecordField)

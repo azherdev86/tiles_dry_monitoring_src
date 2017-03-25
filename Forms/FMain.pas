@@ -35,7 +35,6 @@ type
     LabeledEditAxisMaxYValue: TLabeledEdit;
     BitBtnEventHistory: TBitBtn;
     BitBtnTemperatureRanges: TBitBtn;
-    ButtonApplyFloorAxisSettings: TButton;
     Label19: TLabel;
     StatusBar: TStatusBar;
     ComPort: TComPort;
@@ -72,6 +71,7 @@ type
     BitBtnSirenDisable: TBitBtn;
     BitBtnControlPanel: TBitBtn;
     TimerScheduler: TTimer;
+    BitBtnOk: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
     procedure PaintBoxMouseEnter(Sender: TObject);
@@ -86,7 +86,6 @@ type
     procedure TimerComPortSendMessagesTimer(Sender: TObject);
     procedure TimerRefreshViewTimer(Sender: TObject);
     procedure TimerSchedulerTimer(Sender: TObject);
-    procedure ButtonApplyFloorAxisSettingsClick(Sender: TObject);
     procedure LabeledEditAxisMinYValueKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure LabeledEditAxisMaxYValueKeyDown(Sender: TObject; var Key: Word;
@@ -102,6 +101,7 @@ type
     procedure TimerCreateCheckSignaModelMessagesTimer(Sender: TObject);
     procedure BitBtnControlPanelClick(Sender: TObject);
     procedure BitBtnSirenDisableClick(Sender: TObject);
+    procedure BitBtnOkClick(Sender: TObject);
   private
     { Private declarations }
     FStartTime : double;
@@ -113,6 +113,9 @@ type
 
     FNeedBackupOutdatedTempValues : boolean; //Нужно сохранять устаревшие значения (да/нет)
     FOutdatedTempValuesBackuped : boolean;     //Устаревшие значения сохранены (да/нет)
+
+    FNeedDeleteComPortMessages : boolean; //Нужно удалять устаревшие сообщения из базы (да/нет)
+    FComPortMessagesDeleted : boolean;     //Устаревшие сообщения удалены (да/нет)
 
     procedure UpdateGraph();
     procedure UpdateStatusBar;
@@ -129,6 +132,7 @@ type
 
     function DeleteOutdatedTempValues() : boolean;
     function BackupOutdatedTempValues() : boolean;
+    function DeleteOutdatedComPortMessages() : boolean;
 
   public
     { Public declarations }
@@ -162,7 +166,7 @@ uses LApplicationGlobals, CGraph, ShellAPI, FTemperatureRanges, FEventLogs,
      FGraphHistory, CBoxes, CBasicComPortMessage, DateUtils, CTableRecords, ZDataset,
      CTempValuesBuffer, CController, FInputPassword, FChangePassword, FExportToCSV,
      CEventLog, LUtils, FDebugPanel, CQueryConstructor, CConditions, CExportToCSV,
-  FUserDigitalKeyboard, FControlPanel;
+     FUserDigitalKeyboard, FControlPanel, LFileLogging;
 
 
 procedure TFormMain.FormCreate(Sender: TObject);
@@ -198,6 +202,9 @@ begin
   FNeedBackupOutdatedTempValues := False;
   FOutdatedTempValuesBackuped   := False;
 
+  FNeedDeleteComPortMessages    := False;
+  FComPortMessagesDeleted       := False;
+
   LoadSettings;
 
   UpdateStatusBar;
@@ -221,15 +228,25 @@ procedure TFormMain.LabeledEditAxisMaxYValueKeyDown(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
   case Key of
-    VK_RETURN : ButtonApplyFloorAxisSettings.Click;
+    VK_RETURN : BitBtnOk.Click;
   end;
+end;
+
+function ArrToStr(Aarr : TDynamicByteArray) : string;
+var
+  i, count : integer;
+begin
+  count := Length(Aarr);
+
+  for i := 0 to count - 1 do
+    Result := Result + IntToHex(AArr[i], 2) + ' ';
 end;
 
 procedure TFormMain.LabeledEditAxisMinYValueKeyDown(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
   case Key of
-    VK_RETURN : ButtonApplyFloorAxisSettings.Click;
+    VK_RETURN : BitBtnOk.Click;
   end;
 end;
 
@@ -336,10 +353,14 @@ begin
 end;
 
 procedure TFormMain.TimerSchedulerTimer(Sender: TObject);
+const
+  CDeleteValuesHour   = 0;
+  CBackupValuesHour   = 1;
+  CDeleteMessagesHour = 2;
 begin
   ///////////////// Удаление старых даных ////////////////////////
   ////////////////// Каждый день в 00:00 /////////////////////////
-  if (DecodeHour(Now) = 0) and (not FOutdatedTempValuesDeleted) //если настало нужное время и операция еще не выполнена
+  if (DecodeHour(Now) = CDeleteValuesHour) and (not FOutdatedTempValuesDeleted) //если настало нужное время и операция еще не выполнена
     then FNeedDeleteOutdatedTempValues := True; //то выставляем флаг
 
   if FNeedDeleteOutdatedTempValues and (not FOutdatedTempValuesDeleted)
@@ -348,22 +369,36 @@ begin
   if FOutdatedTempValuesDeleted
     then FNeedDeleteOutdatedTempValues := False;
 
-  if (DecodeHour(Now) > 0)
+  if (DecodeHour(Now) > CDeleteValuesHour)
     then FOutdatedTempValuesDeleted := False;
 
   ///////////////// Сохранение старых данных ////////////////////////
   ////////////////// Каждый день в 01:00 /////////////////////////
-  if (DecodeHour(Now) = 1) and (not FOutdatedTempValuesBackuped) //если настало нужное время и операция еще не выполнена
+  if (DecodeHour(Now) = CBackupValuesHour) and (not FOutdatedTempValuesBackuped) //если настало нужное время и операция еще не выполнена
     then FNeedBackupOutdatedTempValues := True; //то выставляем флаг
 
   if FNeedBackupOutdatedTempValues and (not FOutdatedTempValuesBackuped)
-    then FOutdatedTempValuesBackuped := BackupOutdatedTempValues;
+    then FOutdatedTempValuesBackuped := BackupOutdatedTempValues();
 
   if FOutdatedTempValuesBackuped
     then FNeedBackupOutdatedTempValues := False;
 
-  if (DecodeHour(Now) > 1)
+  if (DecodeHour(Now) > CBackupValuesHour)
     then FOutdatedTempValuesBackuped := False;
+
+  ///////////////// Сохранение старых данных ////////////////////////
+  ////////////////// Каждый день в 02:00 /////////////////////////
+  if (DecodeHour(Now) = CDeleteMessagesHour) and (not FComPortMessagesDeleted) //если настало нужное время и операция еще не выполнена
+    then FNeedDeleteComPortMessages := True; //то выставляем флаг
+
+  if FNeedDeleteComPortMessages and (not FComPortMessagesDeleted)
+    then FComPortMessagesDeleted := DeleteOutdatedComPortMessages();
+
+  if FComPortMessagesDeleted
+    then FNeedDeleteComPortMessages := False;
+
+  if (DecodeHour(Now) > CDeleteMessagesHour)
+    then FComPortMessagesDeleted := False;
 end;
 
 procedure TFormMain.TrackBarAllConveyorsChange(Sender: TObject);
@@ -592,10 +627,13 @@ begin
     if ComPort.Write(MessageBytes[0], Length(MessageBytes)) > 0
       then
         begin
+          WriteLog(ArrToStr(MessageBytes), fltOutgoingMessages);
+          
           SendingMessage.State           := omsWaitResponse;
           SendingMessage.SentTime        := Now;
 
           ApplicationComPortOutgoingMessages.SendingComPortMessage := SendingMessage;
+          SendingMessage.SaveToDataBase;
 
           Inc(SentMessagesCount);
         end;
@@ -643,21 +681,7 @@ begin
   FormEventLogs.Free;
 end;
 
-procedure TFormMain.BitBtnTemperatureRangesClick(Sender: TObject);
-begin
-  case InputPassword of
-    pmWrong : ShowMessage('Wrong password');
-
-    pmCorrect :
-      begin
-        Application.CreateForm(TFormTemperatureRanges, FormTemperatureRanges);
-        FormTemperatureRanges.ShowModal;
-        FormTemperatureRanges.Free;
-      end;
-  end;
-end;
-
-procedure TFormMain.ButtonApplyFloorAxisSettingsClick(Sender: TObject);
+procedure TFormMain.BitBtnOkClick(Sender: TObject);
 var
   MinYValue,
   MaxYValue : single;
@@ -703,6 +727,20 @@ begin
   PaintBox.Repaint;
 end;
 
+procedure TFormMain.BitBtnTemperatureRangesClick(Sender: TObject);
+begin
+  case InputPassword of
+    pmWrong : ShowMessage('Wrong password');
+
+    pmCorrect :
+      begin
+        Application.CreateForm(TFormTemperatureRanges, FormTemperatureRanges);
+        FormTemperatureRanges.ShowModal;
+        FormTemperatureRanges.Free;
+      end;
+  end;
+end;
+
 procedure TFormMain.ButtonDebugClick(Sender: TObject);
 begin
   Application.CreateForm(TFormDebugPanel, FormDebugPanel);
@@ -721,6 +759,8 @@ begin
 
   SetLength(Buffer, Count);
   ComPort.Read(Buffer[0], Count);
+
+  WriteLog(ArrToStr(Buffer), fltIncomingMessages);
 
   IncomingMessage := ApplicationComPortIncomingMessage; //Передаем значение по ссылке. Промежуточный объект используется для сокращения названия переменной
 
@@ -745,7 +785,11 @@ begin
       end;
 
   if (IncomingMessage.State = imsRecieved) or IncomingMessage.IsError
-    then IncomingMessage.Clear; //Есди сообщение получено или во время получения возникли ошибки
+    then
+      begin
+        IncomingMessage.SaveToDataBase;
+        IncomingMessage.Clear; //Есди сообщение получено или во время получения возникли ошибки
+      end;
 end;
 
 procedure TFormMain.UpdateGraph();
@@ -1054,6 +1098,7 @@ var
 begin
   //Очистка сообщения
   message_uid := SendingMessage.MessageUid;
+  SendingMessage.SaveToDataBase;
   ApplicationComPortOutgoingMessages.DeleteItem(message_uid);
   ApplicationComPortOutgoingMessages.SendingComPortMessage := nil;
   SendingMessage := nil;
@@ -1098,6 +1143,33 @@ begin
 
   Result := True;
 end;
+
+function TFormMain.DeleteOutdatedComPortMessages() : boolean;
+var
+  TableRecord : TMTableRecord;
+
+  ms_between : integer;
+
+  before : TDateTime;
+begin
+  //Удаляем старые Com-port сообщения
+  TableRecord := TMTableRecord.Create('Messages');
+  try
+    before := Now;
+
+    TableRecord.DeleteRecordsAll;
+
+    ms_between := MilliSecondsBetween(before, Now);
+
+    ApplicationEventLog.WriteLog(elDeleteOutdated, 'Deleted all ComPort messages in ' +
+                                                   IntToStr(ms_between) + ' ms');
+  finally
+    TableRecord.Free;
+  end;
+
+  Result := True;
+end;
+
 
 function TFormMain.BackupOutdatedTempValues() : boolean;
 const

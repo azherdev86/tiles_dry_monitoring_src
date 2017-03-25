@@ -494,11 +494,13 @@ end;
 
 function TMTableRecord.GetFieldValues : string;
 var
-  i : integer;
+  i, count : integer;
   RecordField : TMRecordField;
 begin
   Result := '';
-  for i := 0 to GetFieldsCount - 1 do
+
+  count := GetFieldsCount;
+  for i := 0 to count - 1 do
   begin
     RecordField := GetFieldByIndex(i);
 
@@ -577,10 +579,12 @@ end;
 
 procedure TMTableRecord.Reset;
 var
-  i : integer;
+  i, count : integer;
   Field : TMRecordField;
 begin
-  for i := 0 to GetFieldsCount - 1 do
+  count := GetFieldsCount;
+
+  for i := 0 to count - 1 do
   begin
     Field := Items.Objects[i] as TMRecordField;
     if Assigned(Field)
@@ -600,9 +604,10 @@ end;
 
 procedure TMTableRecord.ClearRecordValues;
 var
-  i : integer;
+  i, count : integer;
 begin
-  for i := 0 to GetFieldsCount - 1 do
+  count := GetFieldsCount;
+  for i := 0 to count - 1 do
     FieldByIndex[i].Value := null;
 end;
 
@@ -615,7 +620,7 @@ end;
 function TMTableRecord.LoadTableStructure(tblName : string) : boolean;
 var
   Table : TMTableStructure;
-  i : integer;
+  i, FieldsCount : integer;
   RecordField : TMRecordField;
   Field : TMField;
 begin
@@ -630,8 +635,9 @@ begin
   FTableName := Table.TableName;
   FPKFieldName := Table.PKFieldName;
 
+  FieldsCount := Table.Fields.GetCount;
   //загружаем информацию обо всех полях таблицы
-  for i := 0 to Table.Fields.GetCount - 1 do
+  for i := 0 to FieldsCount - 1 do
   begin
     Field := Table.Fields.GetItem(i);
     if not Assigned(Field)
@@ -1275,10 +1281,11 @@ end;
 
 procedure TMTableRecords.Reset;
 var
-  i : integer;
+  i, count: integer;
   RecordField : TMTableRecord;
 begin
-  for i := 0 to GetCount - 1 do
+  count := GetCount;
+  for i := 0 to count - 1 do
   begin
     RecordField := Items.Objects[i] as TMTableRecord;
     if Assigned(RecordField)

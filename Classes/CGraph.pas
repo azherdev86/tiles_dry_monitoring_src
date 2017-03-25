@@ -21,6 +21,7 @@ const
   SERIES_COLOR = clBlack;
 
   SELECTED_CELL_COLOR    = $EEEEEE; //светло-серый
+  DOWN_ROW_COLOR         = $DAEFE2; //светло-зеленый
   HIGHLIGHTED_ROW_COLOR  = $D5E5FB; //светло-розовый
   HIGHLIGHTED_CELL_COLOR = $ACCBF7; //немного темнее, чем светло-розовый
 
@@ -114,8 +115,9 @@ type
 
     procedure DrawWhiteScreen();
     procedure DrawGrid();
-    procedure DrawSelectedCell();
-    procedure DrawHighLightedCells();
+    procedure FillSelectedCell();
+    procedure FillDownRow();
+    procedure FillHighLightedCells();
     procedure DrawSeries();
     procedure DrawRanges();
     procedure DrawAverage();
@@ -283,10 +285,12 @@ end;
 
 procedure TMSeriesList.Reset;
 var
-  i : integer;
+  i, count: integer;
   Series : TMSeries;
 begin
-  for i := 0 to GetCount - 1 do
+  count := GetCount;
+
+  for i := 0 to count - 1 do
   begin
     Series := Items.Objects[i] as TMSeries;
     if Assigned(Series)
@@ -348,7 +352,7 @@ begin
   DrawWhiteScreen;
 end;
 
-procedure TMGraph.DrawSelectedCell();
+procedure TMGraph.FillSelectedCell();
 var
   Rect : TRect;
 begin
@@ -365,7 +369,21 @@ begin
   FBitMap.Canvas.Rectangle(Rect);
 end;
 
-procedure TMGraph.DrawHighLightedCells();
+procedure TMGraph.FillDownRow();
+var
+  Rect : TRect;
+begin
+  Rect.Left  := 0;
+  Rect.Right := Width;
+
+  Rect.Top := (GRID_ROW_COUNT - 1)*FGridRowHeight;
+  Rect.Bottom := Rect.Top + FGridRowHeight + 1;
+
+  FBitMap.Canvas.Brush.Color := DOWN_ROW_COLOR;
+  FBitMap.Canvas.Rectangle(Rect);           
+end;
+
+procedure TMGraph.FillHighLightedCells();
 var
   row_count, col_count,
   col_index, row_index,
@@ -463,6 +481,7 @@ procedure TMGraph.DrawRanges();
 var
   i, j, k,
   count,
+  points_count,
   x_int_start, y_int_start,
   x_int_end, y_int_end     : integer;
 
@@ -487,7 +506,8 @@ begin
 
       for j := 0 to FGridRowCount - 1 do
         begin
-          for k := 0 to Range.GetPointsCount - 1 do
+          points_count := Range.GetPointsCount;
+          for k := 0 to points_count - 1 do
             begin
               if (Range.FFloatPoints[k].Value < FAxis.MinY) or
                  (Range.FFloatPoints[k].Value > FAxis.MaxY)
@@ -1046,8 +1066,9 @@ end;
 procedure TMGraph.DrawGraph(PaintBox : TPaintBox);
 begin
   DrawWhiteScreen;     //заполняем весь холст белой заливкой
-  DrawHighLightedCells;
-  DrawSelectedCell; //перерисовка выделенной области
+  FillHighLightedCells;
+  FillSelectedCell;   //перерисовка выделенной области
+  FillDownRow;
   DrawGrid;            //координатная сетка
   DrawAverage;         //отрисовка линий со средними значениями
   DrawRanges;          //отрисовка границ

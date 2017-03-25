@@ -80,6 +80,21 @@ begin
     AddField('EventLogTime',    ftDateTime);
   end;
 
+  with AddTable('Messages', 'MessageId') do
+  begin
+    AddField('MessageType',             ftString);
+    AddField('MessageRecievedTime',     ftDateTime);
+    AddField('MessageRecievedPartTime', ftDateTime);
+    AddField('MessageCreationTime',     ftDateTime);
+    AddField('MessageSentTime',         ftDateTime);
+    AddField('MessageDelieveredTime',   ftDateTime);
+    AddField('MessageState',            ftString);
+    AddField('MessageError',            ftString);
+    AddField('MessageBytes',            ftString);
+    AddField('MessageUid',              ftString);
+  end;
+
+
   if not CheckTableNames(OutMessage)
     then
       begin
@@ -173,12 +188,15 @@ function TMDataBaseStructure.CheckTableNamesMySQL(var OutMessage: string) : bool
 var
   Query : TZQuery;
   Table : TMTableStructure;
-  i : integer;
+  i, count : integer;
   ListOfTable : array of boolean;
 begin
   Result := False;
-  SetLength(ListOfTable, Tables.GetCount);
-  for i := 0 to Tables.GetCount - 1 do
+
+  count := Tables.GetCount;
+  SetLength(ListOfTable, count);
+
+  for i := 0 to count - 1 do
     ListOfTable[i] := FALSE;
     
   Query := TZQuery.Create(FDBConn);
@@ -188,7 +206,9 @@ begin
           
     while not Query.Eof do
       begin
-        for i := 0 to Tables.GetCount - 1 do
+        count := Tables.GetCount;
+        
+        for i := 0 to count - 1 do
         begin
           Table := Tables.GetItem(i);
           if UpperCase(Table.TableName) = UpperCase(Query.Fields[0].AsString)
@@ -202,7 +222,10 @@ begin
       end;
 
     Result := TRUE;
-    for i := 0 to Length(ListOfTable) - 1 do
+
+    count := Length(ListOfTable);
+    
+    for i := 0 to count - 1 do
     begin
       Result := Result AND ListOfTable[i];
       if not ListOfTable[i]
@@ -221,20 +244,28 @@ end;
 function TMDatabaseStructure.CheckTableNamesFireBird(var OutMessage : string) : boolean;
 var
   Strings : TStrings;
-  i, j : integer;
+  i, j,
+  tables_count, strings_count,
+  list_of_table_length : integer;
   ListOfTable : array of boolean;
   Table : TMTableStructure;
 begin
   Result := False;
-  SetLength(ListOfTable, Tables.GetCount);
-  for i := 0 to Tables.GetCount - 1 do
+
+  tables_count := Tables.GetCount;
+  
+  SetLength(ListOfTable, tables_count);
+  for i := 0 to tables_count - 1 do
     ListOfTable[i] := FALSE;
 
   Strings := TStringList.Create;
   try
     FDBConn.GetTableNames('',Strings);
-    for i := 0 to Strings.Count - 1 do
-      for j := 0 to Tables.GetCount - 1 do
+
+    strings_count := Strings.Count;
+
+    for i := 0 to strings_count - 1 do
+      for j := 0 to tables_count - 1 do
       begin
         Table := Tables.GetItem(j);
         if UpperCase(Table.TableName) = UpperCase(Strings[i])
@@ -246,7 +277,10 @@ begin
       end;
 
     Result := TRUE;
-    for i := 0 to Length(ListOfTable) - 1 do
+
+    list_of_table_length := Length(ListOfTable);
+
+    for i := 0 to list_of_table_length - 1 do
     begin
       Result := Result AND ListOfTable[i];
       if not ListOfTable[i]

@@ -4,18 +4,18 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Grids, StdCtrls, ZDataSet, DBGrids, DB;
+  Dialogs, Grids, StdCtrls, ZDataSet, DBGrids, DB, Buttons;
 
 type
   TFormEventLogs = class(TForm)
     DBGrid: TDBGrid;
     DataSource: TDataSource;
-    ButtonRefresh: TButton;
-    ButtonCancel: TButton;
+    BitBtnCancel: TBitBtn;
+    BitBtnRefresh: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure ButtonRefreshClick(Sender: TObject);
-    procedure ButtonCancelClick(Sender: TObject);
+    procedure BitBtnCancelClick(Sender: TObject);
+    procedure BitBtnRefreshClick(Sender: TObject);
   private
     { Private declarations }
     FQuery : TZQuery;
@@ -35,12 +35,12 @@ uses LApplicationGlobals;
 
 {$R *.dfm}
 
-procedure TFormEventLogs.ButtonCancelClick(Sender: TObject);
+procedure TFormEventLogs.BitBtnCancelClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFormEventLogs.ButtonRefreshClick(Sender: TObject);
+procedure TFormEventLogs.BitBtnRefreshClick(Sender: TObject);
 begin
   RefreshBrowse;
 end;

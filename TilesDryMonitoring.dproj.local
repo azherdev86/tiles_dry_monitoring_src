@@ -61,5 +61,6 @@
     <Transaction>2017.03.18 23:30:45.114.pas,F:\_programming\tiles_dry_monitoring\_sources\Unit1.pas=F:\_programming\tiles_dry_monitoring\_sources\Forms\FControlPanel.pas</Transaction>
     <Transaction>2017.03.18 23:30:45.114.dfm,F:\_programming\tiles_dry_monitoring\_sources\Unit1.dfm=F:\_programming\tiles_dry_monitoring\_sources\Forms\FControlPanel.dfm</Transaction>
     <Transaction>2017.03.19 23:52:22.038.pas,F:\_programming\tiles_dry_monitoring\_sources\Unit1.pas=F:\_programming\tiles_dry_monitoring\_sources\Classes\CSensorValueCounters.pas</Transaction>
+    <Transaction>2017.03.25 13:11:59.831.pas,F:\_programming\tiles_dry_monitoring\_sources\Unit1.pas=F:\_programming\tiles_dry_monitoring\_sources\Libraries\LFileLogging.pas</Transaction>
   </Transactions>
 </BorlandProject>

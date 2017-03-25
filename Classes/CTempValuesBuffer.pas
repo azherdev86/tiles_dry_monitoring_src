@@ -187,15 +187,17 @@ end;
 function TMTempBufferValuesList.GetAverage(ASectionNumber : integer; APair : string) : single;
 var
   Item : TMTempBufferValue;
-  i, count : integer;
+  i, avg_count, count : integer;
 
   sum : single;
 begin
   Result := 0;
 
-  sum := 0; count := 0;
+  sum := 0; avg_count := 0;
 
-  for i := 0 to GetCount - 1 do
+  count := GetCount;
+
+  for i := 0 to count - 1 do
     begin
       Item := GetItem(i);
 
@@ -207,12 +209,12 @@ begin
         then
           begin
             sum := sum + Item.TempValue;
-            count := count + 1;
+            avg_count := avg_count + 1;
           end;
     end;
 
-    if count <> 0
-      then Result := sum/count;
+    if avg_count <> 0
+      then Result := sum/avg_count;
 end;
 
 function TMTempBufferValuesList.GetAverage(ASectionNumber : integer; AConveyorNumber : integer; APair : string) : single;
@@ -321,10 +323,12 @@ end;
 
 procedure TMTempBufferValuesList.Reset;
 var
-  i : integer;
+  i, count : integer;
   Item : TMTempBufferValue;
 begin
-  for i := 0 to GetCount - 1 do
+  count := GetCount;
+
+  for i := 0 to count - 1 do
   begin
     Item := FItems.Objects[i] as TMTempBufferValue;
     if Assigned(Item)

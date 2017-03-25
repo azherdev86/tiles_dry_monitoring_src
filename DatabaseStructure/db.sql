@@ -14,6 +14,7 @@ SET SQL DIALECT 3;
 CREATE GENERATOR GEN_SENSORS_ID;
 CREATE GENERATOR GEN_TEMPVALUES_ID;
 CREATE GENERATOR GEN_EVENTLOGS_ID;
+CREATE GENERATOR GEN_MESSAGES_ID;
 
 /******************************************************************************/
 /***                                 Tables                                 ***/
@@ -41,6 +42,21 @@ CREATE TABLE EVENTLOGS (
     EVENTLOGDETAILS  VARCHAR(511)
 );
 
+CREATE TABLE MESSAGES (
+    MESSAGEID                INTEGER NOT NULL,
+    MESSAGETYPE              VARCHAR(3) CHARACTER SET WIN1251 NOT NULL,
+    MESSAGERECIEVEDTIME      TIMESTAMP,
+    MESSAGERECIEVEDPARTTIME  TIMESTAMP,
+    MESSAGECREATIONTIME      TIMESTAMP,
+    MESSAGESENTTIME          TIMESTAMP,
+    MESSAGEDELIEVEREDTIME    TIMESTAMP,
+    MESSAGESTATE             VARCHAR(20) CHARACTER SET WIN1251 NOT NULL,
+    MESSAGEERROR             VARCHAR(20) CHARACTER SET WIN1251 NOT NULL,
+    MESSAGEBYTES             VARCHAR(255) CHARACTER SET WIN1251 NOT NULL,
+    MESSAGEUID               VARCHAR(20) CHARACTER SET WIN1251 NOT NULL
+);
+
+
 /******************************************************************************/
 /***                              Primary Keys                              ***/
 /******************************************************************************/
@@ -48,6 +64,7 @@ CREATE TABLE EVENTLOGS (
 ALTER TABLE SENSORS ADD CONSTRAINT PK_SENSORS PRIMARY KEY (SENSORID);
 ALTER TABLE TEMPVALUES ADD CONSTRAINT PK_TEMPVALUES PRIMARY KEY (TEMPVALUEID);
 ALTER TABLE EVENTLOGS ADD CONSTRAINT PK_EVENTLOGS PRIMARY KEY (EVENTLOGID);
+ALTER TABLE MESSAGES ADD CONSTRAINT PK_MESSAGES PRIMARY KEY (MESSAGEID);
 
 /******************************************************************************/
 /***                              Foreign Keys                              ***/
@@ -96,6 +113,15 @@ as
 begin
   if (new.sensorid is null) then
     new.sensorid = gen_id(gen_sensors_id,1);
+end
+^
+
+CREATE OR ALTER TRIGGER MESSAGES_BI FOR MESSAGES
+ACTIVE BEFORE INSERT POSITION 0
+as
+begin
+  if (new.messageid is null) then
+    new.messageid = gen_id(gen_messages_id,1);
 end
 ^
 
