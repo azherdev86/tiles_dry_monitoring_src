@@ -4,18 +4,18 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, ActnList, FTerminalForm;
+  Dialogs, StdCtrls, ExtCtrls, ActnList, FTerminalForm, Buttons;
 
 type
   TFormChangePassword = class(TFormTerminal)
-    ButtonCancel: TButton;
-    ButtonOk: TButton;
     LabeledEditCurrentPassword: TLabeledEdit;
     LabeledEditNewPassword: TLabeledEdit;
     LabeledEditNewPasswordConfirm: TLabeledEdit;
     ActionList: TActionList;
     ActionLabeledEditKeyDown: TAction;
     CheckBoxDisplayInputCharacters: TCheckBox;
+    BitBtnOk: TBitBtn;
+    BitBtnCancel: TBitBtn;
     procedure LabeledEditCurrentPasswordKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure LabeledEditNewPasswordKeyDown(Sender: TObject; var Key: Word;
@@ -23,10 +23,10 @@ type
     procedure LabeledEditNewPasswordConfirmKeyDown(Sender: TObject;
       var Key: Word; Shift: TShiftState);
     procedure CheckBoxDisplayInputCharactersClick(Sender: TObject);
-    procedure ButtonOkClick(Sender: TObject);
-    procedure ButtonCancelClick(Sender: TObject);
     procedure CheckBoxDisplayInputCharactersKeyDown(Sender: TObject;
       var Key: Word; Shift: TShiftState);
+    procedure BitBtnCancelClick(Sender: TObject);
+    procedure BitBtnOkClick(Sender: TObject);
   private
     { Private declarations }
     procedure LabeledEditKeyDown(var Key : Word);
@@ -43,12 +43,12 @@ uses LApplicationGlobals, LHash, CEventLog;
 
 {$R *.dfm}
 
-procedure TFormChangePassword.ButtonCancelClick(Sender: TObject);
+procedure TFormChangePassword.BitBtnCancelClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFormChangePassword.ButtonOkClick(Sender: TObject);
+procedure TFormChangePassword.BitBtnOkClick(Sender: TObject);
 var
   CurrentPass,
   NewPass,
@@ -114,6 +114,7 @@ begin
   Close;
 end;
 
+
 procedure TFormChangePassword.CheckBoxDisplayInputCharactersClick(
   Sender: TObject);
 begin
@@ -149,7 +150,7 @@ end;
 procedure TFormChangePassword.LabeledEditKeyDown(var Key: Word);
 begin
   case Key of
-    VK_RETURN: ButtonOk.Click;
+    VK_RETURN: BitBtnOk.Click;
     VK_ESCAPE:
       begin
 //        PasswordMode := pmNone;

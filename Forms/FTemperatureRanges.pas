@@ -8,8 +8,6 @@ uses
 
 type
   TFormTemperatureRanges = class(TFormTerminal)
-    ButtonApply: TButton;
-    ButtonCancel: TButton;
     LabeledEditSection1MinYValue: TLabeledEdit;
     LabeledEditSection1MaxYValue: TLabeledEdit;
     LabeledEditSection2MinYValue: TLabeledEdit;
@@ -40,9 +38,11 @@ type
     LabelSection9: TLabel;
     LabelSection8: TLabel;
     LabelSection10: TLabel;
+    BitBtnOk: TBitBtn;
+    BitBtnCancel: TBitBtn;
     procedure FormCreate(Sender: TObject);
-    procedure ButtonCancelClick(Sender: TObject);
-    procedure ButtonApplyClick(Sender: TObject);
+    procedure BitBtnOkClick(Sender: TObject);
+    procedure BitBtnCancelClick(Sender: TObject);
   private
     MaxValuesStart,
     MinValuesStart,
@@ -71,7 +71,12 @@ implementation
 
 uses LApplicationGlobals, CEventLog;
 
-procedure TFormTemperatureRanges.ButtonApplyClick(Sender: TObject);
+procedure TFormTemperatureRanges.BitBtnCancelClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TFormTemperatureRanges.BitBtnOkClick(Sender: TObject);
 begin
   if not CheckValues
     then Exit;
@@ -79,11 +84,6 @@ begin
   SaveSettings;
   LoadFinalRanges;
   CompareRanges;
-  Close;
-end;
-
-procedure TFormTemperatureRanges.ButtonCancelClick(Sender: TObject);
-begin
   Close;
 end;
 

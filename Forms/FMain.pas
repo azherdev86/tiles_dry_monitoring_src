@@ -35,7 +35,6 @@ type
     LabeledEditAxisMaxYValue: TLabeledEdit;
     BitBtnEventHistory: TBitBtn;
     BitBtnTemperatureRanges: TBitBtn;
-    ButtonApplyFloorAxisSettings: TButton;
     Label19: TLabel;
     StatusBar: TStatusBar;
     ComPort: TComPort;
@@ -72,6 +71,7 @@ type
     BitBtnSirenDisable: TBitBtn;
     BitBtnControlPanel: TBitBtn;
     TimerScheduler: TTimer;
+    BitBtnOk: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
     procedure PaintBoxMouseEnter(Sender: TObject);
@@ -86,7 +86,6 @@ type
     procedure TimerComPortSendMessagesTimer(Sender: TObject);
     procedure TimerRefreshViewTimer(Sender: TObject);
     procedure TimerSchedulerTimer(Sender: TObject);
-    procedure ButtonApplyFloorAxisSettingsClick(Sender: TObject);
     procedure LabeledEditAxisMinYValueKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure LabeledEditAxisMaxYValueKeyDown(Sender: TObject; var Key: Word;
@@ -102,6 +101,7 @@ type
     procedure TimerCreateCheckSignaModelMessagesTimer(Sender: TObject);
     procedure BitBtnControlPanelClick(Sender: TObject);
     procedure BitBtnSirenDisableClick(Sender: TObject);
+    procedure BitBtnOkClick(Sender: TObject);
   private
     { Private declarations }
     FStartTime : double;
@@ -228,7 +228,7 @@ procedure TFormMain.LabeledEditAxisMaxYValueKeyDown(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
   case Key of
-    VK_RETURN : ButtonApplyFloorAxisSettings.Click;
+    VK_RETURN : BitBtnOk.Click;
   end;
 end;
 
@@ -246,7 +246,7 @@ procedure TFormMain.LabeledEditAxisMinYValueKeyDown(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
   case Key of
-    VK_RETURN : ButtonApplyFloorAxisSettings.Click;
+    VK_RETURN : BitBtnOk.Click;
   end;
 end;
 
@@ -681,21 +681,7 @@ begin
   FormEventLogs.Free;
 end;
 
-procedure TFormMain.BitBtnTemperatureRangesClick(Sender: TObject);
-begin
-  case InputPassword of
-    pmWrong : ShowMessage('Wrong password');
-
-    pmCorrect :
-      begin
-        Application.CreateForm(TFormTemperatureRanges, FormTemperatureRanges);
-        FormTemperatureRanges.ShowModal;
-        FormTemperatureRanges.Free;
-      end;
-  end;
-end;
-
-procedure TFormMain.ButtonApplyFloorAxisSettingsClick(Sender: TObject);
+procedure TFormMain.BitBtnOkClick(Sender: TObject);
 var
   MinYValue,
   MaxYValue : single;
@@ -739,6 +725,20 @@ begin
   SaveSettings;
 
   PaintBox.Repaint;
+end;
+
+procedure TFormMain.BitBtnTemperatureRangesClick(Sender: TObject);
+begin
+  case InputPassword of
+    pmWrong : ShowMessage('Wrong password');
+
+    pmCorrect :
+      begin
+        Application.CreateForm(TFormTemperatureRanges, FormTemperatureRanges);
+        FormTemperatureRanges.ShowModal;
+        FormTemperatureRanges.Free;
+      end;
+  end;
 end;
 
 procedure TFormMain.ButtonDebugClick(Sender: TObject);
