@@ -264,7 +264,7 @@ begin
   Result := 0;
 
   if not NeedSaveToDataBase //Сохраняем значения в базу не чаще чем, в минуту
-    then Exit;  
+    then Exit;
 
   count := GetCount;
 
