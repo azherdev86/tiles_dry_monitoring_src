@@ -47,7 +47,8 @@ uses
   FTerminalForm in 'Forms\FTerminalForm.pas' {FormTerminal},
   FControlPanel in 'Forms\FControlPanel.pas' {FormControlPanel},
   LApplicationAttributes in 'Libraries\LApplicationAttributes.pas',
-  CSensorValueCounters in 'Classes\CSensorValueCounters.pas';
+  CSensorValueCounters in 'Classes\CSensorValueCounters.pas',
+  LFileLogging in 'Libraries\LFileLogging.pas';
 
 {$R *.res}
 
