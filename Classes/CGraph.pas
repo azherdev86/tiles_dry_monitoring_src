@@ -21,6 +21,7 @@ const
   SERIES_COLOR = clBlack;
 
   SELECTED_CELL_COLOR    = $EEEEEE; //светло-серый
+  DOWN_ROW_COLOR         = $DAEFE2; //светло-зеленый
   HIGHLIGHTED_ROW_COLOR  = $D5E5FB; //светло-розовый
   HIGHLIGHTED_CELL_COLOR = $ACCBF7; //немного темнее, чем светло-розовый
 
@@ -114,8 +115,9 @@ type
 
     procedure DrawWhiteScreen();
     procedure DrawGrid();
-    procedure DrawSelectedCell();
-    procedure DrawHighLightedCells();
+    procedure FillSelectedCell();
+    procedure FillDownRow();
+    procedure FillHighLightedCells();
     procedure DrawSeries();
     procedure DrawRanges();
     procedure DrawAverage();
@@ -350,7 +352,7 @@ begin
   DrawWhiteScreen;
 end;
 
-procedure TMGraph.DrawSelectedCell();
+procedure TMGraph.FillSelectedCell();
 var
   Rect : TRect;
 begin
@@ -367,7 +369,21 @@ begin
   FBitMap.Canvas.Rectangle(Rect);
 end;
 
-procedure TMGraph.DrawHighLightedCells();
+procedure TMGraph.FillDownRow();
+var
+  Rect : TRect;
+begin
+  Rect.Left  := 0;
+  Rect.Right := Width;
+
+  Rect.Top := (GRID_ROW_COUNT - 1)*FGridRowHeight;
+  Rect.Bottom := Rect.Top + FGridRowHeight + 1;
+
+  FBitMap.Canvas.Brush.Color := DOWN_ROW_COLOR;
+  FBitMap.Canvas.Rectangle(Rect);           
+end;
+
+procedure TMGraph.FillHighLightedCells();
 var
   row_count, col_count,
   col_index, row_index,
@@ -1050,8 +1066,9 @@ end;
 procedure TMGraph.DrawGraph(PaintBox : TPaintBox);
 begin
   DrawWhiteScreen;     //заполняем весь холст белой заливкой
-  DrawHighLightedCells;
-  DrawSelectedCell; //перерисовка выделенной области
+  FillHighLightedCells;
+  FillSelectedCell;   //перерисовка выделенной области
+  FillDownRow;
   DrawGrid;            //координатная сетка
   DrawAverage;         //отрисовка линий со средними значениями
   DrawRanges;          //отрисовка границ
