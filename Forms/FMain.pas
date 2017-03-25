@@ -114,6 +114,9 @@ type
     FNeedBackupOutdatedTempValues : boolean; //Нужно сохранять устаревшие значения (да/нет)
     FOutdatedTempValuesBackuped : boolean;     //Устаревшие значения сохранены (да/нет)
 
+    FNeedDeleteComPortMessages : boolean; //Нужно удалять устаревшие сообщения из базы (да/нет)
+    FComPortMessagesDeleted : boolean;     //Устаревшие сообщения удалены (да/нет)
+
     procedure UpdateGraph();
     procedure UpdateStatusBar;
     procedure UpdateSignalMode;
@@ -129,6 +132,7 @@ type
 
     function DeleteOutdatedTempValues() : boolean;
     function BackupOutdatedTempValues() : boolean;
+    function DeleteOutdatedComPortMessages() : boolean;
 
   public
     { Public declarations }
@@ -197,6 +201,9 @@ begin
 
   FNeedBackupOutdatedTempValues := False;
   FOutdatedTempValuesBackuped   := False;
+
+  FNeedDeleteComPortMessages    := False;
+  FComPortMessagesDeleted       := False;
 
   LoadSettings;
 
@@ -336,10 +343,14 @@ begin
 end;
 
 procedure TFormMain.TimerSchedulerTimer(Sender: TObject);
+const
+  CDeleteValuesHour   = 0;
+  CBackupValuesHour   = 1;
+  CDeleteMessagesHour = 2;
 begin
   ///////////////// Удаление старых даных ////////////////////////
   ////////////////// Каждый день в 00:00 /////////////////////////
-  if (DecodeHour(Now) = 0) and (not FOutdatedTempValuesDeleted) //если настало нужное время и операция еще не выполнена
+  if (DecodeHour(Now) = CDeleteValuesHour) and (not FOutdatedTempValuesDeleted) //если настало нужное время и операция еще не выполнена
     then FNeedDeleteOutdatedTempValues := True; //то выставляем флаг
 
   if FNeedDeleteOutdatedTempValues and (not FOutdatedTempValuesDeleted)
@@ -348,22 +359,36 @@ begin
   if FOutdatedTempValuesDeleted
     then FNeedDeleteOutdatedTempValues := False;
 
-  if (DecodeHour(Now) > 0)
+  if (DecodeHour(Now) > CDeleteValuesHour)
     then FOutdatedTempValuesDeleted := False;
 
   ///////////////// Сохранение старых данных ////////////////////////
   ////////////////// Каждый день в 01:00 /////////////////////////
-  if (DecodeHour(Now) = 1) and (not FOutdatedTempValuesBackuped) //если настало нужное время и операция еще не выполнена
+  if (DecodeHour(Now) = CBackupValuesHour) and (not FOutdatedTempValuesBackuped) //если настало нужное время и операция еще не выполнена
     then FNeedBackupOutdatedTempValues := True; //то выставляем флаг
 
   if FNeedBackupOutdatedTempValues and (not FOutdatedTempValuesBackuped)
-    then FOutdatedTempValuesBackuped := BackupOutdatedTempValues;
+    then FOutdatedTempValuesBackuped := BackupOutdatedTempValues();
 
   if FOutdatedTempValuesBackuped
     then FNeedBackupOutdatedTempValues := False;
 
-  if (DecodeHour(Now) > 1)
+  if (DecodeHour(Now) > CBackupValuesHour)
     then FOutdatedTempValuesBackuped := False;
+
+  ///////////////// Сохранение старых данных ////////////////////////
+  ////////////////// Каждый день в 02:00 /////////////////////////
+  if (DecodeHour(Now) = CDeleteMessagesHour) and (not FComPortMessagesDeleted) //если настало нужное время и операция еще не выполнена
+    then FNeedDeleteComPortMessages := True; //то выставляем флаг
+
+  if FNeedDeleteComPortMessages and (not FComPortMessagesDeleted)
+    then FComPortMessagesDeleted := DeleteOutdatedComPortMessages();
+
+  if FComPortMessagesDeleted
+    then FNeedDeleteComPortMessages := False;
+
+  if (DecodeHour(Now) > CDeleteMessagesHour)
+    then FComPortMessagesDeleted := False;
 end;
 
 procedure TFormMain.TrackBarAllConveyorsChange(Sender: TObject);
@@ -1104,6 +1129,33 @@ begin
 
   Result := True;
 end;
+
+function TFormMain.DeleteOutdatedComPortMessages() : boolean;
+var
+  TableRecord : TMTableRecord;
+
+  ms_between : integer;
+
+  before : TDateTime;
+begin
+  //Удаляем старые Com-port сообщения
+  TableRecord := TMTableRecord.Create('Messages');
+  try
+    before := Now;
+
+    TableRecord.DeleteRecordsAll;
+
+    ms_between := MilliSecondsBetween(before, Now);
+
+    ApplicationEventLog.WriteLog(elDeleteOutdated, 'Deleted all ComPort messages in ' +
+                                                   IntToStr(ms_between) + ' ms');
+  finally
+    TableRecord.Free;
+  end;
+
+  Result := True;
+end;
+
 
 function TFormMain.BackupOutdatedTempValues() : boolean;
 const
